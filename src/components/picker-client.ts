@@ -93,18 +93,20 @@ function headroomNote(rec: Recommendation): string {
  * They do not. Saying "GGUF runtime" does not correct that expectation for
  * someone who does not yet know the two are different things.
  *
- * What it must NOT do is promise a bump. The published comparisons disagree
- * badly, and the commonly quoted 1.4-1.6x is arithmetically impossible against
- * what llama.cpp's own published measurements support. So this says the
- * direction is up, declines to say how far, and names the case where the
- * advantage is reported to disappear.
+ * What it must NOT do is promise a bump. The Apple Silicon overhead range was
+ * set on both runtimes (docs/mac-tok-s-validation.md), so MLX is inside the
+ * figures already, mostly at the top. Same-machine comparisons at matched
+ * 4-bit put it at 1.0-1.2x llama.cpp on most models and 1.6-1.9x on Qwen3.5,
+ * where llama.cpp's kernels for the linear-attention layers lag. So this says
+ * where in the range to look, names the one family that sits above it, and
+ * corrects the 3x that is really Ollama's wrapper.
  */
 function mlxNote(m: Machine): string {
   if (m.platform !== 'unified') return '';
   const body =
-    'Controlled comparisons put MLX at roughly 1.5× these figures on generation — 1.63× on a dense 9B, about 1.5× on a 35B mixture-of-experts, measured at 4-bit on both sides of the same machine. So read the speed above as a floor if you run MLX. The 3× sometimes quoted is Ollama changing its own backend, and about half of that gap is Ollama\'s wrapper rather than MLX.';
+    'The range above was set on both runtimes. Same-machine comparisons at 4-bit on both sides put MLX at 1.0–1.2× llama.cpp on most models, so if you run MLX expect the top of the range; on Qwen3.5 it is 1.6–1.9×, and lands above it. The 3× sometimes quoted is Ollama changing its own backend, and about half of that gap is Ollama\'s wrapper rather than MLX.';
   return `<div class="border-l-2 border-edge bg-paper py-2 pl-3 pr-3">
-    <p class="dslabel">On a Mac, these are llama.cpp numbers</p>
+    <p class="dslabel">On a Mac, llama.cpp or MLX</p>
     <p class="mt-1 dsnote">${esc(body)} <a href="/methodology" class="underline decoration-dotted underline-offset-2 hover:text-serious">How speed is estimated</a></p>
     <p class="mt-1.5 dsnote">The memory figures above are llama.cpp's too, including the context ceiling. MLX allocates differently and this site does not model it, so on an MLX build expect the context you can actually load to differ from what is shown here — and, on the one report available, to be lower.</p>
   </div>`;

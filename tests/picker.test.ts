@@ -965,11 +965,13 @@ describe('compareMachines', () => {
   });
 
   it('reports a speed ratio that tracks the bandwidth ratio', () => {
-    // Same model, same band, so bytes-read cancels and the ratio should be the
-    // bandwidth ratio: 936 / 400 = 2.34.
+    // Same model, same band, so bytes-read cancels and the ratio should sit
+    // near the bandwidth ratio: 936 / 400 = 2.34. Not exactly on it — the
+    // per-layer overhead is a fixed cost, and its share of the token differs
+    // between CUDA and Metal — but within a fifth of it.
     const c = compareMachines(m1max, rtx3090, 'coding-assistant', real)!;
-    expect(c.speedRatio).toBeGreaterThan(2.1);
-    expect(c.speedRatio).toBeLessThan(2.5);
+    expect(c.speedRatio).toBeGreaterThan(1.9);
+    expect(c.speedRatio).toBeLessThan(2.6);
   });
 
   it('withholds the ratio when the two run different models', () => {
@@ -1845,19 +1847,22 @@ describe('speed is a latency, not a bandwidth fraction', () => {
   });
 
   it('ANCHOR: brackets the sparse MoE measurement the old model missed', () => {
-    // Qwen3.5-35B-A3B on an M4 Max measures 66-70 tok/s. Reading ~1.6GB per
-    // token, the old bandwidth-fraction predicted 120-187 and the measurement
-    // fell outside it entirely. This is the whole reason for the change.
+    // Qwen3.5-35B-A3B on an M4 Max 128GB, 40 layers, 4-bit on both sides:
+    // llama.cpp 70.4-72.4 tok/s, MLX 126.4-131.8 (antekapetanovic.com, ten
+    // runs each). Reading ~1.7GB per token, a bandwidth fraction predicted
+    // 120-187 and put llama.cpp outside it entirely; the range is now wide
+    // enough to hold both runtimes, which is what a Mac reader may be on.
     const moe = model('m35', {
       paramsB: 35,
       activeParamsB: 3,
       architecture: 'moe',
+      layers: 40,
       kvBytesPerToken: 32768,
       bands: { mid: { weightsGb: 19, exampleQuants: ['Q4_K_M'] } },
     });
     const s = speedFor(moe, 'mid', { platform: 'unified', ramGb: 128, chipId: 'm4-max-40c' }, 2048, 546);
-    expect(s.lo).toBeLessThanOrEqual(70);
-    expect(s.hi).toBeGreaterThanOrEqual(66);
+    expect(s.lo).toBeLessThanOrEqual(70.4);
+    expect(s.hi).toBeGreaterThanOrEqual(131.8);
   });
 
   it('a fixed overhead means a real speed ceiling', () => {
@@ -1869,36 +1874,103 @@ describe('speed is a latency, not a bandwidth fraction', () => {
     expect(s.hi).toBeLessThanOrEqual(Math.ceil(ceiling));
   });
 
-  it('REGRESSION: small reads slow down, large reads speed up', () => {
-    // The direction is the mechanism. A change that moved everything the same
-    // way would mean it is not doing what it claims.
+  it('REGRESSION: small reads use less of the bandwidth than large ones', () => {
+    // The direction is the mechanism: a fixed cost is a larger share of a
+    // small token than of a big one, so the bandwidth a small read appears to
+    // achieve is lower. A multiplicative derate cannot produce this — it gives
+    // every model the same utilisation — and it is the reason sparse models
+    // were overpredicted by about two times under the old fraction.
     const real = loadSiteData();
     const machine: Machine = { platform: 'unified', ramGb: 128, chipId: 'm4-max-40c' };
     const bw = 546;
-    let sparseChecked = 0;
-    let denseChecked = 0;
+    const util: { small: number[]; large: number[] } = { small: [], large: [] };
     for (const m of real.models) {
       const f = fitFor(m, 'mid', machine, hardware, 8192);
       if (!f || f.state === 'no') continue;
       const af = m.activeParamsB ? m.activeParamsB / m.paramsB : 1;
       const bytes = f.weightsGb * af + f.kvGb;
       const s = generationSpeed(f.weightsGb, f.kvGb, m, f, bw, 90, hardware, machine.platform)!;
-      const oldMid = (bw * 0.45 + bw * 0.7) / 2 / bytes; // what the fraction model said
-      const newMid = (s.lo + s.hi) / 2;
+      const mid = (s.lo + s.hi) / 2;
       // The predictor is BYTES READ, not architecture. Mistral Small 4 is
       // sparse — 6.5B of 119B active — but carries a 590KB/token KV cache, so
       // at 8K it reads ~8.9GB and behaves like a dense model. Asserting on
       // sparsity would encode the wrong mechanism.
-      if (bytes < 4) {
-        expect(newMid, `${m.id} small read ${bytes.toFixed(1)}GB`).toBeLessThan(oldMid);
-        sparseChecked++;
-      } else if (bytes > 15) {
-        expect(newMid, `${m.id} large read ${bytes.toFixed(1)}GB`).toBeGreaterThan(oldMid);
-        denseChecked++;
-      }
+      if (bytes < 4) util.small.push((mid * bytes) / bw);
+      else if (bytes > 15) util.large.push((mid * bytes) / bw);
     }
-    expect(sparseChecked).toBeGreaterThan(3);
-    expect(denseChecked).toBeGreaterThan(3);
+    expect(util.small.length).toBeGreaterThan(3);
+    expect(util.large.length).toBeGreaterThan(3);
+    expect(Math.max(...util.small)).toBeLessThan(Math.min(...util.large));
+  });
+});
+
+describe('Mac tok/s against published measurements', () => {
+  // The two most authoritative Apple Silicon tables there are, one per runtime,
+  // and the only ones with a stated machine, command and version on every row.
+  // The range shown for a Mac has to hold both: a reader is on one or the other
+  // and the site cannot tell which. See docs/mac-tok-s-validation.md for the
+  // full 92-row corpus these were chosen from.
+  const real = loadSiteData();
+  const byId = (id: string) => real.models.find((m) => m.id === id)!;
+  const speed = (chipId: string, ramGb: number, modelId: string, weightsGb: number, ctx: number) => {
+    const m = byId(modelId);
+    const machine: Machine = { platform: 'unified', ramGb, chipId };
+    const bw = bandwidthFor(machine, hardware)!;
+    const f = fitFor(m, 'mid', machine, hardware, ctx)!;
+    return generationSpeed(weightsGb, f.kvGb, m, f, bw, undefined, hardware, 'unified')!;
+  };
+
+  it('brackets llama.cpp on every chip in its own Apple Silicon table', () => {
+    // ggml-org/llama.cpp discussion #4167: LLaMA-2-7B Q4_0 (3.83GB, 32 layers),
+    // `llama-bench -p 512 -n 128`. Llama-3.1-8B stands in for the layer count;
+    // at 128 tokens the KV difference between the two is under 0.1GB.
+    const rows: [string, number, number][] = [
+      ['m1-max', 64, 61.19],
+      ['m1-ultra', 128, 83.73],
+      ['m2-max', 64, 65.95],
+      ['m2-ultra', 192, 94.27],
+      ['m3-max-30c', 36, 56.58],
+      ['m3-max-40c', 64, 66.31],
+      ['m3-ultra', 256, 92.14],
+      ['m4-pro', 48, 50.74],
+      ['m4-max-32c', 64, 69.95],
+      ['m4-max-40c', 64, 83.06],
+      ['m5', 32, 31.88],
+      ['m5-pro', 48, 66.33],
+      ['m5-max-40c', 128, 119.92],
+    ];
+    for (const [chip, ram, measured] of rows) {
+      const s = speed(chip, ram, 'llama-3.1-8b', 3.83, 128);
+      expect(s.lo, `${chip} lo`).toBeLessThanOrEqual(measured);
+      // The site prints whole tok/s; the M5 Pro row lands on the rounding.
+      expect(s.hi + 0.5, `${chip} hi`).toBeGreaterThanOrEqual(measured);
+    }
+  });
+
+  it('brackets MLX in mlx-lm\'s own benchmark table', () => {
+    // ml-explore/mlx-lm BENCHMARKS.md, M4 Max 64GB, `-p 2048 -g 128`, weights
+    // at the sizes the table states. bf16 is the site's full band; the rest are
+    // MLX's own 4.5 and 8.5 bits per weight, which no GGUF band matches.
+    const rows: [string, number, number][] = [
+      ['qwen3-4b', 2.5, 134.52],
+      ['qwen3-4b', 4.3, 86.91],
+      ['qwen3-4b', 8, 52.47],
+      ['qwen3-30b-a3b', 18.2, 113.33],
+      ['qwen3-30b-a3b', 33.46, 83.16],
+    ];
+    for (const [modelId, gb, measured] of rows) {
+      const s = speed('m4-max-40c', 64, modelId, gb, 2176);
+      expect(s.lo, `${modelId} ${gb}GB lo`).toBeLessThanOrEqual(measured);
+      expect(s.hi, `${modelId} ${gb}GB hi`).toBeGreaterThanOrEqual(measured);
+    }
+  });
+
+  it('does not open the range wider than the measurements need', () => {
+    // A range that held everything by spanning 10-1000 would pass the two
+    // tests above and tell the reader nothing. The 7B row on an M1 Max is the
+    // narrowest case the corpus has, and it stays under 2x wide.
+    const s = speed('m1-max', 64, 'llama-3.1-8b', 3.83, 128);
+    expect(s.hi / s.lo).toBeLessThan(2);
   });
 });
 
