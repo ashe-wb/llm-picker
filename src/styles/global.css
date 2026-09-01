@@ -178,3 +178,40 @@ select.is-set {
 th.is-sorted {
   @apply text-serious underline underline-offset-4;
 }
+
+/* The header mark. On arrival it bounces three times, each smaller than the
+   last, running through the site's three signal colours before settling on
+   serious — the colour it has always been. After that it stays put, except
+   for one small bounce every eight seconds so the page reads as alive rather
+   than parked. Two animations on one element: the intro plays once, the idle
+   loop starts when the intro ends. Transform and colour only, so neither
+   touches layout. Off entirely under reduced motion: the mark is decoration,
+   and a page that keeps twitching is the wrong kind of alive for someone who
+   asked it not to. */
+.mark {
+  transform-origin: 50% 100%;
+  animation:
+    mark-intro 1.4s cubic-bezier(0.28, 0.84, 0.42, 1) 0.2s 1 both,
+    mark-idle 8s cubic-bezier(0.28, 0.84, 0.42, 1) 1.6s infinite;
+}
+@keyframes mark-intro {
+  0%   { transform: translateY(0); background-color: var(--color-serious); }
+  14%  { transform: translateY(-10px) scale(0.92, 1.08); background-color: var(--color-warn); }
+  30%  { transform: translateY(0) scale(1.08, 0.92); background-color: var(--color-warn); }
+  33%  { transform: translateY(0) scale(1); }
+  46%  { transform: translateY(-6px) scale(0.95, 1.05); background-color: var(--color-ok); }
+  60%  { transform: translateY(0) scale(1.05, 0.95); background-color: var(--color-ok); }
+  63%  { transform: translateY(0) scale(1); }
+  74%  { transform: translateY(-3px); background-color: var(--color-live); }
+  86%  { transform: translateY(0); background-color: var(--color-live); }
+  100% { transform: translateY(0); background-color: var(--color-serious); }
+}
+@keyframes mark-idle {
+  0%, 84%, 100% { transform: translateY(0); background-color: var(--color-serious); }
+  88%  { transform: translateY(-5px) scale(0.95, 1.05); background-color: var(--color-warn); }
+  93%  { transform: translateY(0) scale(1.05, 0.95); background-color: var(--color-warn); }
+  95%  { transform: translateY(0) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mark { animation: none; }
+}
