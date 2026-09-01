@@ -1,0 +1,26 @@
+{
+  "modelId": "nemotron-3-nano-30b-a3b",
+  "entries": [
+    { "band": "full", "dimension": "long-context", "score": 9,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "RULER-100@1M", "rawValue": 86.3, "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "92.9 at 256K and 91.3 at 512K. The best long-context evidence on this site by a wide margin — Gemma 4 31B, the nearest measured rival, manages 66.4% at 128K. RULER is a multi-hop, multi-needle test, not a single planted sentence, which is what makes the number meaningful." }] },
+    { "band": "full", "dimension": "math", "score": 8,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "AIME25", "rawValue": 89.1, "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "GPQA 73.0, MMLU-Pro 78.3. Scored without tools; NVIDIA also reports 99.2 on AIME25 with tools, which measures the harness as much as the model." }] },
+    { "band": "full", "dimension": "coding", "score": 6,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "LiveCodeBench", "rawValue": 68.3, "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "SWE-Bench (OpenHands): 38.8 — a long way below the competition-style number, and the honest signal for real repository work. This is not the coding model in this catalog." }] },
+    { "band": "full", "dimension": "tool-calling", "score": 5,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "BFCL v4", "rawValue": 53.8, "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Modest for a model marketed as agentic, and measured on BFCL v4 rather than the v3 most other entries here quote — not directly comparable." }] },
+    { "band": "full", "dimension": "instruction-following", "score": 7,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "IFBench", "rawValue": 71.5, "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "One of only eleven models on this site with any instruction-following evidence at all." }] },
+    { "band": "high", "dimension": "long-context", "score": 9,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q6_K", "method": "aggregated", "quantNote": "Editorial derivation: long-context retrieval is not quant-sensitive in the way arithmetic is, and 6-bit is near-lossless here. Carried unchanged." }] },
+    { "band": "high", "dimension": "math", "score": 8,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q6_K", "method": "aggregated", "quantNote": "Editorial derivation: carried from the full band." }] },
+    { "band": "mid", "dimension": "long-context", "score": 8,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: one point down. This is the band to run — 24.7GB, and the tiny KV cache means a very long context stays affordable on top of it." }] },
+    { "band": "mid", "dimension": "math", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: one point down for 4-bit MoE experts on multi-step arithmetic." }] },
+    { "band": "mid", "dimension": "coding", "score": 5,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: one point down from the full band." }] }
+  ],
+  "quantOverrides": []
+}

@@ -1,0 +1,32 @@
+llm-picker
+Copyright (c) 2026 llm-picker contributors
+
+This product includes no third-party source code. Nothing under a third-party
+licence is redistributed in the published site: the browser receives only this
+project's own JavaScript, CSS and HTML. Build-time dependencies (Astro, Vite,
+Tailwind, zod, lightningcss, sharp and their trees) stay on the build machine.
+
+The following works were consulted to establish facts about model behaviour.
+No code from them is copied, adapted or shipped here; what was taken is what a
+program does, which is not something a licence governs. They are named because
+this project cites its evidence, not because attribution is required.
+
+  mlx-lm — Apache-2.0, Apple Inc.
+  https://github.com/ml-explore/mlx-lm
+  Used to establish: the order of norms and residual adds inside a transformer
+  block (llama.py, gemma3_text.py, gemma4_text.py); that Gemma 4's KV-shared
+  layers allocate no cache (gemma4_text.py make_cache); and that MLX's KVCache
+  allocates separate K and V buffers regardless of attention_k_eq_v (cache.py).
+
+  transformers — Apache-2.0, Hugging Face
+  https://github.com/huggingface/transformers
+  Used to establish: that a Qwen3.5 decoder layer builds exactly one token
+  mixer, chosen by layer_types (modeling_qwen3_5.py).
+
+Hardware figures are cited to their sources in data/hardware.json and in the
+methodology. NVIDIA memory bandwidths come from NVIDIA's own GTX 1080 and Turing
+architecture whitepapers where those state them.
+
+Model architecture figures are measured from published checkpoints; see
+DATA_LICENSE for what is recorded and what is not, and each model's entry for
+that model's own licence.

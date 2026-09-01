@@ -1,0 +1,196 @@
+---
+import { loadSiteData } from '../lib/data';
+import type { PickerData } from '../lib/picker';
+import { chipPresets } from '../lib/fit';
+
+const data = loadSiteData();
+// Capacity cannot identify a Mac, so the Apple row has to be the chip list. The
+// eight hand-written machines it replaces were the short version of exactly
+// this, and left anyone on a chip outside those eight with nothing to click.
+const hardware = {
+  ...data.hardware,
+  presets: [...data.hardware.presets, ...chipPresets(data.hardware)],
+};
+const pickerData: PickerData = {
+  hardware,
+  tasks: data.tasks,
+  mitigations: data.mitigations,
+  models: data.models,
+  scores: Object.fromEntries(data.scores),
+  weaknesses: Object.fromEntries(data.weaknesses),
+};
+const json = JSON.stringify(pickerData).replace(/</g, '\\u003c');
+const { platforms, presets, ramOptions, vramOptions, chips, systemMemory } = hardware;
+const CONTEXTS = [4096, 8192, 32768, 131072, 262144];
+const ctxLabel = (n: number) => `${Math.round(n / 1024)}K`;
+// One dropdown per vendor: 35 chips in wrapped rows filled the whole page.
+// Alphabetical, with CPU only pinned last: it is the fallback for people with
+// no accelerator at all, so it reads as the end of the list rather than a peer
+// of the vendors above it. Order was previously whatever the data file happened
+// to list first, which put Apple at the bottom once its row became generated.
+const LAST_GROUP = 'CPU only';
+const groupNames = [...new Set(presets.map((p) => p.group))].sort((a, b) =>
+  a === LAST_GROUP ? 1 : b === LAST_GROUP ? -1 : a.localeCompare(b),
+);
+const presetGroups = groupNames.map((group) => {
+  const items = presets.filter((p) => p.group === group);
+  const subs = [...new Set(items.map((p) => p.subgroup).filter(Boolean))] as string[];
+  return {
+    group,
+    items,
+    // Sixty-one Macs in one flat list is unreadable; grouped by generation it
+    // is six short lists you can scan.
+    sub: subs.map((subgroup) => ({ subgroup, items: items.filter((p) => p.subgroup === subgroup) })),
+  };
+});
+const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+// Chips grouped by generation. Nobody knows their memory bandwidth; everybody
+// knows whether they have an M1 Max or an M4 Pro, and on Apple silicon that is
+// the only thing that determines it.
+const chipFamilies = [...new Set(chips.map((c) => c.family))].map((family) => ({
+  family,
+  items: chips.filter((c) => c.family === family),
+}));
+
+---
+
+<script type="application/json" id="picker-data" set:html={json} />
+
+<div class="space-y-8">
+  <section>
+    <h2 class="dshead mb-4">Step 01 — Your machine</h2>
+
+    <p class="dslabel mb-3 normal-case tracking-normal">Start from a machine like yours, or set the numbers below.</p>
+    <div class="mb-4 space-y-2">
+      {presetGroups.map((g) => (
+        <div class="flex items-center gap-2">
+          <label for={`p-preset-${slug(g.group)}`} class="dskey w-28 shrink-0">{g.group}</label>
+          <select
+            id={`p-preset-${slug(g.group)}`}
+            data-preset-group
+            class="min-w-0 flex-1 border border-rule bg-paper px-2 py-1.5 font-mono text-xs sm:w-72 sm:flex-none"
+          >
+            <option value="">—</option>
+            {g.sub.length > 0
+              ? g.sub.map((s) => (
+                  <optgroup label={s.subgroup}>
+                    {s.items.map((p) => <option value={p.id}>{p.label}</option>)}
+                  </optgroup>
+                ))
+              : g.items.map((p) => <option value={p.id}>{p.label}</option>)}
+          </select>
+        </div>
+      ))}
+    </div>
+    <p class="mb-4 dsnote">
+      Machines with the same memory hold the same models, so <em>what fits</em> is the same
+      answer for all of them. How fast they run it is not: a Tesla M40 and an RTX 4090 both
+      hold a 24GB model, and the 4090 reads memory three and a half times quicker. Pick a
+      machine and the recommendations below estimate both.
+    </p>
+
+    <div class="flex flex-wrap items-end gap-x-6 gap-y-3 border border-edge bg-panel px-4 py-3">
+      <label class="flex flex-col gap-1">
+        <span class="dslabel">Graphics card</span>
+        <select id="p-platform" class="border border-rule bg-paper px-2 py-1.5 font-mono text-xs">
+          {platforms.map((p) => <option value={p.id}>{p.pickerLabel ?? p.label}</option>)}
+        </select>
+      </label>
+      <label class="flex flex-col gap-1">
+        <span class="dslabel" id="p-ram-label">System RAM</span>
+        <select id="p-ram" class="border border-rule bg-paper px-2 py-1.5 font-mono text-xs">
+          {ramOptions.map((g) => <option value={g} selected={g === 32}>{g} GB</option>)}
+        </select>
+      </label>
+      <label class="flex flex-col gap-1" id="p-vram-wrap">
+        <span class="dslabel">Graphics card memory</span>
+        <select id="p-vram" class="border border-rule bg-paper px-2 py-1.5 font-mono text-xs">
+          {vramOptions.map((g) => <option value={g}>{g} GB VRAM</option>)}
+        </select>
+      </label>
+      <label class="flex flex-col gap-1" id="p-sysmem-wrap">
+        <span class="dslabel">System memory speed</span>
+        <select id="p-sysmem" class="border border-rule bg-paper px-2 py-1.5 font-mono text-xs">
+          {systemMemory.map((sm) => (
+            <option value={sm.id} selected={sm.id === 'ddr5-dual'}>{sm.label} — {sm.bandwidthGbs} GB/s</option>
+          ))}
+        </select>
+      </label>
+      <label class="flex flex-col gap-1">
+        <span class="dslabel">Context</span>
+        <select id="p-ctx" class="border border-rule bg-paper px-2 py-1.5 font-mono text-xs">
+          <option value="">Auto — from workload</option>
+          {CONTEXTS.map((c) => <option value={c}>{ctxLabel(c)}</option>)}
+        </select>
+      </label>
+      <label class="flex flex-col gap-1" id="p-chip-wrap">
+        <span class="dslabel">Chip</span>
+        <select id="p-chip" class="border border-rule bg-paper px-2 py-1.5 font-mono text-xs">
+          <option value="">From the machine above</option>
+          {chipFamilies.map((f) => (
+            <optgroup label={f.family}>
+              {f.items.map((c) => <option value={c.id}>{c.label} — {c.bandwidthGbs} GB/s</option>)}
+            </optgroup>
+          ))}
+        </select>
+      </label>
+      <label class="flex flex-col gap-1" id="p-ceiling-wrap">
+        <span class="dslabel">GPU memory limit</span>
+        <select id="p-ceiling" class="border border-rule bg-paper px-2 py-1.5 font-mono text-xs">
+          <option value="">Default (untouched)</option>
+        </select>
+      </label>
+    </div>
+    <p class="mt-2 border-l-2 border-edge bg-panel py-2 pl-3 pr-3 dsnote">
+      Your graphics card and your CPU both work here, and this asks about both. A model larger
+      than the card does not stop: the card holds what it can and <em>your CPU runs the rest out
+      of system RAM</em>, which is why the RAM figure and its speed change the answer even when
+      you have a card. With no card at all, system RAM is the whole of it.
+    </p>
+    <p id="p-budget" class="mt-2 dsnote"></p>
+    <p id="p-preset-note" class="mt-2 border-l-2 border-warn bg-panel py-2 pl-3 pr-3 dsnote" hidden></p>
+  </section>
+
+  <section>
+    <h2 class="dshead mb-4">Step 02 — Workload</h2>
+    <div class="grid gap-2 sm:grid-cols-3">
+      {data.tasks.map((t) => (
+        <button data-task={t.id} class="sel-btn">
+          <span class="block font-medium">{t.label}</span>
+          <span class="dslabel mt-1 block normal-case tracking-normal">
+            assumes {t.assumedContextTokens >= 1024 ? `${Math.round(t.assumedContextTokens / 1024)}K` : t.assumedContextTokens} context
+          </span>
+        </button>
+      ))}
+    </div>
+  </section>
+
+  <section>
+    <h2 class="dshead mb-4">Output — Recommendation</h2>
+
+    <div class="mb-4 flex flex-wrap items-center gap-2">
+      <label for="p-compare" class="dskey shrink-0">Compare with</label>
+      <select
+        id="p-compare"
+        class="min-w-0 flex-1 border border-rule bg-paper px-2 py-1.5 font-mono text-xs sm:w-80 sm:flex-none"
+      >
+        <option value="">— another machine</option>
+        {presetGroups.map((g) => (
+          <optgroup label={g.group}>
+            {g.items.map((p) => <option value={p.id}>{p.label}</option>)}
+          </optgroup>
+        ))}
+      </select>
+    </div>
+    <div id="p-compare-out" class="empty:hidden mb-4"></div>
+
+    <div id="picker-results" class="space-y-4" aria-live="polite">
+      <p class="font-mono text-sm text-faded">Awaiting input. Choose a workload above.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+  import { initPicker } from './picker-client';
+  initPicker();
+</script>

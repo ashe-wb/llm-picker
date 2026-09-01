@@ -1,0 +1,58 @@
+{
+  "id": "qwen3-8b",
+  "name": "Qwen3 8B",
+  "family": "Qwen3",
+  "vendor": "Alibaba",
+  "architecture": "dense",
+  "paramsB": 8.2,
+  "layers": 36,
+  "vocabSize": 151936,
+  "width": 12288,
+  "attentionHeads": 32,
+  "kvHeads": 8,
+  "headDim": 128,
+  "attentionPattern": "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+  "vision": false,
+  "contextLength": 32768,
+  "license": {
+    "name": "Apache-2.0",
+    "url": "https://huggingface.co/Qwen/Qwen3-8B"
+  },
+  "releaseDate": "2025-04-29",
+  "ggufUrl": "https://huggingface.co/Qwen/Qwen3-8B-GGUF",
+  "status": "active",
+  "summary": "The default mid-size all-rounder. Strong reasoning and coding for its size, hybrid thinking mode, solid tool calling. The community's most common answer to 'which model should I start with?' on 16GB machines.",
+  "kvBytesPerToken": 147456,
+  "kvSourceUrl": "https://huggingface.co/Qwen/Qwen3-8B/blob/main/config.json",
+  "bands": {
+    "low": {
+      "weightsGb": 4,
+      "exampleQuants": [
+        "IQ3_XXS",
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 5,
+      "exampleQuants": [
+        "Q4_K_M",
+        "Q5_K_M",
+        "mlx-4bit"
+      ]
+    },
+    "high": {
+      "weightsGb": 7,
+      "exampleQuants": [
+        "Q6_K",
+        "Q8_0"
+      ]
+    },
+    "full": {
+      "weightsGb": 16,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  },
+  "mlxUrl": "https://huggingface.co/mlx-community/Qwen3-8B-4bit"
+}

@@ -1,0 +1,36 @@
+{
+  "modelId": "nanbeige4.2-3b",
+  "entries": [
+    {
+      "id": "nanbeige4.2-3b/all/loop-doubles-kv",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["long-context"],
+      "severity": "severe",
+      "summary": "The looped architecture runs its 22 layers twice, and each pass caches its own keys and values — so the KV cache behaves like a 44-layer model even though only 3B of weights are stored. At 32K context that is roughly 5.5GB of cache against 2.7GB of weights: the context costs twice the model. The usual intuition that a 3B is cheap to run holds for the download and fails badly for the session.",
+      "mitigations": [
+        { "mitigationId": "rag", "note": "Keep the context short and retrieve what you need. On this model that is a memory decision, not just a quality one.", "effectiveness": "strong" },
+        { "mitigationId": "update-runtime", "note": "Loop-aware KV handling is new; check whether your runtime caches once per layer or once per pass, because the memory figures here assume the latter (the safe assumption).", "effectiveness": "partial" }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/Nanbeige/Nanbeige4.2-3B/blob/main/config.json", "title": "Nanbeige4.2-3B config.json — 22 layers, num_loops 2", "sourceType": "vendor", "accessed": "2026-08-30" },
+        { "url": "https://hackernoon.com/inside-nanbeige42-3b-bases-looped-transformer-architecture", "title": "Inside Nanbeige4.2-3B-Base's Looped Transformer Architecture", "sourceType": "blog", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "nanbeige4.2-3b/all/too-good-for-its-size",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["math", "coding"],
+      "severity": "moderate",
+      "summary": "GPQA-Diamond 87.4 and SWE-bench Verified 63.6 from a 3B model would place it above most 27B-class models in this catalog. That is either a genuine architectural result or contamination, and from the vendor's own runs there is no way to tell. The arXiv report is a point in its favour; independent replication is what would settle it.",
+      "mitigations": [
+        { "mitigationId": "none", "note": "No fix — a caveat. Try it on your own work before believing the table; a 2.7GB download makes that cheap." }
+      ],
+      "citations": [
+        { "url": "https://arxiv.org/html/2607.22083v2", "title": "Nanbeige4.2-3B: Unlocking Agentic Capabilities in a Compact Model", "sourceType": "paper", "accessed": "2026-08-30" },
+        { "url": "https://aiweekly.co/alerts/nanbeige42-3b-beats-9b-12b-rivals-on-swe-bench-and-gdpval", "title": "Nanbeige4.2-3B beats 9B and 12B rivals on SWE-Bench and GDPval", "sourceType": "blog", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    }
+  ]
+}

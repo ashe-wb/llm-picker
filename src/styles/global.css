@@ -1,0 +1,180 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Dark theme, tuned for long reading rather than maximum contrast.
+     Two deliberate non-choices: the page is not #000 and the text is not #fff.
+     Pure white on pure black is 21:1, and at that ratio light glyphs bloom into
+     the background (halation) and afterimages set in — it reads as harsh, not
+     crisp. Body text here lands at 15.8:1, which is comfortably past AAA.
+     Surfaces get LIGHTER with elevation, the reverse of the light theme:
+     the page is darkest, cards sit above it. */
+  --color-paper: #0b0b0c; /* the page. Near-neutral rather than the blue-tinted
+                            #15181d it replaces, and darker — still not #000,
+                            so the halation the note above describes is still
+                            avoided at 15.8:1 rather than 21:1. */
+  --color-panel: #1c2027; /* cards, tables, buttons — one step up */
+  --color-ink: #e3e7ec; /* primary text — 15.8:1 */
+  --color-faded: #bfc7cf; /* body prose — 11.5:1. Lifted toward the text colour
+                             because this carries paragraphs, not just labels.
+                             Stopped here: ink stays 1.4x lighter, and much past
+                             this the two collapse and the hierarchy goes. */
+  --color-rule: #333a44; /* hairlines and dividers — 1.7:1, quiet */
+  --color-edge: #4a535f; /* the datasheet's strong rules. In the light theme
+                            these were near-black (border-ink); inverted that
+                            becomes a glowing white line, so strong borders get
+                            their own token instead of reusing the text colour. */
+  --color-ok: #8ddcae; /* 12.2:1 */
+  /* Terminal green, for the machine you told us about. Deliberately NOT
+     --color-ok: that green means "the evidence says this is fine", and a
+     control echoing your own input is not a claim about anything. Kept more
+     saturated than --color-ok so the two do not read as the same signal. */
+  --color-live: #6ee7a0; /* 12.7:1 on paper */
+  --color-warn: #dcc255; /* 11.1:1 */
+  --color-serious: #f0705f; /* 6.7:1 — deliberately the darkest of the three:
+                                luminance separation is what survives colour-blindness,
+                                so ok/warn/serious stay distinguishable. Worst CVD pair
+                                ΔE 20.6 (light theme was 18.3). Re-run the check before
+                                changing any of these three. */
+  /* Inter throughout, loaded as one variable face over 400..700 with the
+     optical-size axis, so every weight this file asks for is drawn rather than
+     synthesised and small text gets the wider, more open cut.
+     The token is still called `mono` because ~200 usages read from it and
+     renaming would be a refactor rather than a font change — it is not
+     monospaced, so text set in it does not align into columns. Digits do:
+     Inter ships proper tabular figures and the tables ask for `tabular-nums`
+     explicitly, which fixes the wobble Montserrat had, where google/fonts#2553
+     reports tnum landing only on the 700 weight. */
+  --font-mono: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+/* Back to 400. The 450 trial was tuned for dark-on-light; on a dark background
+   light glyphs already read heavier, so 450 tips into muddy. Inter is loaded as
+   a variable face over 400..700, so every weight this file asks for (400, 500,
+   600, 700) is drawn rather than synthesised, and raising this is a one-token
+   change. */
+html {
+  font-weight: 400;
+  /* `antialiased` here, the OPPOSITE of the light theme. Subpixel rendering was
+     right for dark-on-light; light-on-dark optically thickens instead, so
+     grayscale AA is what keeps the stems from bleeding. */
+  @apply bg-paper font-sans text-ink antialiased;
+}
+
+/* Plex Mono is static (400/500/600/700), so an inherited 450 would round it UP
+   to 500 and quietly re-weight every label. Pin it back. This sits in the base
+   layer, so explicit weight utilities (font-bold, font-semibold) still win. */
+@layer base {
+  .font-mono {
+    font-weight: 400;
+  }
+}
+
+::selection {
+  @apply bg-ink text-paper;
+}
+
+/* A control holding a value the reader actually chose, rather than a default
+   sitting there untouched. Reads like input echoed back on a terminal, which is
+   the point: the panel should visibly become YOUR machine the moment you pick
+   one. Applied per control, so the selects still on "Auto" or "Default" stay
+   quiet and the green means something. */
+select.is-set {
+  color: var(--color-live);
+  /* Bold to match the readout lines below. Same colour, same weight: what you
+     told it and what it read back are one voice. The controls still on a
+     placeholder stay regular, so weight carries the distinction as well as
+     colour and it survives being read on a bad screen. */
+  font-weight: 700;
+}
+
+/* The secondary text inside a card's nested blocks: the runtime breakdown, the
+   assumptions, the provenance footnote. Subordinate to .dsline, but the border,
+   the indent, the panel background and the .dslabel heading above already carry
+   that — so size does not have to do the work as well, and at 11px it was doing
+   it at the cost of being read at all. 12px, matching .dsline, with weight and
+   colour left to mark the difference.
+
+   A class rather than 29 edits for the same reason .dsline is one: this had
+   already drifted between 11 and 12 across the card. */
+.dsnote {
+  @apply font-mono text-[12px] text-faded;
+}
+
+/* A card's annotation lines — RUNS AT, the speed estimate, why this band, the
+   fit warning. One class because they are one voice: consecutive mono lines
+   reading out the machine's numbers. They had drifted to 12px and 11px, which
+   at this size reads as a mistake rather than a hierarchy, and drifted again
+   every time a line was added. */
+.dsline {
+  /* Bold at 700, which IBM Plex Mono actually ships and Layout.astro loads —
+     not a browser-synthesised smear. */
+  @apply font-mono text-[12px] font-bold;
+  /* Terminal green, the same the controls use: the panel above is what you told
+     the machine, these lines are what it read back. One colour makes that a
+     single conversation rather than two unrelated widgets. */
+  color: var(--color-live);
+}
+
+/* Except a warning, which must not be green. "TIGHT: bigger than your graphics
+   card" in the same colour as a healthy readout would contradict both its amber
+   rule and its meaning. Two classes so it beats .dsline on specificity — a
+   trailing utility would lose here, since .dsline is defined after Tailwind's. */
+.dsline.is-warn {
+  color: var(--color-warn);
+}
+
+/* Mono label — the datasheet's small-caps annotation voice */
+.dslabel {
+  /* 600 rather than 500: at 11px with wide tracking, 500 goes spindly. */
+  @apply font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-faded;
+}
+
+/* Section heading. Was .dslabel, which made each picker step identical to the
+   field labels sitting inside it — same 11px, same weight, same colour, a few
+   pixels apart. A heading that matches its own contents is not a heading.
+   Bigger, in the primary text colour, on the strong rule rather than the faint
+   one; tracking pulled back because 0.14em reads as deliberate at 11px and as
+   airy at 16px. Still short of the 30px h1, so the page keeps three levels. */
+.dshead {
+  @apply border-b border-edge pb-1.5 font-mono text-base font-bold uppercase tracking-[0.1em] text-ink;
+}
+
+/* The label that NAMES a control, as against the ones that annotate one.
+   A vendor row and "Compare with" are the handles you scan for; "Memory type"
+   and "System RAM" sit inside a panel you have already found. Bold and in the
+   primary text colour, so the difference is visible.
+
+   Its own class rather than `class="dslabel text-ink font-bold"`: .dslabel is
+   defined after Tailwind's utilities, so it wins the cascade on equal
+   specificity and those trailing utilities would silently do nothing.
+
+   text-ink, not white. The palette above is deliberate about not using #fff. */
+.dskey {
+  @apply font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-ink;
+}
+
+/* Selectable spec cells (picker buttons) */
+.sel-btn {
+  @apply border border-ink bg-panel p-3 text-left transition-none cursor-pointer;
+}
+.sel-btn:hover {
+  /* Darken on hover. Lightening toward white would make the button dissolve
+     into the page now that paper is pure white. */
+  @apply bg-rule/50;
+}
+.sel-btn.is-selected {
+  @apply bg-ink text-paper;
+}
+.sel-btn.is-selected .dslabel {
+  @apply text-paper/60;
+}
+
+/* Sorted column header */
+th.is-sorted {
+  @apply text-serious underline underline-offset-4;
+}

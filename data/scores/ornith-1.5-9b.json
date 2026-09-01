@@ -1,0 +1,18 @@
+{
+  "modelId": "ornith-1.5-9b",
+  "entries": [
+    { "band": "full", "dimension": "coding", "score": 7,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "SWE-bench Verified", "rawValue": 70.6, "url": "https://datanorth.ai/news/ornith-releases-ornith-1-5", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Extraordinary for 9B — above Granite 4.2 30B (57.0) and close to models three times its size. Exactly the kind of claim that needs independent replication, and has none yet." }] },
+    { "band": "full", "dimension": "tool-calling", "score": 6,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "Terminal-Bench 2.1", "rawValue": 47.0, "url": "https://datanorth.ai/news/ornith-releases-ornith-1-5", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Well behind the 35B sibling's 68.5 — multi-step agentic work is where the size difference shows." }] },
+    { "band": "high", "dimension": "coding", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q6_K", "method": "aggregated", "quantNote": "Editorial derivation: carried from the full band. At 7.6GB this fits a 16GB machine comfortably." }] },
+    { "band": "high", "dimension": "tool-calling", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q6_K", "method": "aggregated", "quantNote": "Editorial derivation: carried from the full band." }] },
+    { "band": "mid", "dimension": "coding", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: one point down. A 9B has less redundancy to spare than a 30B, so 4-bit costs it more." }] },
+    { "band": "mid", "dimension": "tool-calling", "score": 5,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: one point down; structured tool output degrades before prose does." }] }
+  ],
+  "quantOverrides": []
+}

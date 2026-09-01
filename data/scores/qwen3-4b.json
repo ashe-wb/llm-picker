@@ -1,0 +1,26 @@
+{
+  "modelId": "qwen3-4b",
+  "entries": [
+    { "band": "full", "dimension": "math", "score": 7,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "AIME'24 (thinking mode)", "rawValue": 73.8, "url": "https://arxiv.org/html/2505.09388v1", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "MATH-500: 97.0 thinking. Non-thinking drops to 25.0 — thinking mode is doing the lifting." }] },
+    { "band": "full", "dimension": "coding", "score": 6,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "LiveCodeBench v5 (thinking)", "rawValue": 54.2, "url": "https://arxiv.org/html/2505.09388v1", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Non-thinking: 21.3. Absent from Aider polyglot." }] },
+    { "band": "full", "dimension": "tool-calling", "score": 6,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "BFCL v3 (thinking)", "rawValue": 65.9, "url": "https://arxiv.org/html/2505.09388v1", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Non-thinking: 57.6." }] },
+    { "band": "full", "dimension": "instruction-following", "score": 7,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "IFEval strict prompt (thinking)", "rawValue": 81.9, "url": "https://arxiv.org/html/2505.09388v1", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported" }] },
+    { "band": "full", "dimension": "factuality", "score": 5,
+      "provenance": [{ "sourceId": "vectara-hallucination", "metric": "HHEM hallucination rate % (lower is better)", "rawValue": 5.7, "url": "https://github.com/vectara/hallucination-leaderboard", "retrieved": "2026-08-30", "quant": "bf16", "method": "aggregated", "notes": "Grounds well; open-domain knowledge is thin for the whole family." }] },
+    { "band": "full", "dimension": "long-context", "score": 6,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "RULER avg 4K–128K (thinking)", "rawValue": 83.5, "url": "https://arxiv.org/html/2505.09388v1", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "85.2 non-thinking. Native window is 32K; 128K needs YaRN." }] },
+    { "band": "mid", "dimension": "math", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "KLD/perplexity delta vs bf16", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: small models lose proportionally more at 4-bit." }] },
+    { "band": "mid", "dimension": "coding", "score": 5,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "KLD/perplexity delta vs bf16", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: small loss at 4-bit." }] },
+    { "band": "mid", "dimension": "tool-calling", "score": 5,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: small loss at 4-bit." }] },
+    { "band": "mid", "dimension": "instruction-following", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: IF is not quant-sensitive." }] }
+  ],
+  "quantOverrides": []
+}

@@ -1,0 +1,20 @@
+{
+  "modelId": "gemma-4-26b-a4b",
+  "entries": [
+    { "band": "full", "dimension": "math", "score": 8,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "AIME 2026 (no tools)", "rawValue": 88.3, "url": "https://ai.google.dev/gemma/docs/core/model_card_4", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "GPQA Diamond: 82.3, MMLU-Pro: 82.6. Too new for independent leaderboards (absent from Vectara HHEM and Aider)." }] },
+    { "band": "full", "dimension": "coding", "score": 8,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "LiveCodeBench v6", "rawValue": 77.1, "url": "https://ai.google.dev/gemma/docs/core/model_card_4", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "A generational leap over Gemma 3's coding — but vendor-reported only so far." }] },
+    { "band": "full", "dimension": "tool-calling", "score": 7,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "Tau2 average", "rawValue": 68.2, "url": "https://ai.google.dev/gemma/docs/core/model_card_4", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Gemma 4 adds trained-in tool calling — fixing the family's old gap." }] },
+    { "band": "full", "dimension": "long-context", "score": 4,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "MRCR v2 @128K", "rawValue": 44.1, "url": "https://ai.google.dev/gemma/docs/core/model_card_4", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "The 256K window is real but retrieval quality drops well before it fills — the vendor's own number says so." }] },
+    { "band": "mid", "dimension": "math", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_0", "method": "aggregated", "quantNote": "Editorial derivation: QAT Q4_0 is the intended local build; small loss vs full." }] },
+    { "band": "mid", "dimension": "coding", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_0", "method": "aggregated", "quantNote": "Editorial derivation: QAT limits quant loss." }] },
+    { "band": "mid", "dimension": "tool-calling", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_0", "method": "aggregated", "quantNote": "Editorial derivation: MoE expert weights are quant-sensitive; slight downgrade at 4-bit." }] }
+  ],
+  "quantOverrides": []
+}

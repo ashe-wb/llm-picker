@@ -1,0 +1,56 @@
+{
+  "id": "phi-4",
+  "name": "Phi-4",
+  "family": "Phi",
+  "vendor": "Microsoft",
+  "architecture": "dense",
+  "paramsB": 14,
+  "layers": 40,
+  "vocabSize": 100352,
+  "width": 17920,
+  "attentionHeads": 40,
+  "kvHeads": 10,
+  "headDim": 128,
+  "attentionPattern": "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+  "vision": false,
+  "contextLength": 16384,
+  "license": {
+    "name": "MIT",
+    "url": "https://huggingface.co/microsoft/phi-4"
+  },
+  "releaseDate": "2024-12-12",
+  "ggufUrl": "https://huggingface.co/microsoft/phi-4-gguf",
+  "status": "active",
+  "summary": "The exam ace with no life experience: superb STEM reasoning per GB, near-zero world knowledge, and only a 16K window. Excellent at closed problems you paste in; pair with retrieval for everything else.",
+  "kvBytesPerToken": 204800,
+  "kvSourceUrl": "https://huggingface.co/microsoft/phi-4/blob/main/config.json",
+  "bands": {
+    "low": {
+      "weightsGb": 7,
+      "exampleQuants": [
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 9,
+      "exampleQuants": [
+        "Q4_K_M",
+        "mlx-4bit"
+      ]
+    },
+    "high": {
+      "weightsGb": 12,
+      "exampleQuants": [
+        "Q6_K",
+        "Q8_0"
+      ]
+    },
+    "full": {
+      "weightsGb": 29,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  },
+  "mlxUrl": "https://huggingface.co/mlx-community/phi-4-4bit"
+}

@@ -1,0 +1,29 @@
+{
+  "modelId": "qwen3-32b",
+  "entries": [
+    { "band": "full", "dimension": "math", "score": 8,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "AIME'24 (thinking)", "rawValue": 81.4, "url": "https://arxiv.org/html/2505.09388v1", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "MATH-500: 97.2 thinking; Codeforces rating 1977." }] },
+    { "band": "full", "dimension": "coding", "score": 7,
+      "provenance": [
+        { "sourceId": "vendor-model-card", "metric": "LiveCodeBench v5 (thinking)", "rawValue": 65.7, "url": "https://arxiv.org/html/2505.09388v1", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported" },
+        { "sourceId": "aider-polyglot", "metric": "percent correct (diff format)", "rawValue": 40.0, "url": "https://aider.chat/docs/leaderboards/", "retrieved": "2026-08-30", "quant": "bf16", "method": "aggregated", "notes": "The only sub-35B model on the Aider polyglot board — independent real-world editing evidence." }
+      ] },
+    { "band": "full", "dimension": "tool-calling", "score": 7,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "BFCL v3 (thinking)", "rawValue": 70.3, "url": "https://arxiv.org/html/2505.09388v1", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported" }] },
+    { "band": "full", "dimension": "instruction-following", "score": 7,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "IFEval strict prompt (thinking)", "rawValue": 85.0, "url": "https://arxiv.org/html/2505.09388v1", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Arena-Hard: 93.8." }] },
+    { "band": "full", "dimension": "factuality", "score": 5,
+      "provenance": [{ "sourceId": "vectara-hallucination", "metric": "HHEM hallucination rate % (lower is better)", "rawValue": 5.9, "url": "https://github.com/vectara/hallucination-leaderboard", "retrieved": "2026-08-30", "quant": "bf16", "method": "aggregated" }] },
+    { "band": "full", "dimension": "long-context", "score": 7,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "RULER avg (non-thinking)", "rawValue": 93.7, "url": "https://arxiv.org/html/2505.09388v1", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "91.0 thinking. Native 32K; 128K via YaRN." }] },
+    { "band": "mid", "dimension": "math", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "KLD/perplexity delta vs bf16", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: large dense models quantize gracefully; small loss at 4-bit." }] },
+    { "band": "mid", "dimension": "coding", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "KLD/perplexity delta vs bf16", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: small loss at 4-bit." }] },
+    { "band": "mid", "dimension": "tool-calling", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: occasional argument-format slips at 4-bit." }] },
+    { "band": "mid", "dimension": "instruction-following", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: IF is not quant-sensitive." }] }
+  ],
+  "quantOverrides": []
+}

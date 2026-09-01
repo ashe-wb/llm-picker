@@ -1,0 +1,2063 @@
+{
+  "retrieved": "2026-09-01",
+  "method": "safetensors header read over HTTP range request; see scripts/audit-shapes.ts. Authoritative for tensor SHAPE only -- whether a tensor is used is decided by the model's config and implementation, not by its presence in the checkpoint.",
+  "models": {
+    "deepseek-r1-0528-qwen3-8b": {
+      "repo": "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B",
+      "perLayerKvBytes": {
+        "F": 4096
+      },
+      "kvBytesPerToken": 147456,
+      "embedRows": 151936,
+      "hidden": 4096,
+      "widestDenseLayer": 0,
+      "blocks": {
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 12288
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "denseFfn": 12288,
+      "width": 12288
+    },
+    "gemma-3-12b": {
+      "repo": "unsloth/gemma-3-12b-it",
+      "perLayerKvBytes": {
+        "S": 8192,
+        "F": 8192
+      },
+      "kvBytesPerToken": 65536,
+      "kvWindowedBytesPerToken": 327680,
+      "embedRows": 262208,
+      "hidden": 3840,
+      "widestDenseLayer": 0,
+      "blocks": {
+        "S": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm",
+            "pre_feedforward_layernorm",
+            "post_feedforward_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 15360
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        },
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm",
+            "pre_feedforward_layernorm",
+            "post_feedforward_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 15360
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": false,
+      "denseFfn": 15360,
+      "width": 15360
+    },
+    "gemma-3-27b": {
+      "repo": "unsloth/gemma-3-27b-it",
+      "perLayerKvBytes": {
+        "S": 8192,
+        "F": 8192
+      },
+      "kvBytesPerToken": 81920,
+      "kvWindowedBytesPerToken": 425984,
+      "embedRows": 262208,
+      "hidden": 5376,
+      "widestDenseLayer": 0,
+      "blocks": {
+        "S": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm",
+            "pre_feedforward_layernorm",
+            "post_feedforward_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 21504
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        },
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm",
+            "pre_feedforward_layernorm",
+            "post_feedforward_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 21504
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": false,
+      "denseFfn": 21504,
+      "width": 21504
+    },
+    "gemma-3-4b": {
+      "repo": "unsloth/gemma-3-4b-it",
+      "perLayerKvBytes": {
+        "S": 4096,
+        "F": 4096
+      },
+      "kvBytesPerToken": 20480,
+      "kvWindowedBytesPerToken": 118784,
+      "embedRows": 262208,
+      "hidden": 2560,
+      "widestDenseLayer": 0,
+      "blocks": {
+        "S": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm",
+            "pre_feedforward_layernorm",
+            "post_feedforward_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 10240
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        },
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm",
+            "pre_feedforward_layernorm",
+            "post_feedforward_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 10240
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": false,
+      "denseFfn": 10240,
+      "width": 10240
+    },
+    "gemma-4-12b": {
+      "repo": "google/gemma-4-12b-it",
+      "perLayerKvBytes": {
+        "S": 8192,
+        "F": 2048
+      },
+      "kvBytesPerToken": 16384,
+      "kvWindowedBytesPerToken": 327680,
+      "embedRows": 262144,
+      "hidden": 3840,
+      "widestDenseLayer": 0,
+      "blocks": {
+        "S": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm",
+            "pre_feedforward_layernorm",
+            "post_feedforward_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 15360
+          },
+          "linearMixer": false,
+          "unknown": [
+            "layer_scalar"
+          ],
+          "drawable": true
+        },
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm",
+            "pre_feedforward_layernorm",
+            "post_feedforward_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 15360
+          },
+          "linearMixer": false,
+          "unknown": [
+            "layer_scalar"
+          ],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": false,
+      "denseFfn": 15360,
+      "width": 15360
+    },
+    "gemma-4-26b-a4b": {
+      "repo": "google/gemma-4-26B-A4B-it",
+      "perLayerKvBytes": {
+        "S": 8192,
+        "F": 4096
+      },
+      "kvBytesPerToken": 20480,
+      "kvWindowedBytesPerToken": 204800,
+      "embedRows": 262144,
+      "hidden": 2816,
+      "widestDenseLayer": 0,
+      "blocks": {
+        "S": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm",
+            "pre_feedforward_layernorm",
+            "post_feedforward_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "moe",
+            "shared": false,
+            "router": false
+          },
+          "linearMixer": false,
+          "unknown": [
+            "layer_scalar",
+            "post_feedforward_layernorm_1",
+            "post_feedforward_layernorm_2",
+            "pre_feedforward_layernorm_2",
+            "per_expert_scale",
+            "proj"
+          ],
+          "drawable": true
+        },
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm",
+            "pre_feedforward_layernorm",
+            "post_feedforward_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "moe",
+            "shared": false,
+            "router": false
+          },
+          "linearMixer": false,
+          "unknown": [
+            "layer_scalar",
+            "post_feedforward_layernorm_1",
+            "post_feedforward_layernorm_2",
+            "pre_feedforward_layernorm_2",
+            "per_expert_scale",
+            "proj"
+          ],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": false,
+      "denseFfn": 2112,
+      "width": 2816
+    },
+    "gemma-4-31b": {
+      "repo": "google/gemma-4-31b-it",
+      "perLayerKvBytes": {
+        "S": 16384,
+        "F": 8192
+      },
+      "kvBytesPerToken": 81920,
+      "kvWindowedBytesPerToken": 819200,
+      "embedRows": 262144,
+      "hidden": 5376,
+      "widestDenseLayer": 0,
+      "blocks": {
+        "S": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm",
+            "pre_feedforward_layernorm",
+            "post_feedforward_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 21504
+          },
+          "linearMixer": false,
+          "unknown": [
+            "layer_scalar"
+          ],
+          "drawable": true
+        },
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm",
+            "pre_feedforward_layernorm",
+            "post_feedforward_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 21504
+          },
+          "linearMixer": false,
+          "unknown": [
+            "layer_scalar"
+          ],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": false,
+      "denseFfn": 21504,
+      "width": 21504
+    },
+    "gemma-4-e2b": {
+      "repo": "google/gemma-4-E2B-it",
+      "perLayerKvBytes": {
+        "S": 1024,
+        "F": 2048
+      },
+      "kvBytesPerToken": 6144,
+      "kvWindowedBytesPerToken": 12288,
+      "embedRows": 262144,
+      "hidden": 1536,
+      "widestDenseLayer": 15,
+      "blocks": {
+        "S": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm",
+            "pre_feedforward_layernorm",
+            "post_feedforward_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 12288
+          },
+          "linearMixer": false,
+          "unknown": [
+            "layer_scalar",
+            "per_layer_input_gate",
+            "per_layer_projection",
+            "post_per_layer_input_norm"
+          ],
+          "drawable": true
+        },
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm",
+            "pre_feedforward_layernorm",
+            "post_feedforward_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 12288
+          },
+          "linearMixer": false,
+          "unknown": [
+            "layer_scalar",
+            "per_layer_input_gate",
+            "per_layer_projection",
+            "post_per_layer_input_norm"
+          ],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": false,
+      "denseFfn": 12288,
+      "width": 12288
+    },
+    "gemma-4-e4b": {
+      "repo": "google/gemma-4-E4B-it",
+      "perLayerKvBytes": {
+        "S": 2048,
+        "F": 4096
+      },
+      "kvBytesPerToken": 16384,
+      "kvWindowedBytesPerToken": 40960,
+      "embedRows": 262144,
+      "hidden": 2560,
+      "widestDenseLayer": 0,
+      "blocks": {
+        "S": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm",
+            "pre_feedforward_layernorm",
+            "post_feedforward_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 10240
+          },
+          "linearMixer": false,
+          "unknown": [
+            "layer_scalar",
+            "per_layer_input_gate",
+            "per_layer_projection",
+            "post_per_layer_input_norm"
+          ],
+          "drawable": true
+        },
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm",
+            "pre_feedforward_layernorm",
+            "post_feedforward_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 10240
+          },
+          "linearMixer": false,
+          "unknown": [
+            "layer_scalar",
+            "per_layer_input_gate",
+            "per_layer_projection",
+            "post_per_layer_input_norm"
+          ],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": false,
+      "denseFfn": 10240,
+      "width": 10240
+    },
+    "glm-4.7": {
+      "repo": "zai-org/GLM-4.7",
+      "perLayerKvBytes": {
+        "F": 4096
+      },
+      "kvBytesPerToken": 376832,
+      "embedRows": 151552,
+      "hidden": 5120,
+      "widestDenseLayer": 0,
+      "denseFfnLayers": 3,
+      "blocks": {
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "moe",
+            "experts": 160,
+            "shared": true,
+            "router": true,
+            "intermediate": 1536
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "denseFfn": 12288,
+      "moeFfn": 1536,
+      "width": 12288
+    },
+    "glm-4.7-flash": {
+      "repo": "zai-org/GLM-4.7-Flash",
+      "perLayerKvBytes": {
+        "all": 1152
+      },
+      "kvBytesPerToken": 54144,
+      "embedRows": 154880,
+      "hidden": 2048,
+      "widestDenseLayer": 0,
+      "denseFfnLayers": 1,
+      "blocks": {
+        "all": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "o_proj",
+            "q_a_proj",
+            "q_a_layernorm",
+            "q_b_proj",
+            "kv_a_proj_with_mqa",
+            "kv_a_layernorm",
+            "kv_b_proj"
+          ],
+          "ffn": {
+            "kind": "moe",
+            "experts": 64,
+            "shared": true,
+            "router": true,
+            "intermediate": 1536
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "denseFfn": 10240,
+      "moeFfn": 1536,
+      "width": 10240
+    },
+    "gpt-oss-120b": {
+      "repo": "openai/gpt-oss-120b",
+      "perLayerKvBytes": {
+        "S": 2048,
+        "F": 2048
+      },
+      "kvBytesPerToken": 36864,
+      "kvWindowedBytesPerToken": 36864,
+      "embedRows": 201088,
+      "hidden": 2880,
+      "blocks": {
+        "S": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj"
+          ],
+          "ffn": {
+            "kind": "moe",
+            "experts": 128,
+            "shared": false,
+            "router": true,
+            "intermediate": 2880
+          },
+          "linearMixer": false,
+          "unknown": [
+            "sinks"
+          ],
+          "drawable": true
+        },
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj"
+          ],
+          "ffn": {
+            "kind": "moe",
+            "experts": 128,
+            "shared": false,
+            "router": true,
+            "intermediate": 2880
+          },
+          "linearMixer": false,
+          "unknown": [
+            "sinks"
+          ],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "moeFfn": 2880,
+      "width": 11520
+    },
+    "gpt-oss-20b": {
+      "repo": "openai/gpt-oss-20b",
+      "perLayerKvBytes": {
+        "S": 2048,
+        "F": 2048
+      },
+      "kvBytesPerToken": 24576,
+      "kvWindowedBytesPerToken": 24576,
+      "embedRows": 201088,
+      "hidden": 2880,
+      "blocks": {
+        "S": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj"
+          ],
+          "ffn": {
+            "kind": "moe",
+            "experts": 32,
+            "shared": false,
+            "router": true,
+            "intermediate": 2880
+          },
+          "linearMixer": false,
+          "unknown": [
+            "sinks"
+          ],
+          "drawable": true
+        },
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj"
+          ],
+          "ffn": {
+            "kind": "moe",
+            "experts": 32,
+            "shared": false,
+            "router": true,
+            "intermediate": 2880
+          },
+          "linearMixer": false,
+          "unknown": [
+            "sinks"
+          ],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "moeFfn": 2880,
+      "width": 11520
+    },
+    "granite-4.2-30b": {
+      "repo": "ibm-granite/granite-4.2-30b",
+      "perLayerKvBytes": {
+        "F": 4096
+      },
+      "kvBytesPerToken": 262144,
+      "embedRows": 100352,
+      "hidden": 4096,
+      "widestDenseLayer": 0,
+      "blocks": {
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 32768
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "denseFfn": 32768,
+      "width": 32768
+    },
+    "granite-4.2-8b": {
+      "repo": "ibm-granite/granite-4.2-8b",
+      "perLayerKvBytes": {
+        "F": 4096
+      },
+      "kvBytesPerToken": 163840,
+      "embedRows": 100352,
+      "hidden": 4096,
+      "widestDenseLayer": 19,
+      "blocks": {
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 12800
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "denseFfn": 12800,
+      "width": 12800
+    },
+    "kat-coder-v2.5-dev": {
+      "repo": "Kwaipilot/KAT-Coder-V2.5-Dev",
+      "perLayerKvBytes": {
+        ".": 0,
+        "F": 2048
+      },
+      "kvBytesPerToken": 20480,
+      "embedRows": 248320,
+      "hidden": 2048,
+      "blocks": {
+        ".": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [],
+          "ffn": {
+            "kind": "moe",
+            "experts": 256,
+            "shared": true,
+            "router": true,
+            "intermediate": 512
+          },
+          "linearMixer": true,
+          "unknown": [],
+          "drawable": true
+        },
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "moe",
+            "experts": 256,
+            "shared": true,
+            "router": true,
+            "intermediate": 512
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "moeFfn": 512,
+      "width": 4096
+    },
+    "llama-3.1-8b": {
+      "repo": "unsloth/Meta-Llama-3.1-8B-Instruct",
+      "perLayerKvBytes": {
+        "F": 4096
+      },
+      "kvBytesPerToken": 131072,
+      "embedRows": 128256,
+      "hidden": 4096,
+      "widestDenseLayer": 0,
+      "blocks": {
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 14336
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "denseFfn": 14336,
+      "width": 14336
+    },
+    "llama-3.2-3b": {
+      "repo": "unsloth/Llama-3.2-3B-Instruct",
+      "perLayerKvBytes": {
+        "F": 4096
+      },
+      "kvBytesPerToken": 114688,
+      "embedRows": 128256,
+      "hidden": 3072,
+      "widestDenseLayer": 0,
+      "blocks": {
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 8192
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": false,
+      "denseFfn": 8192,
+      "width": 8192
+    },
+    "llama-3.3-70b": {
+      "repo": "unsloth/Llama-3.3-70B-Instruct",
+      "perLayerKvBytes": {
+        "F": 4096
+      },
+      "kvBytesPerToken": 327680,
+      "embedRows": 128256,
+      "hidden": 8192,
+      "widestDenseLayer": 0,
+      "blocks": {
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 28672
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "denseFfn": 28672,
+      "width": 28672
+    },
+    "mistral-small-4": {
+      "repo": "mistralai/Mistral-Small-4-119B-2603",
+      "perLayerKvBytes": {
+        "all": 640
+      },
+      "kvBytesPerToken": 23040,
+      "embedRows": 131072,
+      "hidden": 4096,
+      "blocks": {
+        "all": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "o_proj",
+            "q_a_proj",
+            "q_a_layernorm",
+            "q_b_proj",
+            "kv_a_proj_with_mqa",
+            "kv_a_layernorm",
+            "kv_b_proj"
+          ],
+          "ffn": {
+            "kind": "moe",
+            "experts": 128,
+            "shared": true,
+            "router": true,
+            "intermediate": 2048
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "moeFfn": 2048,
+      "width": 8192
+    },
+    "muse-glimmer-30b": {
+      "repo": "meta-models/Muse-Glimmer-30B",
+      "perLayerKvBytes": {
+        "S": 1024,
+        "F": 1024
+      },
+      "kvBytesPerToken": 13312,
+      "kvWindowedBytesPerToken": 39936,
+      "embedRows": 202048,
+      "hidden": 6656,
+      "widestDenseLayer": 0,
+      "blocks": {
+        "S": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm",
+            "pre_feedforward_layernorm",
+            "post_feedforward_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 19968
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        },
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm",
+            "pre_feedforward_layernorm",
+            "post_feedforward_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 19968
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "denseFfn": 19968,
+      "width": 19968
+    },
+    "nanbeige4.2-3b": {
+      "repo": "Nanbeige/Nanbeige4.2-3B",
+      "perLayerKvBytes": {
+        "F": 4096
+      },
+      "kvBytesPerToken": 90112,
+      "embedRows": 166144,
+      "hidden": 3072,
+      "widestDenseLayer": 0,
+      "blocks": {
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 10752
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "denseFfn": 10752,
+      "width": 10752
+    },
+    "nemotron-3-nano-30b-a3b": {
+      "repo": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16",
+      "perLayerKvBytes": {
+        ".": 0,
+        "F": 1024
+      },
+      "kvBytesPerToken": 6144,
+      "embedRows": 131072,
+      "hidden": 2688,
+      "blocks": {
+        ".": {
+          "norms": [],
+          "attention": [],
+          "ffn": {
+            "kind": "moe",
+            "experts": 128,
+            "shared": true,
+            "router": true,
+            "intermediate": 1856
+          },
+          "linearMixer": true,
+          "unknown": [
+            "norm"
+          ],
+          "drawable": false
+        },
+        "F": {
+          "norms": [],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj"
+          ],
+          "ffn": {
+            "kind": "moe",
+            "experts": 128,
+            "shared": true,
+            "router": true,
+            "intermediate": 1856
+          },
+          "linearMixer": false,
+          "unknown": [
+            "norm"
+          ],
+          "drawable": false
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "moeFfn": 1856,
+      "width": 11136
+    },
+    "nemotron-3-super-120b-a12b": {
+      "repo": "nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16",
+      "perLayerKvBytes": {
+        ".": 0,
+        "F": 1024
+      },
+      "kvBytesPerToken": 8192,
+      "embedRows": 131072,
+      "hidden": 4096,
+      "blocks": {
+        ".": {
+          "norms": [],
+          "attention": [],
+          "ffn": {
+            "kind": "moe",
+            "experts": 512,
+            "shared": true,
+            "router": true,
+            "intermediate": 2688
+          },
+          "linearMixer": true,
+          "unknown": [
+            "norm"
+          ],
+          "drawable": false
+        },
+        "F": {
+          "norms": [],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj"
+          ],
+          "ffn": {
+            "kind": "moe",
+            "experts": 512,
+            "shared": true,
+            "router": true,
+            "intermediate": 2688
+          },
+          "linearMixer": false,
+          "unknown": [
+            "norm"
+          ],
+          "drawable": false
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "moeFfn": 2688,
+      "width": 59136
+    },
+    "ornith-1.5-35b-a3b": {
+      "repo": "ornith-ai/Ornith-1.5-35B-A3B",
+      "perLayerKvBytes": {
+        ".": 0,
+        "F": 2048
+      },
+      "kvBytesPerToken": 20480,
+      "embedRows": 248320,
+      "hidden": 2048,
+      "blocks": {
+        ".": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [],
+          "ffn": {
+            "kind": "moe",
+            "experts": 256,
+            "shared": true,
+            "router": true,
+            "intermediate": 512
+          },
+          "linearMixer": true,
+          "unknown": [],
+          "drawable": true
+        },
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "moe",
+            "experts": 256,
+            "shared": true,
+            "router": true,
+            "intermediate": 512
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "moeFfn": 512,
+      "width": 4096
+    },
+    "ornith-1.5-9b": {
+      "repo": "ornith-ai/Ornith-1.5-9B",
+      "perLayerKvBytes": {
+        ".": 0,
+        "F": 4096
+      },
+      "kvBytesPerToken": 32768,
+      "embedRows": 248320,
+      "hidden": 4096,
+      "widestDenseLayer": 0,
+      "blocks": {
+        ".": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 12288
+          },
+          "linearMixer": true,
+          "unknown": [],
+          "drawable": true
+        },
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 12288
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "denseFfn": 12288,
+      "width": 12288
+    },
+    "phi-4": {
+      "repo": "microsoft/phi-4",
+      "perLayerKvBytes": {
+        "F": 5120
+      },
+      "kvBytesPerToken": 204800,
+      "embedRows": 100352,
+      "hidden": 5120,
+      "widestDenseLayer": 0,
+      "blocks": {
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "o_proj",
+            "qkv_proj"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 17920
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "denseFfn": 17920,
+      "width": 17920
+    },
+    "phi-4-mini": {
+      "repo": "microsoft/Phi-4-mini-instruct",
+      "perLayerKvBytes": {
+        "F": 4096
+      },
+      "kvBytesPerToken": 131072,
+      "embedRows": 200064,
+      "hidden": 3072,
+      "widestDenseLayer": 0,
+      "blocks": {
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "o_proj",
+            "qkv_proj"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 8192
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": false,
+      "denseFfn": 8192,
+      "width": 8192
+    },
+    "phi-4-reasoning-vision-15b": {
+      "repo": "microsoft/Phi-4-reasoning-vision-15B",
+      "perLayerKvBytes": {
+        "F": 5120
+      },
+      "kvBytesPerToken": 204800,
+      "embedRows": 100352,
+      "hidden": 5120,
+      "widestDenseLayer": 0,
+      "blocks": {
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "o_proj",
+            "qkv_proj"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 17920
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "denseFfn": 17920,
+      "width": 17920
+    },
+    "qwen3-14b": {
+      "repo": "Qwen/Qwen3-14B",
+      "perLayerKvBytes": {
+        "F": 4096
+      },
+      "kvBytesPerToken": 163840,
+      "embedRows": 151936,
+      "hidden": 5120,
+      "widestDenseLayer": 0,
+      "blocks": {
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 17408
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "denseFfn": 17408,
+      "width": 17408
+    },
+    "qwen3-30b-a3b": {
+      "repo": "Qwen/Qwen3-30B-A3B",
+      "perLayerKvBytes": {
+        "F": 2048
+      },
+      "kvBytesPerToken": 98304,
+      "embedRows": 151936,
+      "hidden": 2048,
+      "blocks": {
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "moe",
+            "experts": 128,
+            "shared": false,
+            "router": true,
+            "intermediate": 768
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "moeFfn": 768,
+      "width": 6144
+    },
+    "qwen3-32b": {
+      "repo": "Qwen/Qwen3-32B",
+      "perLayerKvBytes": {
+        "F": 4096
+      },
+      "kvBytesPerToken": 262144,
+      "embedRows": 151936,
+      "hidden": 5120,
+      "widestDenseLayer": 0,
+      "blocks": {
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 25600
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "denseFfn": 25600,
+      "width": 25600
+    },
+    "qwen3-4b": {
+      "repo": "Qwen/Qwen3-4B",
+      "perLayerKvBytes": {
+        "F": 4096
+      },
+      "kvBytesPerToken": 147456,
+      "embedRows": 151936,
+      "hidden": 2560,
+      "widestDenseLayer": 0,
+      "blocks": {
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 9728
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": false,
+      "denseFfn": 9728,
+      "width": 9728
+    },
+    "qwen3-8b": {
+      "repo": "Qwen/Qwen3-8B",
+      "perLayerKvBytes": {
+        "F": 4096
+      },
+      "kvBytesPerToken": 147456,
+      "embedRows": 151936,
+      "hidden": 4096,
+      "widestDenseLayer": 0,
+      "blocks": {
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 12288
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "denseFfn": 12288,
+      "width": 12288
+    },
+    "qwen3-coder-next-80b-a3b": {
+      "repo": "Qwen/Qwen3-Coder-Next",
+      "perLayerKvBytes": {
+        ".": 0,
+        "F": 2048
+      },
+      "kvBytesPerToken": 24576,
+      "embedRows": 151936,
+      "hidden": 2048,
+      "blocks": {
+        ".": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [],
+          "ffn": {
+            "kind": "moe",
+            "experts": 512,
+            "shared": true,
+            "router": true,
+            "intermediate": 512
+          },
+          "linearMixer": true,
+          "unknown": [],
+          "drawable": true
+        },
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "moe",
+            "experts": 512,
+            "shared": true,
+            "router": true,
+            "intermediate": 512
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "moeFfn": 512,
+      "width": 5120
+    },
+    "qwen3.5-122b-a10b": {
+      "repo": "Qwen/Qwen3.5-122B-A10B",
+      "perLayerKvBytes": {
+        ".": 0,
+        "F": 2048
+      },
+      "kvBytesPerToken": 24576,
+      "embedRows": 248320,
+      "hidden": 3072,
+      "blocks": {
+        ".": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [],
+          "ffn": {
+            "kind": "moe",
+            "experts": 256,
+            "shared": true,
+            "router": true,
+            "intermediate": 1024
+          },
+          "linearMixer": true,
+          "unknown": [],
+          "drawable": true
+        },
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "moe",
+            "experts": 256,
+            "shared": true,
+            "router": true,
+            "intermediate": 1024
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "moeFfn": 1024,
+      "width": 8192
+    },
+    "qwen3.5-397b-a17b": {
+      "repo": "Qwen/Qwen3.5-397B-A17B",
+      "perLayerKvBytes": {
+        ".": 0,
+        "F": 2048
+      },
+      "kvBytesPerToken": 30720,
+      "embedRows": 248320,
+      "hidden": 4096,
+      "blocks": {
+        ".": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [],
+          "ffn": {
+            "kind": "moe",
+            "experts": 512,
+            "shared": true,
+            "router": true,
+            "intermediate": 1024
+          },
+          "linearMixer": true,
+          "unknown": [],
+          "drawable": true
+        },
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "moe",
+            "experts": 512,
+            "shared": true,
+            "router": true,
+            "intermediate": 1024
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "moeFfn": 1024,
+      "width": 10240
+    },
+    "qwen3.5-9b": {
+      "repo": "Qwen/Qwen3.5-9B",
+      "perLayerKvBytes": {
+        ".": 0,
+        "F": 4096
+      },
+      "kvBytesPerToken": 32768,
+      "embedRows": 248320,
+      "hidden": 4096,
+      "widestDenseLayer": 14,
+      "blocks": {
+        ".": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 12288
+          },
+          "linearMixer": true,
+          "unknown": [],
+          "drawable": true
+        },
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 12288
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "denseFfn": 12288,
+      "width": 12288
+    },
+    "qwen3.6-27b": {
+      "repo": "Qwen/Qwen3.6-27B",
+      "perLayerKvBytes": {
+        ".": 0,
+        "F": 4096
+      },
+      "kvBytesPerToken": 65536,
+      "embedRows": 248320,
+      "hidden": 5120,
+      "widestDenseLayer": 0,
+      "blocks": {
+        ".": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 17408
+          },
+          "linearMixer": true,
+          "unknown": [],
+          "drawable": true
+        },
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 17408
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "denseFfn": 17408,
+      "width": 17408
+    },
+    "qwen3.6-35b-a3b": {
+      "repo": "Qwen/Qwen3.6-35B-A3B",
+      "perLayerKvBytes": {
+        ".": 0,
+        "F": 2048
+      },
+      "kvBytesPerToken": 20480,
+      "embedRows": 248320,
+      "hidden": 2048,
+      "blocks": {
+        ".": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [],
+          "ffn": {
+            "kind": "moe",
+            "experts": 256,
+            "shared": true,
+            "router": true,
+            "intermediate": 512
+          },
+          "linearMixer": true,
+          "unknown": [],
+          "drawable": true
+        },
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "moe",
+            "experts": 256,
+            "shared": true,
+            "router": true,
+            "intermediate": 512
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "moeFfn": 512,
+      "width": 4096
+    },
+    "qwen3.8-27b": {
+      "repo": "Qwen/Qwen3.8-27B",
+      "perLayerKvBytes": {
+        ".": 0,
+        "F": 4096
+      },
+      "kvBytesPerToken": 65536,
+      "embedRows": 248320,
+      "hidden": 5120,
+      "widestDenseLayer": 0,
+      "blocks": {
+        ".": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 17408
+          },
+          "linearMixer": true,
+          "unknown": [],
+          "drawable": true
+        },
+        "F": {
+          "norms": [
+            "input_layernorm",
+            "post_attention_layernorm"
+          ],
+          "attention": [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "q_norm",
+            "k_norm"
+          ],
+          "ffn": {
+            "kind": "dense",
+            "intermediate": 17408
+          },
+          "linearMixer": false,
+          "unknown": [],
+          "drawable": true
+        }
+      },
+      "finalNorm": true,
+      "separateLmHead": true,
+      "denseFfn": 17408,
+      "width": 17408
+    }
+  }
+}

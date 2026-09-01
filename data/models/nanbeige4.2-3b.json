@@ -1,0 +1,55 @@
+{
+  "id": "nanbeige4.2-3b",
+  "name": "Nanbeige4.2 3B",
+  "family": "Nanbeige4.2",
+  "vendor": "Nanbeige",
+  "architecture": "dense",
+  "paramsB": 3,
+  "layers": 22,
+  "vocabSize": 166144,
+  "width": 10752,
+  "attentionHeads": 48,
+  "kvHeads": 8,
+  "headDim": 128,
+  "attentionPattern": "FFFFFFFFFFFFFFFFFFFFFF",
+  "vision": false,
+  "contextLength": 262144,
+  "license": {
+    "name": "Apache-2.0",
+    "url": "https://huggingface.co/Nanbeige/Nanbeige4.2-3B"
+  },
+  "releaseDate": "2026-07-21",
+  "ggufUrl": "https://huggingface.co/bartowski/Nanbeige_Nanbeige4.2-3B-GGUF",
+  "status": "active",
+  "summary": "A looped transformer: 22 layers run twice, so 3B of parameters do the work of a much deeper model. Reported to beat Qwen3.5 9B and Gemma 4 12B on agentic coding at a third of the size. The loop is not free — it doubles the KV cache, which is the largest memory cost here by far.",
+  "kvBytesPerToken": 90112,
+  "kvSourceUrl": "https://huggingface.co/Nanbeige/Nanbeige4.2-3B/blob/main/config.json",
+  "bands": {
+    "low": {
+      "weightsGb": 2.24,
+      "exampleQuants": [
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 2.68,
+      "exampleQuants": [
+        "Q4_K_M",
+        "mlx-4bit"
+      ]
+    },
+    "high": {
+      "weightsGb": 3.6,
+      "exampleQuants": [
+        "Q6_K"
+      ]
+    },
+    "full": {
+      "weightsGb": 8.34,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  },
+  "mlxUrl": "https://huggingface.co/mlx-community/Nanbeige4.2-3B-4bit"
+}

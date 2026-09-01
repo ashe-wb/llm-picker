@@ -1,0 +1,56 @@
+{
+  "id": "deepseek-r1-0528-qwen3-8b",
+  "name": "DeepSeek R1-0528 Qwen3-8B",
+  "family": "DeepSeek R1 distill",
+  "vendor": "DeepSeek",
+  "architecture": "dense",
+  "paramsB": 8,
+  "layers": 36,
+  "vocabSize": 151936,
+  "width": 12288,
+  "attentionHeads": 32,
+  "kvHeads": 8,
+  "headDim": 128,
+  "attentionPattern": "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+  "vision": false,
+  "contextLength": 131072,
+  "license": {
+    "name": "MIT",
+    "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1-0528-Qwen3-8B"
+  },
+  "releaseDate": "2025-05-29",
+  "ggufUrl": "https://huggingface.co/unsloth/DeepSeek-R1-0528-Qwen3-8B-GGUF",
+  "status": "active",
+  "summary": "R1's reasoning distilled into a Qwen3-8B body: frontier-class competition math in 8B — AIME'24 86.0 matches models 30× its size. A specialist: brilliant at math and logic, awkward at everything agentic.",
+  "kvBytesPerToken": 147456,
+  "kvSourceUrl": "https://huggingface.co/deepseek-ai/DeepSeek-R1-0528-Qwen3-8B/blob/main/config.json",
+  "bands": {
+    "low": {
+      "weightsGb": 4,
+      "exampleQuants": [
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 5,
+      "exampleQuants": [
+        "Q4_K_M",
+        "mlx-4bit"
+      ]
+    },
+    "high": {
+      "weightsGb": 7,
+      "exampleQuants": [
+        "Q6_K",
+        "Q8_0"
+      ]
+    },
+    "full": {
+      "weightsGb": 16,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  },
+  "mlxUrl": "https://huggingface.co/mlx-community/DeepSeek-R1-0528-Qwen3-8B-4bit"
+}

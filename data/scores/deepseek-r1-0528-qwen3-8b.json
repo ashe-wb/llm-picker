@@ -1,0 +1,10 @@
+{
+  "modelId": "deepseek-r1-0528-qwen3-8b",
+  "entries": [
+    { "band": "full", "dimension": "math", "score": 8,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "AIME 2024", "rawValue": 86.0, "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1-0528", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "AIME 2025: 76.3, HMMT Feb 2025: 61.5 — vs base Qwen3-8B's 76.0 AIME'24. GPQA-Diamond (61.1) actually drops slightly below base." }] },
+    { "band": "full", "dimension": "coding", "score": 6,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "LiveCodeBench 2408–2505", "rawValue": 60.5, "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1-0528", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Benchmark-decent, but community reports real-world coding friction (see known issues). Absent from Aider (only full R1 appears at 71.4%)." }] }
+  ],
+  "quantOverrides": []
+}

@@ -1,0 +1,50 @@
+{
+  "modelId": "gemma-3-27b",
+  "entries": [
+    {
+      "id": "gemma-3-27b/all/code-editing",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["coding"],
+      "severity": "severe",
+      "summary": "Real-world code editing is dismal — 4.9% on the Aider polyglot board, near the bottom, despite a respectable-looking HumanEval. Snippet benchmarks flatter it; repository work exposes it.",
+      "mitigations": [
+        { "mitigationId": "none", "note": "Use a Qwen3 model for coding. Gemma's lane is chat, languages, writing, and vision." }
+      ],
+      "citations": [
+        { "url": "https://aider.chat/docs/leaderboards/", "title": "Aider polyglot leaderboard (gemma-3-27b-it: 4.9%)", "sourceType": "leaderboard", "accessed": "2026-08-30" },
+        { "url": "https://huggingface.co/google/gemma-3-27b-it", "title": "Model card (HumanEval 48.8 — the contrast)", "sourceType": "vendor", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "gemma-3-27b/all/tool-calling",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["tool-calling"],
+      "severity": "moderate",
+      "summary": "No native function-calling tokens or template — tool use rides on prompt-following, which works surprisingly well but breaks more than trained-in tool calling.",
+      "mitigations": [
+        { "mitigationId": "prompting", "note": "Give exact JSON schemas with examples in the system prompt — community benchmarks show it follows them decently.", "effectiveness": "partial" },
+        { "mitigationId": "none", "note": "For heavy MCP/agent work, pick a model with trained-in tool calling." }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/google/gemma-3-27b-it/discussions/24", "title": "Discussion: Gemma 3 function-calling support", "sourceType": "other", "accessed": "2026-08-30" },
+        { "url": "https://github.com/gamemaker1/gemma3-function-calling-benchmarks", "title": "Gemma 3 prompt-based function-calling benchmarks", "sourceType": "github", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "gemma-3-27b/all/name-hallucination",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["factuality"],
+      "severity": "mild",
+      "summary": "Family-wide tendency to hallucinate names and specific factual details; HHEM (7.4%) is oddly worse than the 4B.",
+      "mitigations": [
+        { "mitigationId": "rag", "note": "Ground factual work; treat unsourced names/dates with suspicion.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/google/gemma-4-26B-A4B-it/discussions/6", "title": "Gemma-family factual-name hallucination reports", "sourceType": "other", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    }
+  ]
+}

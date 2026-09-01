@@ -1,0 +1,69 @@
+[
+  {
+    "id": "code-interpreter",
+    "label": "Code interpreter / calculator tool",
+    "newbieExplainer": "Instead of the model doing arithmetic 'in its head', it writes a small program that a sandboxed Python actually runs, then reads the result. The model only needs to plan the calculation — the computer does the computing.",
+    "howToLinks": [
+      {
+        "label": "Open WebUI code execution docs",
+        "url": "https://docs.openwebui.com/"
+      }
+    ],
+    "worksVia": "tool-calling",
+    "caveat": "Requires the model to be decent at tool calling — check that dimension first."
+  },
+  {
+    "id": "mcp-tools",
+    "label": "MCP / external tools",
+    "newbieExplainer": "MCP (Model Context Protocol) lets the model call outside services — web search, file access, calculators — so it doesn't have to rely on what it memorized.",
+    "howToLinks": [
+      {
+        "label": "MCP documentation",
+        "url": "https://modelcontextprotocol.io/"
+      }
+    ],
+    "worksVia": "tool-calling",
+    "caveat": "Also depends on the model's tool-calling ability."
+  },
+  {
+    "id": "rag",
+    "label": "RAG (retrieval)",
+    "newbieExplainer": "Retrieval-Augmented Generation: your documents are searched first, and the relevant passages are pasted into the prompt, so the model answers from your data instead of guessing.",
+    "howToLinks": [
+      {
+        "label": "Open WebUI documents feature",
+        "url": "https://docs.openwebui.com/"
+      }
+    ],
+    "caveat": "Quality depends heavily on how the documents are chunked and searched."
+  },
+  {
+    "id": "higher-quant",
+    "label": "Move up a quant band",
+    "newbieExplainer": "Quantization compresses the model to fit in less memory, but the smallest versions lose real ability. If your machine has headroom, a 4–5 bit file often recovers most of what a 3-bit file lost.",
+    "howToLinks": []
+  },
+  {
+    "id": "prompting",
+    "label": "Prompt technique",
+    "newbieExplainer": "Some weaknesses shrink if you ask differently — e.g. 'think step by step', giving an example of the output format you want, or splitting a big request into smaller ones.",
+    "howToLinks": []
+  },
+  {
+    "id": "update-runtime",
+    "label": "Update your runtime",
+    "newbieExplainer": "Brand-new model architectures often need brand-new runner code. If a fresh model produces garbage or won't load, the fix is frequently just updating llama.cpp / LM Studio / Ollama to a build that supports it — not a different quant.",
+    "howToLinks": [
+      {
+        "label": "llama.cpp releases",
+        "url": "https://github.com/ggml-org/llama.cpp/releases"
+      }
+    ]
+  },
+  {
+    "id": "none",
+    "label": "No known fix — choose a different model",
+    "newbieExplainer": "Some weaknesses are baked into the model itself. No tool or trick meaningfully changes them, so we say so instead of pretending a workaround exists.",
+    "howToLinks": []
+  }
+]

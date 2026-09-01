@@ -1,0 +1,22 @@
+{
+  "modelId": "nanbeige4.2-3b",
+  "entries": [
+    { "band": "full", "dimension": "coding", "score": 7,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "SWE-bench Verified", "rawValue": 63.6, "url": "https://arxiv.org/html/2607.22083v2", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Against Qwen3.5 9B at 53.1 and Gemma 4 12B at 44.2 on the same table — a 3B beating models three and four times its size. Published with an arXiv technical report, which is more than most vendor claims on this site carry, but still the authors' own runs." }] },
+    { "band": "full", "dimension": "math", "score": 8,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "GPQA Diamond", "rawValue": 87.4, "url": "https://arxiv.org/html/2607.22083v2", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "HMMT Feb 2026: 82.8. Extraordinary for 3B — higher than several 27B-class models here. Treat as a claim pending independent replication; a figure this far out of line with size is exactly what benchmark contamination looks like." }] },
+    { "band": "high", "dimension": "coding", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q6_K", "method": "aggregated", "quantNote": "Editorial derivation: carried from the full band. At 3.6GB the weights fit anything." }] },
+    { "band": "high", "dimension": "math", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q6_K", "method": "aggregated", "quantNote": "Editorial derivation: one point down — small models have the least redundancy to lose, and maths goes first." }] },
+    { "band": "mid", "dimension": "coding", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: one point down. A 3B at 4-bit is a thin margin; the looped architecture is also unusual enough that community quant evidence for it is scarce." }] },
+    { "band": "mid", "dimension": "math", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: two points down from the full band." }] },
+    { "band": "low", "dimension": "coding", "score": 4,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q3_K_M", "method": "aggregated", "quantNote": "Editorial derivation: three points down. 3-bit on a 3B model saves 0.44GB over 4-bit and costs a great deal — see the known issue." }] },
+    { "band": "low", "dimension": "math", "score": 3,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q3_K_M", "method": "aggregated", "quantNote": "Editorial derivation: the standard collapse of multi-step arithmetic at ≤3-bit, worse than usual on a model this small." }] }
+  ],
+  "quantOverrides": []
+}

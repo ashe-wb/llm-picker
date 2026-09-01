@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+title: llm-picker
+abstract: >-
+  Which local LLMs fit a given machine, which suit a given workload, and what
+  breaks at each quantization band. Memory and speed are computed from published
+  hardware specifications and from architecture figures measured out of each
+  model's own weights; per-band defects are recorded with cited evidence.
+message: If you use this data, please cite it and link back to the repository.
+type: dataset
+authors:
+  - alias: ashe-wb
+    website: https://llm-picker.dev
+repository-code: https://github.com/ashe-wb/llm-picker
+url: https://llm-picker.dev
+license: CC-BY-4.0
+license-url: https://creativecommons.org/licenses/by/4.0/
+keywords:
+  - local-llm
+  - quantization
+  - kv-cache
+  - inference
+  - hardware

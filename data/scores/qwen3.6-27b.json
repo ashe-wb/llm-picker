@@ -1,0 +1,43 @@
+{
+  "modelId": "qwen3.6-27b",
+  "entries": [
+    { "band": "full", "dimension": "math", "score": 8,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "GPQA Diamond", "rawValue": 87.8, "url": "https://huggingface.co/Qwen/Qwen3.6-27B", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "AIME26: 94.1, HMMT Feb 25: 93.8, MMLU-Pro: 86.2. Vendor-reported, but the AIME line is the one number an independent party has re-run locally (see the mid-band cell)." }] },
+    { "band": "full", "dimension": "coding", "score": 8,
+      "provenance": [
+        { "sourceId": "vendor-model-card", "metric": "SWE-bench Verified", "rawValue": 77.2, "url": "https://huggingface.co/Qwen/Qwen3.6-27B", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "LiveCodeBench v6: 83.9, SWE-bench Pro: 53.5, Terminal-Bench 2.0: 59.3. Beats the 397B-A17B Qwen3.5 MoE on most coding lines." },
+        { "sourceId": "vals-ai", "metric": "Vals Index placement (link-only — no numbers republished)", "url": "https://www.vals.ai/models/alibaba_qwen3.6-27b", "retrieved": "2026-08-30", "quant": "bf16", "method": "aggregated", "notes": "Independent evaluator: #22 on the Vals Index overall, #8 of 18 among open-weight models, four months after release. Corroborates the tier, not the exact vendor figures — held at 8 rather than 9 because the flagship agentic numbers are still vendor-measured." }
+      ] },
+    { "band": "full", "dimension": "tool-calling", "score": 6,
+      "provenance": [
+        { "sourceId": "vendor-model-card", "metric": "AndroidWorld", "rawValue": 70.3, "url": "https://huggingface.co/Qwen/Qwen3.6-27B", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Benchmarks are strong on paper." },
+        { "sourceId": "community-consensus", "metric": "reported agent-loop failures (empty tool calls)", "url": "https://github.com/QwenLM/Qwen3.6/issues/150", "retrieved": "2026-08-30", "quant": "bf16", "method": "aggregated", "notes": "Scored two points below the benchmark tier: the 3.6 family emits empty tool calls that terminate agent loops, reported across 27B and 35B and at official FP8. See weaknesses/qwen3.6-27b.json." }
+      ] },
+
+    { "band": "high", "dimension": "math", "score": 8,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "KL divergence + top-1 agreement vs bf16", "url": "https://quesma.com/blog/qwen-quantization-quality/", "retrieved": "2026-08-30", "quant": "Q6_K", "method": "aggregated", "quantNote": "Editorial derivation: measured study of this exact model found every quant at 4-bit and above indistinguishable from full precision up to noise. Carried from the full band unchanged." }] },
+    { "band": "high", "dimension": "coding", "score": 8,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "KL divergence + top-1 agreement vs bf16", "url": "https://quesma.com/blog/qwen-quantization-quality/", "retrieved": "2026-08-30", "quant": "Q6_K", "method": "aggregated", "quantNote": "Editorial derivation: carried from the full band — no measurable loss at 6–8 bit." }] },
+    { "band": "high", "dimension": "tool-calling", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "KL divergence + top-1 agreement vs bf16", "url": "https://quesma.com/blog/qwen-quantization-quality/", "retrieved": "2026-08-30", "quant": "Q6_K", "method": "aggregated", "quantNote": "Editorial derivation: carried from the full band. The empty-tool-call defect is architectural, not a quantization artifact — quantizing up does not fix it." }] },
+
+    { "band": "mid", "dimension": "math", "score": 8,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "AIME-120 (temperature 0.6)", "rawValue": 70.8, "url": "https://quesma.com/blog/qwen-quantization-quality/", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "rawValue is the bf16 reference the study measured; Q4_K_M landed within noise of it. Editorial derivation: no discount for 4-bit on this model." }] },
+    { "band": "mid", "dimension": "coding", "score": 8,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "Terminal-Bench 2.1", "url": "https://quesma.com/blog/qwen-quantization-quality/", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: the 17.1GB Q4_K_M matched the full model on an agentic coding benchmark. This is the band to run — it fits a 32GB machine with context to spare." }] },
+    { "band": "mid", "dimension": "tool-calling", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "top-1 token agreement vs bf16", "url": "https://quesma.com/blog/qwen-quantization-quality/", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: carried from the full band, defect included." }] },
+
+    { "band": "low", "dimension": "math", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "AIME-120 (temperature 0.6)", "rawValue": 73.3, "url": "https://quesma.com/blog/qwen-quantization-quality/", "retrieved": "2026-08-30", "quant": "Q3_K_M", "method": "aggregated", "quantNote": "Q3_K_M actually scored 73.3 vs bf16's 70.8 — within run-to-run noise, not a real gain. Discounted one point because the band is unreliable as a whole: Q3_K_S collapsed to 54.2 on the same test. See the quantOverride." }] },
+    { "band": "low", "dimension": "coding", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "SVG-generation duels + perplexity vs bf16", "url": "https://quesma.com/blog/qwen-quantization-quality/", "retrieved": "2026-08-30", "quant": "Q3_K_M", "method": "aggregated", "quantNote": "Editorial derivation: 3-bit still produced coherent structured output in the study's generation tests; one-point discount for band-internal variance." }] },
+    { "band": "low", "dimension": "tool-calling", "score": 5,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "top-1 token agreement vs bf16", "url": "https://quesma.com/blog/qwen-quantization-quality/", "retrieved": "2026-08-30", "quant": "Q3_K_M", "method": "aggregated", "quantNote": "Editorial derivation: an already-shaky tool layer plus 3-bit token drift. Two points below the full band." }] }
+  ],
+  "quantOverrides": [
+    { "quant": "Q3_K_S", "dimension": "math", "score": 4,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "AIME-120 (temperature 0.6)", "rawValue": 54.2, "url": "https://quesma.com/blog/qwen-quantization-quality/", "retrieved": "2026-08-30", "quant": "Q3_K_S", "method": "aggregated", "notes": "Same study, same test: 54.2 against bf16's 70.8 and Q3_K_M's 73.3." }],
+      "note": "Q3_K_S is the trap in this band — it loses ~16 points of AIME accuracy while the barely-larger Q3_K_M loses nothing. If you are squeezing this model into ≤3 bits, take Q3_K_M." }
+  ]
+}

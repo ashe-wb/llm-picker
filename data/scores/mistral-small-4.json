@@ -1,0 +1,178 @@
+{
+  "modelId": "mistral-small-4",
+  "entries": [
+    {
+      "band": "full",
+      "dimension": "math",
+      "score": 8,
+      "provenance": [
+        {
+          "sourceId": "vendor-model-card",
+          "metric": "AIME 2025",
+          "rawValue": 83.8,
+          "url": "https://mistral.ai/news/mistral-small-4/",
+          "retrieved": "2026-08-31",
+          "quant": "bf16",
+          "method": "vendor-reported",
+          "notes": "GPQA Diamond 71.2. Reasoning is toggled per request with reasoning_effort, so the figure assumes it is on."
+        }
+      ]
+    },
+    {
+      "band": "full",
+      "dimension": "coding",
+      "score": 7,
+      "provenance": [
+        {
+          "sourceId": "vendor-model-card",
+          "metric": "LiveCodeBench",
+          "rawValue": 63.6,
+          "url": "https://mistral.ai/news/mistral-small-4/",
+          "retrieved": "2026-08-31",
+          "quant": "bf16",
+          "method": "vendor-reported",
+          "notes": "Mistral claim it beats gpt-oss-120b here while producing 20% less output. No SWE-bench figure is published, which is the number that would matter most for the agentic coding it absorbed from Devstral."
+        }
+      ]
+    },
+    {
+      "band": "full",
+      "dimension": "factuality",
+      "score": 7,
+      "provenance": [
+        {
+          "sourceId": "vendor-model-card",
+          "metric": "MMLU-Pro",
+          "rawValue": 78.0,
+          "url": "https://mistral.ai/news/mistral-small-4/",
+          "retrieved": "2026-08-31",
+          "quant": "bf16",
+          "method": "vendor-reported",
+          "notes": "MMMU-Pro 60 on the vision side. No hallucination-rate benchmark is published, so this is a knowledge score rather than a truthfulness one."
+        }
+      ]
+    },
+    {
+      "band": "full",
+      "dimension": "long-context",
+      "score": 7,
+      "provenance": [
+        {
+          "sourceId": "artificial-analysis",
+          "metric": "AA-LCR long-context reasoning (link-only — no numbers republished)",
+          "url": "https://artificialanalysis.ai/",
+          "retrieved": "2026-08-31",
+          "quant": "bf16",
+          "method": "aggregated",
+          "notes": "Cited by link under their terms. Mistral report it as matching gpt-oss-120b. Worth reading against this model's KV cost: the context is affordable to reason over and expensive to hold."
+        }
+      ]
+    },
+    {
+      "band": "high",
+      "dimension": "math",
+      "score": 8,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q6_K",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: no drop from the measured bf16 figure. 6-8 bit is effectively lossless on a model this size."
+        }
+      ]
+    },
+    {
+      "band": "high",
+      "dimension": "coding",
+      "score": 7,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q6_K",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: no drop from the measured bf16 figure. 6-8 bit is effectively lossless on a model this size."
+        }
+      ]
+    },
+    {
+      "band": "high",
+      "dimension": "factuality",
+      "score": 7,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q6_K",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: no drop from the measured bf16 figure. 6-8 bit is effectively lossless on a model this size."
+        }
+      ]
+    },
+    {
+      "band": "high",
+      "dimension": "long-context",
+      "score": 7,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q6_K",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: no drop from the measured bf16 figure. 6-8 bit is effectively lossless on a model this size."
+        }
+      ]
+    },
+    {
+      "band": "mid",
+      "dimension": "math",
+      "score": 7,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q4_K_M",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: one point down from the measured bf16 figure. 4-bit is the band a model this size is actually run at, and the loss is real but modest."
+        }
+      ]
+    },
+    {
+      "band": "mid",
+      "dimension": "coding",
+      "score": 6,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q4_K_M",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: one point down from the measured bf16 figure. 4-bit is the band a model this size is actually run at, and the loss is real but modest."
+        }
+      ]
+    },
+    {
+      "band": "low",
+      "dimension": "coding",
+      "score": 5,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q3_K_M",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: two points down. At 3-bit a sparse MoE loses expert-routing precision first, which surfaces as dropped tool arguments and broken multi-file edits before prose visibly suffers."
+        }
+      ]
+    }
+  ],
+  "quantOverrides": []
+}

@@ -1,0 +1,74 @@
+{
+  "modelId": "glm-4.7",
+  "entries": [
+    {
+      "id": "glm-4.7/all/kv-cache-cost",
+      "bands": [
+        "low",
+        "mid",
+        "high",
+        "full"
+      ],
+      "dimensions": [
+        "long-context"
+      ],
+      "severity": "severe",
+      "summary": "The most expensive KV cache in this catalogue by a wide margin. All 92 layers use full attention with no sliding window and no linear-attention layers, giving 368KB per token — so a 32K context costs 12GB of cache before a single weight is loaded, and filling the 198K window would cost about 71GB. On a machine sized to just hold the weights, context is what you run out of first.",
+      "mitigations": [
+        {
+          "mitigationId": "none",
+          "note": "Architectural. Budget the cache explicitly: the RUNS AT line on this site prices it at the context you pick."
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://huggingface.co/zai-org/GLM-4.7/blob/main/config.json",
+          "title": "GLM-4.7 config.json: 92 layers, no sliding_window, 8 KV heads x 128 head_dim",
+          "sourceType": "vendor",
+          "accessed": "2026-08-31"
+        },
+        {
+          "url": "https://docs.unsloth.ai/models/glm-4.7",
+          "title": "Unsloth GLM-4.7 run guide: memory requirements",
+          "sourceType": "blog",
+          "accessed": "2026-08-31"
+        }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "glm-4.7/low/two-bit-is-the-only-way-in",
+      "bands": [
+        "low"
+      ],
+      "dimensions": [
+        "coding",
+        "tool-calling"
+      ],
+      "severity": "moderate",
+      "summary": "For almost everyone this model is only reachable at 2-3 bit — the 4-bit build is 205GB and the bf16 weights are 717GB. Unsloth's dynamic 2-bit lands around 135GB, which is the first size that fits a single large machine. That is a real option, but it is the bottom of the quant ladder, and expert routing in a 358B MoE is exactly what degrades there.",
+      "mitigations": [
+        {
+          "mitigationId": "higher-quant",
+          "note": "Move up to the 205GB 4-bit build if you have the memory; the gap between 2-bit and 4-bit is larger here than on a small dense model.",
+          "effectiveness": "strong"
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://huggingface.co/unsloth/GLM-4.7-GGUF",
+          "title": "unsloth GLM-4.7-GGUF: Q2_K_XL 135GB, Q3_K_M 171GB, UD-Q4_K_XL 205GB, BF16 717GB",
+          "sourceType": "other",
+          "accessed": "2026-08-31"
+        },
+        {
+          "url": "https://docs.unsloth.ai/models/glm-4.7",
+          "title": "Unsloth GLM-4.7 run guide",
+          "sourceType": "blog",
+          "accessed": "2026-08-31"
+        }
+      ],
+      "confidence": "community-consensus"
+    }
+  ]
+}

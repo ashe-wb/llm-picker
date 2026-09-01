@@ -1,0 +1,76 @@
+{
+  "modelId": "qwen3.5-397b-a17b",
+  "entries": [
+    {
+      "id": "qwen3.5-397b-a17b/all/weights-not-cache",
+      "bands": [
+        "low",
+        "mid",
+        "high",
+        "full"
+      ],
+      "dimensions": [
+        "long-context"
+      ],
+      "severity": "moderate",
+      "summary": "The unusual shape of this model is that context is cheap and weights are not. Three of every four layers use linear attention, so the KV cache is only 30KB per token — a full 256K context costs about 8GB, less than GLM-4.7 spends on 32K. But the 4-bit weights are 244GB. Nothing about a long context will stop you here; holding the model will.",
+      "mitigations": [
+        {
+          "mitigationId": "none",
+          "note": "Architectural, and mostly good news. Size the machine for weights and treat context as close to free."
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://huggingface.co/Qwen/Qwen3.5-397B-A17B/blob/main/config.json",
+          "title": "Qwen3.5-397B config.json: layer_types, 3 linear per 1 full attention across 60 layers",
+          "sourceType": "vendor",
+          "accessed": "2026-08-31"
+        },
+        {
+          "url": "https://unsloth.ai/docs/models/qwen3.5",
+          "title": "Unsloth Qwen3.5 run guide",
+          "sourceType": "blog",
+          "accessed": "2026-08-31"
+        }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "qwen3.5-397b-a17b/all/unreplicated-benchmarks",
+      "bands": [
+        "low",
+        "mid",
+        "high",
+        "full"
+      ],
+      "dimensions": [
+        "coding",
+        "math"
+      ],
+      "severity": "moderate",
+      "summary": "Every number scored here is Alibaba's own. Qwen3.5-397B is a flagship release with headline figures that beat much larger closed models, and no independent replication of those figures exists in this dataset. Treat them as claims. Its factuality and long-context cells are blank rather than estimated because nobody has published a hallucination or RULER result for it.",
+      "mitigations": [
+        {
+          "mitigationId": "none",
+          "note": "Nothing to work around — this is a caveat on the evidence, not on the model."
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://huggingface.co/Qwen/Qwen3.5-397B-A17B",
+          "title": "Qwen3.5-397B-A17B model card: all benchmark figures are vendor-reported",
+          "sourceType": "vendor",
+          "accessed": "2026-08-31"
+        },
+        {
+          "url": "https://huggingface.co/unsloth/Qwen3.5-397B-A17B-GGUF",
+          "title": "unsloth GGUF quant ladder — community distribution, no independent benchmarks",
+          "sourceType": "other",
+          "accessed": "2026-08-31"
+        }
+      ],
+      "confidence": "community-consensus"
+    }
+  ]
+}

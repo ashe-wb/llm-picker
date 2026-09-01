@@ -1,0 +1,23 @@
+{
+  "modelId": "gemma-3-27b",
+  "entries": [
+    { "band": "full", "dimension": "math", "score": 5,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "MATH (4-shot)", "rawValue": 50.0, "url": "https://huggingface.co/google/gemma-3-27b-it", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "GSM8K: 82.6." }] },
+    { "band": "full", "dimension": "coding", "score": 4,
+      "provenance": [
+        { "sourceId": "vendor-model-card", "metric": "HumanEval", "rawValue": 48.8, "url": "https://huggingface.co/google/gemma-3-27b-it", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "MBPP: 65.6." },
+        { "sourceId": "aider-polyglot", "metric": "percent correct (whole format)", "rawValue": 4.9, "url": "https://aider.chat/docs/leaderboards/", "retrieved": "2026-08-30", "quant": "bf16", "method": "aggregated", "notes": "Near the bottom of the board — real-world code editing is far weaker than HumanEval suggests." }
+      ] },
+    { "band": "full", "dimension": "factuality", "score": 5,
+      "provenance": [{ "sourceId": "vectara-hallucination", "metric": "HHEM hallucination rate % (lower is better)", "rawValue": 7.4, "url": "https://github.com/vectara/hallucination-leaderboard", "retrieved": "2026-08-30", "quant": "bf16", "method": "aggregated", "notes": "Curiously worse than the 4B's 6.4%." }] },
+    { "band": "full", "dimension": "creative-writing", "score": 7,
+      "provenance": [{ "sourceId": "community-consensus", "metric": "community reputation (no public benchmark currently lists this model)", "url": "https://www.reddit.com/r/LocalLLaMA/", "retrieved": "2026-08-30", "quant": "bf16", "method": "aggregated", "notes": "Editorial score: the Gemma 3 prose reputation, strongest at 27B. No benchmark backs this cell." }] },
+    { "band": "mid", "dimension": "creative-writing", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_0", "method": "aggregated", "quantNote": "Editorial derivation: Google's QAT Q4_0 preserves prose quality well." }] },
+    { "band": "mid", "dimension": "math", "score": 4,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_0", "method": "aggregated", "quantNote": "Editorial derivation: small loss vs full band; QAT helps." }] },
+    { "band": "mid", "dimension": "coding", "score": 4,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_0", "method": "aggregated", "quantNote": "Editorial derivation: carried from full band." }] }
+  ],
+  "quantOverrides": []
+}

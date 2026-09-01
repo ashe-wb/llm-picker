@@ -1,0 +1,35 @@
+{
+  "modelId": "qwen3-4b",
+  "entries": [
+    {
+      "id": "qwen3-4b/all/greedy-repetition",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["instruction-following"],
+      "severity": "moderate",
+      "summary": "Falls into endless repetition loops under greedy decoding — the card itself warns against it — and quantized builds hit it hardest at this size.",
+      "mitigations": [
+        { "mitigationId": "prompting", "note": "Use the card's samplers (temp 0.6 / top_p 0.95 / top_k 20 thinking; 0.7 / 0.8 / 20 non-thinking); presence_penalty up to 1.5 if loops persist.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/Qwen/Qwen3-4B/blob/main/README.md", "title": "Qwen3-4B card ('DO NOT use greedy decoding')", "sourceType": "vendor", "accessed": "2026-08-30" },
+        { "url": "https://github.com/ggml-org/llama.cpp/issues/13310", "title": "llama.cpp issue: Qwen3 GGUF repetition", "sourceType": "github", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "qwen3-4b/all/world-knowledge",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["factuality"],
+      "severity": "moderate",
+      "summary": "The family's math/code tilt comes at the cost of world knowledge — a 4B slice of it especially. Expect confident wrong answers on open-domain facts.",
+      "mitigations": [
+        { "mitigationId": "rag", "note": "Grounding fixes most of it — its HHEM consistency (94.3%) shows it respects provided text.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/Qwen/Qwen3-235B-A22B/discussions/16", "title": "Family-wide knowledge-gap discussion", "sourceType": "other", "accessed": "2026-08-30" },
+        { "url": "https://patmcguinness.substack.com/p/qwen-3-release-brings-ai-home", "title": "Qwen3 release analysis (SimpleQA weakness)", "sourceType": "blog", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    }
+  ]
+}

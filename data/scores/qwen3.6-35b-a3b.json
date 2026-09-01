@@ -1,0 +1,33 @@
+{
+  "modelId": "qwen3.6-35b-a3b",
+  "entries": [
+    { "band": "full", "dimension": "math", "score": 8,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "AIME26", "rawValue": 92.7, "url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "GPQA: 86.0, MMLU-Pro: 85.2 — within a couple of points of the dense 27B sibling (94.1 / 87.8) at a twelfth of the active compute. Vendor-reported." }] },
+    { "band": "full", "dimension": "coding", "score": 8,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "SWE-bench Verified", "rawValue": 73.4, "url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "SWE-bench Pro: 49.5. Trails the dense Qwen3.6 27B (77.2 / 53.5) by roughly four points — same editorial band, and the gap buys a large speed advantage at 3B active." }] },
+    { "band": "full", "dimension": "tool-calling", "score": 6,
+      "provenance": [
+        { "sourceId": "vendor-model-card", "metric": "agentic coding suite (thinking preservation)", "url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Marketed as an agentic-coding model." },
+        { "sourceId": "community-consensus", "metric": "reported agent-loop failures (empty tool calls)", "url": "https://huggingface.co/Qwen/Qwen3.6-27B/discussions/13", "retrieved": "2026-08-30", "quant": "bf16", "method": "aggregated", "notes": "Scored below the marketing: the empty-tool-call defect is explicitly reported for the 35B as well as the 27B. Same deduction as its sibling." }
+      ] },
+    { "band": "high", "dimension": "math", "score": 8,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q6_K", "method": "aggregated", "quantNote": "Editorial derivation: 6-bit carries MoE expert weights without meaningful loss. Note the file is 30.95GB — this band needs a 64GB machine in practice." }] },
+    { "band": "high", "dimension": "coding", "score": 8,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q6_K", "method": "aggregated", "quantNote": "Editorial derivation: carried from the full band." }] },
+    { "band": "high", "dimension": "tool-calling", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q6_K", "method": "aggregated", "quantNote": "Editorial derivation: carried from the full band, defect included." }] },
+    { "band": "mid", "dimension": "math", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: one point down. Unlike the dense 27B — where a measured study found 4-bit indistinguishable from bf16 — sparse experts are individually more quant-sensitive, the same reasoning applied to gemma-4-26b-a4b. This is the band that fits a 32GB machine (22.29GB Q4_K_M)." }] },
+    { "band": "mid", "dimension": "coding", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: one point down for MoE expert quantization." }] },
+    { "band": "mid", "dimension": "tool-calling", "score": 5,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: a shaky tool layer plus expert quantization." }] },
+    { "band": "low", "dimension": "math", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q3_K_M", "method": "aggregated", "quantNote": "Editorial derivation: two points down. 3-bit MoE routing degrades faster than 3-bit dense — do not assume the dense 27B's unusually clean Q3_K_M result transfers here." }] },
+    { "band": "low", "dimension": "coding", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q3_K_M", "method": "aggregated", "quantNote": "Editorial derivation: two points down from the full band." }] },
+    { "band": "low", "dimension": "tool-calling", "score": 4,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q3_K_M", "method": "aggregated", "quantNote": "Editorial derivation: below usable. The family's empty-tool-call defect plus 3-bit expert drift — see the weakness entry covering this band." }] }
+  ],
+  "quantOverrides": []
+}

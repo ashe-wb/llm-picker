@@ -1,0 +1,56 @@
+{
+  "id": "phi-4-mini",
+  "name": "Phi-4-mini",
+  "family": "Phi",
+  "vendor": "Microsoft",
+  "architecture": "dense",
+  "paramsB": 3.8,
+  "layers": 32,
+  "vocabSize": 200064,
+  "width": 8192,
+  "attentionHeads": 24,
+  "kvHeads": 8,
+  "headDim": 128,
+  "attentionPattern": "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+  "vision": false,
+  "contextLength": 131072,
+  "license": {
+    "name": "MIT",
+    "url": "https://huggingface.co/microsoft/Phi-4-mini-instruct"
+  },
+  "releaseDate": "2025-02-27",
+  "ggufUrl": "https://huggingface.co/bartowski/microsoft_Phi-4-mini-instruct-GGUF",
+  "status": "active",
+  "summary": "Strong math and code for a 3.8B — and the worst measured hallucination rate on this site. A capable calculator that should never be trusted on facts without retrieval.",
+  "kvBytesPerToken": 131072,
+  "kvSourceUrl": "https://huggingface.co/microsoft/Phi-4-mini-instruct/blob/main/config.json",
+  "bands": {
+    "low": {
+      "weightsGb": 2.1,
+      "exampleQuants": [
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 2.5,
+      "exampleQuants": [
+        "Q4_K_M",
+        "mlx-4bit"
+      ]
+    },
+    "high": {
+      "weightsGb": 3.2,
+      "exampleQuants": [
+        "Q6_K",
+        "Q8_0"
+      ]
+    },
+    "full": {
+      "weightsGb": 7.7,
+      "exampleQuants": [
+        "fp16"
+      ]
+    }
+  },
+  "mlxUrl": "https://huggingface.co/mlx-community/Phi-4-mini-instruct-4bit"
+}

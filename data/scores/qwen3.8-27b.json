@@ -1,0 +1,45 @@
+{
+  "modelId": "qwen3.8-27b",
+  "entries": [
+    { "band": "full", "dimension": "coding", "score": 9,
+      "provenance": [
+        { "sourceId": "vendor-model-card", "metric": "LiveCodeBench v6", "rawValue": 90.3, "url": "https://huggingface.co/Qwen/Qwen3.8-27B", "retrieved": "2026-08-31", "quant": "bf16", "method": "vendor-reported", "notes": "Terminal-Bench 2.1: 73.0, SWE-bench Pro: 61.7, NL2Repo-Bench: 42.3. The highest figures in this catalogue on all three — Qwen3.6 27B manages 83.9 on LiveCodeBench and Ornith-1.5 35B-A3B 68.5 on Terminal-Bench." },
+        { "sourceId": "community-consensus", "metric": "Code Arena WebDev leaderboard placement", "url": "https://www.orcarouter.ai/blog/qwen-3-8-27b-benchmarks", "retrieved": "2026-08-31", "quant": "bf16", "method": "aggregated", "notes": "Independent, and the reason this cell moved from 8 to 9: #9 overall on Code Arena's WebDev board and the only model in its size class in the top 10, plus the #1 open-weight slot on Arena.ai's Image-to-WebDev board. Third-party evaluation of the coding claim now exists; it did not on 2026-08-30." },
+        { "sourceId": "artificial-analysis", "metric": "Agentic Index placement (link-only — no numbers republished)", "url": "https://www.mindstudio.ai/blog/qwen-3-27b-local-benchmark", "retrieved": "2026-08-31", "quant": "bf16", "method": "aggregated", "notes": "Independent aggregator, cited by link under their terms. Places it immediately behind a 2.8T-parameter model on agentic work." }
+      ] },
+    { "band": "full", "dimension": "math", "score": 8,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "GPQA Diamond", "rawValue": 89.2, "url": "https://huggingface.co/Qwen/Qwen3.8-27B", "retrieved": "2026-08-31", "quant": "bf16", "method": "vendor-reported", "notes": "Humanity's Last Exam: 30.8. The GPQA figure was independently reproduced at ~90% in a third-party quantization study, which is the first outside confirmation of any Qwen3.8 number." }] },
+    { "band": "full", "dimension": "instruction-following", "score": 8,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "IFBench", "rawValue": 79.5, "url": "https://huggingface.co/Qwen/Qwen3.8-27B", "retrieved": "2026-08-31", "quant": "bf16", "method": "vendor-reported", "notes": "Above Nemotron 3 Nano's 71.5 on the same benchmark. Also reproduced independently in the quantization study below. IFBench is program-checkable, so there is little interpretive room." }] },
+    { "band": "full", "dimension": "tool-calling", "score": 8,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "OSWorld-Verified", "rawValue": 84.3, "url": "https://huggingface.co/Qwen/Qwen3.8-27B", "retrieved": "2026-08-31", "quant": "bf16", "method": "vendor-reported", "notes": "AndroidWorld 81.9, WebArena-Verified 64.8 — none of them Qwen-built, unlike the QwenSWEBench and CoWorkBench numbers on the same card, which are excluded here for that reason." }] },
+
+    { "band": "high", "dimension": "coding", "score": 9,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "Terminal-Bench 2.1 vs bf16", "url": "https://quesma.com/blog/qwen38-27b-quantizations-benchmarked/", "retrieved": "2026-08-31", "quant": "Q8_0", "method": "aggregated", "quantNote": "Measured, not derived: an independent study found Q4_K_M matching the full model on Terminal-Bench 2.1, so 8-bit sits between two points that are equal. Carried unchanged." }] },
+    { "band": "high", "dimension": "math", "score": 8,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "GPQA Diamond vs bf16", "url": "https://quesma.com/blog/qwen38-27b-quantizations-benchmarked/", "retrieved": "2026-08-31", "quant": "Q8_0", "method": "aggregated", "quantNote": "Same study: ~90% at both bf16 and Q4_K_M. Carried unchanged." }] },
+    { "band": "high", "dimension": "instruction-following", "score": 8,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "IFBench vs bf16", "url": "https://quesma.com/blog/qwen38-27b-quantizations-benchmarked/", "retrieved": "2026-08-31", "quant": "Q8_0", "method": "aggregated", "quantNote": "IFBench was one of the three benchmarks run across the quant ladder with no meaningful degradation at 4-bit or above." }] },
+    { "band": "high", "dimension": "tool-calling", "score": 8,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "Terminal-Bench 2.1 vs bf16", "url": "https://quesma.com/blog/qwen38-27b-quantizations-benchmarked/", "retrieved": "2026-08-31", "quant": "Q8_0", "method": "aggregated", "quantNote": "Carried unchanged; agentic behaviour held at 4-bit in the same study." }] },
+
+    { "band": "mid", "dimension": "coding", "score": 9,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "Terminal-Bench 2.1 (89 tasks) vs bf16", "url": "https://quesma.com/blog/qwen38-27b-quantizations-benchmarked/", "retrieved": "2026-08-31", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "No discount. This site normally docks a point at 4-bit, but here it was measured: the 17GB Q4_K_M matched the 55GB full model on an agentic coding benchmark. This is the band to run — it fits a 32GB machine." }] },
+    { "band": "mid", "dimension": "math", "score": 8,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "GPQA Diamond", "rawValue": 90.0, "url": "https://quesma.com/blog/qwen38-27b-quantizations-benchmarked/", "retrieved": "2026-08-31", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Measured at roughly 90% against the full model's roughly 90%. No discount applied because none was observed." }] },
+    { "band": "mid", "dimension": "instruction-following", "score": 8,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "IFBench vs bf16", "url": "https://quesma.com/blog/qwen38-27b-quantizations-benchmarked/", "retrieved": "2026-08-31", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Held at 4-bit in the same study. Carried unchanged." }] },
+    { "band": "mid", "dimension": "tool-calling", "score": 8,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "Terminal-Bench 2.1 vs bf16", "url": "https://quesma.com/blog/qwen38-27b-quantizations-benchmarked/", "retrieved": "2026-08-31", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Carried unchanged — the agentic benchmark is the one that held exactly." }] },
+
+    { "band": "low", "dimension": "math", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "GPQA Diamond", "rawValue": 88.0, "url": "https://quesma.com/blog/qwen38-27b-quantizations-benchmarked/", "retrieved": "2026-08-31", "quant": "Q2_K", "method": "aggregated", "quantNote": "Roughly 88% at 2-bit against roughly 90% at full precision — a real but small loss, and far better than 2-bit usually manages. One point down." }] },
+    { "band": "low", "dimension": "coding", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "Terminal-Bench 2.1", "url": "https://quesma.com/blog/qwen38-27b-quantizations-benchmarked/", "retrieved": "2026-08-31", "quant": "Q2_K", "method": "aggregated", "quantNote": "The study reports a noticeable fall at 2-bit on agentic coding while remaining competitive. Two points down from the measured 4-bit result." }] },
+    { "band": "low", "dimension": "instruction-following", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "IFBench", "url": "https://quesma.com/blog/qwen38-27b-quantizations-benchmarked/", "retrieved": "2026-08-31", "quant": "Q2_K", "method": "aggregated", "quantNote": "Editorial derivation: one point down, in line with the measured GPQA drop at the same width." }] },
+    { "band": "low", "dimension": "tool-calling", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "Terminal-Bench 2.1", "url": "https://quesma.com/blog/qwen38-27b-quantizations-benchmarked/", "retrieved": "2026-08-31", "quant": "Q2_K", "method": "aggregated", "quantNote": "Editorial derivation: two points down. Structured tool output is the first thing to go at 2-bit, and the study's agentic scores fall there." }] }
+  ],
+  "quantOverrides": []
+}

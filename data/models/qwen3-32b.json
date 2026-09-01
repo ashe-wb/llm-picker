@@ -1,0 +1,56 @@
+{
+  "id": "qwen3-32b",
+  "name": "Qwen3 32B",
+  "family": "Qwen3",
+  "vendor": "Alibaba",
+  "architecture": "dense",
+  "paramsB": 32.8,
+  "layers": 64,
+  "vocabSize": 151936,
+  "width": 25600,
+  "attentionHeads": 64,
+  "kvHeads": 8,
+  "headDim": 128,
+  "attentionPattern": "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+  "vision": false,
+  "contextLength": 32768,
+  "license": {
+    "name": "Apache-2.0",
+    "url": "https://huggingface.co/Qwen/Qwen3-32B"
+  },
+  "releaseDate": "2025-04-29",
+  "ggufUrl": "https://huggingface.co/Qwen/Qwen3-32B-GGUF",
+  "status": "active",
+  "summary": "The dense flagship under 35B — the only sub-35B model with an independent Aider coding score. Trades the 30B-A3B MoE's speed for steadier quality and more graceful quantization; expect <10 tok/s on unified memory.",
+  "kvBytesPerToken": 262144,
+  "kvSourceUrl": "https://huggingface.co/Qwen/Qwen3-32B/blob/main/config.json",
+  "bands": {
+    "low": {
+      "weightsGb": 16,
+      "exampleQuants": [
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 20,
+      "exampleQuants": [
+        "Q4_K_M",
+        "Q5_K_M",
+        "mlx-4bit"
+      ]
+    },
+    "high": {
+      "weightsGb": 27,
+      "exampleQuants": [
+        "Q6_K"
+      ]
+    },
+    "full": {
+      "weightsGb": 66,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  },
+  "mlxUrl": "https://huggingface.co/mlx-community/Qwen3-32B-4bit"
+}

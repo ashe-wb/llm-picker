@@ -1,0 +1,76 @@
+{
+  "modelId": "gpt-oss-120b",
+  "entries": [
+    {
+      "id": "gpt-oss-120b/all/world-knowledge",
+      "bands": [
+        "mid"
+      ],
+      "dimensions": [
+        "factuality"
+      ],
+      "severity": "severe",
+      "summary": "Hallucinates confidently on world knowledge. SimpleQA 16.8 and a 49.1% PersonQA hallucination rate are OpenAI's own published figures — better than the 20b's, and still bad enough that this model should not be trusted as a source of facts. It is built to reason and call tools, not to remember.",
+      "mitigations": [
+        {
+          "mitigationId": "rag",
+          "note": "Give it documents to read. Retrieval turns the weakness into a non-issue for document work.",
+          "effectiveness": "strong"
+        },
+        {
+          "mitigationId": "mcp-tools",
+          "note": "Wire up search. The model is explicitly designed to look things up rather than recall them.",
+          "effectiveness": "strong"
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://arxiv.org/html/2508.10925",
+          "title": "gpt-oss model card: SimpleQA and PersonQA hallucination figures",
+          "sourceType": "paper",
+          "accessed": "2026-08-31"
+        },
+        {
+          "url": "https://huggingface.co/openai/gpt-oss-120b",
+          "title": "gpt-oss-120b model card",
+          "sourceType": "vendor",
+          "accessed": "2026-08-31"
+        }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "gpt-oss-120b/mid/no-quant-ladder",
+      "bands": [
+        "mid"
+      ],
+      "dimensions": [
+        "coding",
+        "math"
+      ],
+      "severity": "mild",
+      "summary": "There is no quant choice to make: the MoE weights were post-trained in MXFP4, so the 63GB native file is the model rather than a compression of it. Convenient — no band to agonise over — but the usual escape hatch is missing. If 63GB does not fit, there is no smaller official build, and requantizing an already-4-bit model is not the same operation as quantizing from bf16.",
+      "mitigations": [
+        {
+          "mitigationId": "none",
+          "note": "Use gpt-oss-20b instead if 63GB is out of reach; same architecture, 12GB."
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://huggingface.co/openai/gpt-oss-120b",
+          "title": "gpt-oss-120b: MoE weights post-trained in MXFP4",
+          "sourceType": "vendor",
+          "accessed": "2026-08-31"
+        },
+        {
+          "url": "https://huggingface.co/ggml-org/gpt-oss-120b-GGUF",
+          "title": "ggml-org GGUF: a single 63.4GB MXFP4 file",
+          "sourceType": "other",
+          "accessed": "2026-08-31"
+        }
+      ],
+      "confidence": "community-consensus"
+    }
+  ]
+}

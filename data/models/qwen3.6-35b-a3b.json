@@ -1,0 +1,57 @@
+{
+  "id": "qwen3.6-35b-a3b",
+  "name": "Qwen3.6 35B-A3B",
+  "family": "Qwen3.6",
+  "vendor": "Alibaba",
+  "architecture": "moe",
+  "paramsB": 35,
+  "activeParamsB": 3,
+  "layers": 40,
+  "vocabSize": 248320,
+  "width": 4096,
+  "attentionHeads": 16,
+  "kvHeads": 2,
+  "headDim": 256,
+  "attentionPattern": "...F...F...F...F...F...F...F...F...F...F",
+  "expertsPerToken": 8,
+  "vision": true,
+  "contextLength": 262144,
+  "license": {
+    "name": "Apache-2.0",
+    "url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B"
+  },
+  "releaseDate": "2026-04-22",
+  "ggufUrl": "https://huggingface.co/bartowski/Qwen_Qwen3.6-35B-A3B-GGUF",
+  "status": "active",
+  "summary": "Near-flagship agentic coding at 3B-active speed: 73.4 on SWE-bench Verified while activating a twelfth of its weights. The trade is memory, not quality — you hold all 35B in RAM to run 3B worth of compute, and it carries the 3.6 family's tool-calling defect.",
+  "kvBytesPerToken": 20480,
+  "kvSourceUrl": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B/blob/main/config.json",
+  "bands": {
+    "low": {
+      "weightsGb": 17,
+      "exampleQuants": [
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 22,
+      "exampleQuants": [
+        "Q4_K_M",
+        "mlx-4bit"
+      ]
+    },
+    "high": {
+      "weightsGb": 31,
+      "exampleQuants": [
+        "Q6_K"
+      ]
+    },
+    "full": {
+      "weightsGb": 70,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  },
+  "mlxUrl": "https://huggingface.co/mlx-community/Qwen3.6-35B-A3B-4bit"
+}

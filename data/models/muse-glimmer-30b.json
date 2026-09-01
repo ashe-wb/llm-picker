@@ -1,0 +1,58 @@
+{
+  "id": "muse-glimmer-30b",
+  "name": "Muse Glimmer 30B",
+  "family": "Muse",
+  "vendor": "Meta",
+  "architecture": "dense",
+  "paramsB": 29.6,
+  "layers": 52,
+  "vocabSize": 202048,
+  "width": 19968,
+  "attentionHeads": 32,
+  "kvHeads": 2,
+  "headDim": 128,
+  "attentionPattern": "SSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSF",
+  "vision": true,
+  "contextLength": 131072,
+  "license": {
+    "name": "Apache-2.0",
+    "url": "https://huggingface.co/meta-models/Muse-Glimmer-30B"
+  },
+  "releaseDate": "2026-08-10",
+  "ggufUrl": "https://huggingface.co/meta-models/Muse-Glimmer-30B-GGUF",
+  "status": "active",
+  "summary": "Meta's agent-first comeback under a real Apache license: strong tool use, screen understanding, and a speculative-decoding sidecar for speed. Knowledge is its weak leg — it's built to act, not to recall.",
+  "kvBytesPerToken": 13312,
+  "kvWindowedBytesPerToken": 39936,
+  "slidingWindow": 2048,
+  "kvSourceUrl": "https://huggingface.co/meta-models/Muse-Glimmer-30B/blob/main/config.json",
+  "bands": {
+    "low": {
+      "weightsGb": 13,
+      "exampleQuants": [
+        "Q3_K_XL"
+      ]
+    },
+    "mid": {
+      "weightsGb": 17,
+      "exampleQuants": [
+        "Q4_K_M",
+        "mlx-4bit"
+      ]
+    },
+    "high": {
+      "weightsGb": 26,
+      "exampleQuants": [
+        "Q6_K_XL",
+        "Q8_0"
+      ]
+    },
+    "full": {
+      "weightsGb": 59,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  },
+  "mlxUrl": "https://huggingface.co/mlx-community/Muse-Glimmer-30B-4bit"
+}

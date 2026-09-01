@@ -1,0 +1,35 @@
+{
+  "modelId": "qwen3.6-35b-a3b",
+  "entries": [
+    {
+      "id": "qwen3.6-35b-a3b/all/empty-tool-calls",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["tool-calling"],
+      "severity": "moderate",
+      "summary": "Shares the 3.6 family defect: the model announces a tool call and then emits an empty one, ending the agent loop with the task unfinished. Reporters state explicitly that it affects the 35B as well as the 27B, and it reproduces on Alibaba's own FP8 build — so it is neither a size-specific nor a quantization artifact.",
+      "mitigations": [
+        { "mitigationId": "update-runtime", "note": "Run a current llama.cpp/vLLM with the official 3.6 chat template rather than a 3.5 template carried over; this clears most of the empty calls.", "effectiveness": "partial" },
+        { "mitigationId": "prompting", "note": "Retry on an empty tool call instead of terminating, and prefer few coarse tools over many fine-grained ones.", "effectiveness": "partial" }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/Qwen/Qwen3.6-27B/discussions/13", "title": "Anyone is having issues with tool calling with the 3.6 family? (not just 35b or 27b)", "sourceType": "vendor", "accessed": "2026-08-30" },
+        { "url": "https://github.com/QwenLM/Qwen3.6/issues/150", "title": "Qwen3.6 frequently stopped with empty tool call", "sourceType": "github", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "qwen3.6-35b-a3b/all/moe-memory-tax",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["coding", "math"],
+      "severity": "mild",
+      "summary": "The A3B speed comes with a memory bill that a parameter count hides: all 35B of weights must be resident to activate 3B of them. Q4_K_M is 22.29GB against the dense 27B sibling's 17.1GB — so the faster model is the one that does NOT fit the smaller machine, and Q6_K (30.95GB) needs 64GB.",
+      "mitigations": [
+        { "mitigationId": "higher-quant", "note": "Inverted advice: on a 32GB machine the dense Qwen3.6 27B at Q4_K_M gives you higher benchmark scores in less memory. Choose this model for throughput on a large machine, not to save space.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/bartowski/Qwen_Qwen3.6-35B-A3B-GGUF", "title": "Qwen3.6-35B-A3B GGUF quant sizes (Q3_K_M 17.12GB, Q4_K_M 22.29GB, Q6_K 30.95GB)", "sourceType": "other", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    }
+  ]
+}

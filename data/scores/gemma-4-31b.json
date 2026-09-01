@@ -1,0 +1,20 @@
+{
+  "modelId": "gemma-4-31b",
+  "entries": [
+    { "band": "full", "dimension": "math", "score": 8,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "AIME 2026 (no tools)", "rawValue": 89.2, "url": "https://ai.google.dev/gemma/docs/core/model_card_4", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "GPQA Diamond: 84.3, MMLU-Pro: 85.2. Marginally ahead of the 26B-A4B sibling (88.3) — same editorial score, since the gap is inside vendor-reporting noise and neither has independent replication." }] },
+    { "band": "full", "dimension": "coding", "score": 8,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "LiveCodeBench v6", "rawValue": 80.0, "url": "https://ai.google.dev/gemma/docs/core/model_card_4", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Codeforces ELO 2150. Absent from Aider polyglot as of 2026-08-30, so no real-world code-editing check exists yet — the dimension that historically embarrassed Gemma 3." }] },
+    { "band": "full", "dimension": "tool-calling", "score": 7,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "Tau2 average (with tools)", "rawValue": 76.9, "url": "https://ai.google.dev/gemma/docs/core/model_card_4", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Best Tau2 in the family. Held at 7 rather than 8 because llama.cpp users report duplicated tool calls on this size — see weaknesses/gemma-4-31b.json." }] },
+    { "band": "full", "dimension": "long-context", "score": 6,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "MRCR v2 @128K (8 needle)", "rawValue": 66.4, "url": "https://ai.google.dev/gemma/docs/core/model_card_4", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "The standout number in this catalog: 66.4 where the 26B-A4B scores 44.1 and most models here are unrated. Still not a licence to fill 256K — a third of the needles are missed at half the window." }] },
+    { "band": "mid", "dimension": "math", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_0", "method": "aggregated", "quantNote": "Editorial derivation: QAT Q4_0 is Google's intended local build (17.7GB); small loss vs full. Mirrors the derivation used for gemma-4-26b-a4b." }] },
+    { "band": "mid", "dimension": "coding", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_0", "method": "aggregated", "quantNote": "Editorial derivation: QAT limits quant loss." }] },
+    { "band": "mid", "dimension": "tool-calling", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_0", "method": "aggregated", "quantNote": "Editorial derivation: carried down one point, consistent with the family." }] }
+  ],
+  "quantOverrides": []
+}

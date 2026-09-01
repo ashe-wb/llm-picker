@@ -1,0 +1,36 @@
+{
+  "modelId": "gpt-oss-20b",
+  "entries": [
+    {
+      "id": "gpt-oss-20b/all/world-knowledge",
+      "bands": ["mid"],
+      "dimensions": ["factuality"],
+      "severity": "severe",
+      "summary": "Severe factual hallucination and thin world knowledge — SimpleQA 6.7 and 53.2% PersonQA hallucination are OpenAI's own figures, and community testing found it 'unbelievably ignorant' offline.",
+      "mitigations": [
+        { "mitigationId": "mcp-tools", "note": "Give it web search — it was explicitly designed to look things up rather than know them, and its tool use is good enough to make this work.", "effectiveness": "strong" },
+        { "mitigationId": "rag", "note": "Grounded document Q&A sidesteps the recall gap entirely.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/openai/gpt-oss-20b/discussions/14", "title": "Community discussion on offline knowledge gaps", "sourceType": "other", "accessed": "2026-08-30" },
+        { "url": "https://medium.com/utopian/openais-open-models-are-shockingly-bad-6d85071d51d8", "title": "Critique of gpt-oss world knowledge", "sourceType": "blog", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "gpt-oss-20b/all/stem-narrow",
+      "bands": ["mid"],
+      "dimensions": ["creative-writing", "instruction-following"],
+      "severity": "moderate",
+      "summary": "STEM-narrow: general chat feels stiff, multilingual ability is weak, and prose is functional at best.",
+      "mitigations": [
+        { "mitigationId": "none", "note": "Model character. For chat or writing, Gemma or Mistral at similar memory are better company." }
+      ],
+      "citations": [
+        { "url": "https://medium.com/utopian/openais-open-models-are-shockingly-bad-6d85071d51d8", "title": "Critique of gpt-oss general use", "sourceType": "blog", "accessed": "2026-08-30" },
+        { "url": "https://huggingface.co/openai/gpt-oss-20b/discussions/14", "title": "Community discussion of chat/multilingual gaps", "sourceType": "other", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    }
+  ]
+}

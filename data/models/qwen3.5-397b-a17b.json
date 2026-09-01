@@ -1,0 +1,56 @@
+{
+  "id": "qwen3.5-397b-a17b",
+  "name": "Qwen3.5 397B-A17B",
+  "family": "Qwen3.5",
+  "vendor": "Alibaba",
+  "architecture": "moe",
+  "paramsB": 397,
+  "activeParamsB": 17,
+  "layers": 60,
+  "vocabSize": 248320,
+  "width": 10240,
+  "attentionHeads": 32,
+  "kvHeads": 2,
+  "headDim": 256,
+  "attentionPattern": "...F...F...F...F...F...F...F...F...F...F...F...F...F...F...F",
+  "expertsPerToken": 10,
+  "vision": true,
+  "contextLength": 262144,
+  "license": {
+    "name": "Apache-2.0",
+    "url": "https://huggingface.co/Qwen/Qwen3.5-397B-A17B"
+  },
+  "releaseDate": "2026-02-16",
+  "ggufUrl": "https://huggingface.co/unsloth/Qwen3.5-397B-A17B-GGUF",
+  "status": "active",
+  "summary": "The largest model on this site and the top of the Qwen3.5 line. Gated DeltaNet plus sparse MoE: only 15 of its 60 layers are full attention, so 256K of context costs about 8GB of cache — remarkably cheap for its size. The weights are the problem, not the cache.",
+  "kvBytesPerToken": 30720,
+  "kvSourceUrl": "https://huggingface.co/Qwen/Qwen3.5-397B-A17B/blob/main/config.json",
+  "bands": {
+    "low": {
+      "weightsGb": 177,
+      "exampleQuants": [
+        "IQ2_M",
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 244,
+      "exampleQuants": [
+        "Q4_K_M"
+      ]
+    },
+    "high": {
+      "weightsGb": 327,
+      "exampleQuants": [
+        "Q6_K"
+      ]
+    },
+    "full": {
+      "weightsGb": 793,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  }
+}

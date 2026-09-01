@@ -1,0 +1,22 @@
+{
+  "modelId": "llama-3.1-8b",
+  "entries": [
+    { "band": "full", "dimension": "math", "score": 5,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "MATH CoT", "rawValue": 51.9, "url": "https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "GSM8K CoT: 84.5." }] },
+    { "band": "full", "dimension": "coding", "score": 6,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "HumanEval", "rawValue": 72.6, "url": "https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "MBPP++: 72.8. Absent from the Aider polyglot leaderboard as of 2026-08-30." }] },
+    { "band": "full", "dimension": "tool-calling", "score": 7,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "BFCL", "rawValue": 76.1, "url": "https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "API-Bank: 82.6 — tool calling is this model's standout." }] },
+    { "band": "full", "dimension": "instruction-following", "score": 7,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "IFEval", "rawValue": 80.4, "url": "https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Absent from Vectara HHEM as of 2026-08-30, so factuality is unrated." }] },
+    { "band": "mid", "dimension": "math", "score": 4,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "KLD/perplexity delta vs bf16", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation from the full-band score; small consistent loss at Q4_K_M." }] },
+    { "band": "mid", "dimension": "coding", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "KLD/perplexity delta vs bf16", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: minor loss at 4-bit." }] },
+    { "band": "mid", "dimension": "tool-calling", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://www.reddit.com/r/LocalLLaMA/", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: tool-call formatting stays reliable at 4-bit." }] },
+    { "band": "mid", "dimension": "instruction-following", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://www.reddit.com/r/LocalLLaMA/", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: IF is not quant-sensitive." }] }
+  ],
+  "quantOverrides": []
+}

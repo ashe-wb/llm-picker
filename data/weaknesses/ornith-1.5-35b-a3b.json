@@ -1,0 +1,34 @@
+{
+  "modelId": "ornith-1.5-35b-a3b",
+  "entries": [
+    {
+      "id": "ornith-1.5-35b-a3b/all/self-reported-only",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["coding", "tool-calling"],
+      "severity": "moderate",
+      "summary": "Every figure is DeepReinforce's own, averaged over five attempts with their harness and sampling settings. The headline — 79.0 on SWE-bench Verified, the highest in this catalog — is also the one most in need of a second opinion, and the model is eleven days old. The training method compounds the concern: the model generates its own tasks and scaffolds, so the possibility of the evaluation resembling the training distribution is real rather than theoretical.",
+      "mitigations": [
+        { "mitigationId": "none", "note": "Nothing to fix — a caveat to hold. Treat the ranking as provisional until an independent harness reproduces it." }
+      ],
+      "citations": [
+        { "url": "https://datanorth.ai/news/ornith-releases-ornith-1-5", "title": "Ornith releases Ornith-1.5 open weights under MIT (benchmarks are vendor runs)", "sourceType": "blog", "accessed": "2026-08-30" },
+        { "url": "https://simonwillison.net/2026/Jun/29/ornith/", "title": "Ornith-1.0: Self-Scaffolding LLMs for Agentic Coding", "sourceType": "blog", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "ornith-1.5-35b-a3b/all/moe-memory-tax",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["coding"],
+      "severity": "mild",
+      "summary": "3B active parameters buys speed, not memory. All 35B of weights stay resident: 21.9GB at Q4_K_M, 30.5GB at Q6_K. On a 32GB machine only the 4-bit band is realistic, and the 6-bit band needs 64GB.",
+      "mitigations": [
+        { "mitigationId": "higher-quant", "note": "If you have the memory, Q6_K is worth it on a sparse model — expert weights suffer more from aggressive quantization than dense ones do.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/bartowski/Ornith-1.5-35B-A3B-GGUF", "title": "Ornith-1.5-35B-A3B GGUF quant sizes", "sourceType": "other", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    }
+  ]
+}

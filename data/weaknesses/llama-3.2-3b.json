@@ -1,0 +1,21 @@
+{
+  "modelId": "llama-3.2-3b",
+  "entries": [
+    {
+      "id": "llama-3.2-3b/all/capability-ceiling",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["instruction-following", "coding"],
+      "severity": "moderate",
+      "summary": "A 3B model has a hard ceiling: answers get shallow, grammar and instruction-following slip on anything multi-step, and code quality is limited.",
+      "mitigations": [
+        { "mitigationId": "prompting", "note": "Scope it to what Meta built it for — summarization, rewriting, extraction, short Q&A — one small task per prompt.", "effectiveness": "partial" },
+        { "mitigationId": "none", "note": "For real coding or multi-step work, move up to an 8B+ model." }
+      ],
+      "citations": [
+        { "url": "https://discuss.huggingface.co/t/ai-disappointment-why-llama-3-2-3b-version-loses-out-to-chat-gpt-an-analysis-of-the-limitations-of-llama-3-2-3b-version-compared-to-chat-gpt/129281/1", "title": "Analysis of Llama 3.2 3B limitations", "sourceType": "other", "accessed": "2026-08-30" },
+        { "url": "https://arxiv.org/pdf/2504.01054", "title": "Academic evaluation of small-model coding/feedback quality", "sourceType": "paper", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    }
+  ]
+}

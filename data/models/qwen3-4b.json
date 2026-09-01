@@ -1,0 +1,57 @@
+{
+  "id": "qwen3-4b",
+  "name": "Qwen3 4B",
+  "family": "Qwen3",
+  "vendor": "Alibaba",
+  "architecture": "dense",
+  "paramsB": 4,
+  "layers": 36,
+  "vocabSize": 151936,
+  "width": 9728,
+  "attentionHeads": 32,
+  "kvHeads": 8,
+  "headDim": 128,
+  "attentionPattern": "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+  "vision": false,
+  "contextLength": 32768,
+  "license": {
+    "name": "Apache-2.0",
+    "url": "https://huggingface.co/Qwen/Qwen3-4B"
+  },
+  "releaseDate": "2025-04-29",
+  "ggufUrl": "https://huggingface.co/Qwen/Qwen3-4B-GGUF",
+  "status": "active",
+  "summary": "The strongest 4B all-rounder: with thinking mode on, it reasons like models twice its size. The default answer for 8GB laptops.",
+  "kvBytesPerToken": 147456,
+  "kvSourceUrl": "https://huggingface.co/Qwen/Qwen3-4B/blob/main/config.json",
+  "bands": {
+    "low": {
+      "weightsGb": 2.1,
+      "exampleQuants": [
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 2.5,
+      "exampleQuants": [
+        "Q4_K_M",
+        "Q5_K_M",
+        "mlx-4bit"
+      ]
+    },
+    "high": {
+      "weightsGb": 3.3,
+      "exampleQuants": [
+        "Q6_K",
+        "Q8_0"
+      ]
+    },
+    "full": {
+      "weightsGb": 8,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  },
+  "mlxUrl": "https://huggingface.co/mlx-community/Qwen3-4B-4bit"
+}

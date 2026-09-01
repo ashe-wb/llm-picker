@@ -1,0 +1,48 @@
+{
+  "modelId": "nemotron-3-nano-30b-a3b",
+  "entries": [
+    {
+      "id": "nemotron-3-nano-30b-a3b/low/sub-4bit-breaks",
+      "bands": ["low"],
+      "dimensions": ["math", "coding", "tool-calling"],
+      "severity": "severe",
+      "summary": "Quantizations below 4-bit are reported broken on this model, not merely degraded. The architecture is the reason: several tensor dimensions are not divisible by 128, so parts of the model cannot be quantized to lower bit widths at all — which is also why Q6_K (33.43GB) and Q8_0 (33.51GB) come out almost the same size.",
+      "mitigations": [
+        { "mitigationId": "higher-quant", "note": "Use Q4_K_M or better. The 3-bit build saves 5.7GB and costs far more than that in quality.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF/discussions/4", "title": "Quantizations below 4 bit are bad", "sourceType": "other", "accessed": "2026-08-30" },
+        { "url": "https://unsloth.ai/docs/models/nemotron-3", "title": "NVIDIA Nemotron 3 Nano — how to run (quantization notes)", "sourceType": "other", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "nemotron-3-nano-30b-a3b/all/coding-gap",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["coding"],
+      "severity": "moderate",
+      "summary": "LiveCodeBench 68.3 looks strong; SWE-Bench with OpenHands is 38.8. The gap between competition-style problems and real repository work is wide here, and the second number is the one that predicts whether it can fix your bug.",
+      "mitigations": [
+        { "mitigationId": "none", "note": "Pick it for long documents and reasoning, not for agentic coding. Ornith-1.5 35B-A3B and Qwen3.6 27B are the coding models at this footprint." }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16", "title": "Nemotron 3 Nano model card — LiveCodeBench 68.3 vs SWE-Bench 38.8", "sourceType": "vendor", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    },
+    {
+      "id": "nemotron-3-nano-30b-a3b/all/license",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["instruction-following"],
+      "severity": "mild",
+      "summary": "Released under the NVIDIA Nemotron Open Model License rather than Apache-2.0 or MIT. The weights are downloadable and commercial use is permitted, but it is a vendor licence with its own terms — read them before shipping something on top of it.",
+      "mitigations": [
+        { "mitigationId": "none", "note": "Not a defect. If a permissive licence is a hard requirement, Qwen3.6 35B-A3B (Apache-2.0) and Ornith-1.5 35B-A3B (MIT) are the comparable alternatives." }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16", "title": "NVIDIA Nemotron Open Model License", "sourceType": "vendor", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    }
+  ]
+}

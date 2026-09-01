@@ -1,0 +1,320 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { loadSiteData } from '../lib/data';
+import { BANDS, BAND_LABELS, DIMENSION_IDS, type Band } from '../lib/schemas';
+import { termForQuant } from '../lib/glossary';
+
+const data = loadSiteData();
+const dimLabelShort: Record<string, string> = {
+  math: 'Math',
+  coding: 'Code',
+  'tool-calling': 'Tools',
+  'long-context': 'Long ctx',
+  factuality: 'Facts',
+  'instruction-following': 'Instr.',
+  'creative-writing': 'Writing',
+};
+
+interface Row {
+  modelId: string;
+  modelName: string;
+  vision: boolean;
+  band: Band;
+  weightsGb: number;
+  kvBytesPerToken: number;
+  kvWindowedBytesPerToken: number;
+  slidingWindow: number;
+  contextLength: number;
+  /** Vocabulary and width, so this table charges the same runtime overhead the picker does. */
+  vocabSize: number;
+  width: number;
+  exampleQuants: string[];
+  scores: Partial<Record<string, number>>;
+  weaknessCount: number;
+  worstSeverity: 'severe' | 'moderate' | 'mild' | null;
+}
+
+const rows: Row[] = data.models.flatMap((model) => {
+  const scoresFile = data.scores.get(model.id);
+  const weakFile = data.weaknesses.get(model.id);
+  return BANDS.filter((b): b is Band => Boolean(model.bands[b])).map((band) => {
+    const info = model.bands[band]!;
+    const scores: Partial<Record<string, number>> = {};
+    for (const e of scoresFile?.entries ?? []) {
+      if (e.band === band) scores[e.dimension] = e.score;
+    }
+    const weaknesses = (weakFile?.entries ?? []).filter((w) => w.bands.includes(band));
+    const worst =
+      weaknesses.find((w) => w.severity === 'severe')?.severity ??
+      weaknesses.find((w) => w.severity === 'moderate')?.severity ??
+      weaknesses.find((w) => w.severity === 'mild')?.severity ??
+      null;
+    return {
+      modelId: model.id,
+      modelName: model.name,
+      vision: model.vision,
+      band,
+      weightsGb: info.weightsGb,
+      kvBytesPerToken: model.kvBytesPerToken ?? 0,
+      kvWindowedBytesPerToken: model.kvWindowedBytesPerToken ?? 0,
+      slidingWindow: model.slidingWindow ?? 0,
+      contextLength: model.contextLength,
+      vocabSize: model.vocabSize ?? 0,
+      width: model.width ?? 0,
+      exampleQuants: info.exampleQuants,
+      scores,
+      weaknessCount: weaknesses.length,
+      worstSeverity: worst,
+    };
+  });
+});
+
+/**
+ * Columns that are almost entirely blank make the table harder to scan and imply
+ * we tried to rate them and failed — when the truth is that no public benchmark
+ * covers most of these models on that dimension. Drop them below a coverage
+ * floor, computed from the rows themselves so a column comes back on its own
+ * once the evidence lands. A hardcoded list would stay hidden silently.
+ */
+const COLUMN_MIN_COVERAGE = 0.15;
+const coverage = (d: string) => rows.filter((r) => r.scores[d] !== undefined).length / rows.length;
+const shownDimensions = DIMENSION_IDS.filter((d) => coverage(d) >= COLUMN_MIN_COVERAGE);
+const hiddenDimensions = DIMENSION_IDS.filter((d) => coverage(d) < COLUMN_MIN_COVERAGE);
+
+const scoreTone = (s: number | undefined) =>
+  s === undefined ? 'text-rule' : s >= 7 ? 'text-ok font-semibold' : s >= 5 ? 'text-warn font-semibold' : 'text-serious font-semibold';
+const sevTone = { severe: 'text-serious', moderate: 'text-warn', mild: 'text-faded' };
+const { platforms, ramOptions, vramOptions } = data.hardware;
+const quantHref = (q: string) => {
+  const t = termForQuant(data.glossary, q);
+  return t ? `/glossary#${t.id}` : undefined;
+};
+const CONTEXTS = [4096, 8192, 32768, 131072, 262144];
+const ctxLabel = (n: number) => `${Math.round(n / 1024)}K`;
+const hwJson = JSON.stringify(data.hardware).replace(/</g, '\\u003c');
+---
+
+<script type="application/json" id="explore-hw" set:html={hwJson} />
+<Layout title="Explore" description="Filterable table of every rated model × quant band.">
+  <section class="mb-8">
+    <p class="dslabel mb-2">Full characteristics table</p>
+    <h1 class="font-mono text-2xl font-bold">Explore all ratings</h1>
+    <p class="mt-2 max-w-2xl text-sm text-faded">
+      One row per model × quant band. Blank cells mean <em>not yet rated</em> — never a guessed
+      score. Click a column header to sort.
+    </p>
+  </section>
+
+  <section class="mb-4 flex flex-wrap items-end gap-x-6 gap-y-3 border border-edge bg-panel px-4 py-3 text-sm">
+    <label class="flex flex-col gap-1">
+      <span class="dslabel">Memory type</span>
+      <select id="f-platform" class="border border-rule bg-paper px-2 py-1.5 font-mono text-xs">
+        <option value="">Any hardware</option>
+        {platforms.map((p) => <option value={p.id}>{p.label}</option>)}
+      </select>
+    </label>
+    <label class="flex flex-col gap-1">
+      <span class="dslabel">System RAM</span>
+      <select id="f-ram" class="border border-rule bg-paper px-2 py-1.5 font-mono text-xs">
+        {ramOptions.map((g) => <option value={g} selected={g === 32}>{g} GB</option>)}
+      </select>
+    </label>
+    <label class="flex flex-col gap-1" id="f-vram-wrap">
+      <span class="dslabel">Graphics memory</span>
+      <select id="f-vram" class="border border-rule bg-paper px-2 py-1.5 font-mono text-xs">
+        {vramOptions.map((g) => <option value={g}>{g} GB VRAM</option>)}
+      </select>
+    </label>
+    <label class="flex flex-col gap-1">
+      <span class="dslabel">Context</span>
+      <select id="f-ctx" class="border border-rule bg-paper px-2 py-1.5 font-mono text-xs">
+        {CONTEXTS.map((c) => <option value={c} selected={c === 32768}>{ctxLabel(c)}</option>)}
+      </select>
+    </label>
+    <fieldset class="flex flex-col gap-1">
+      <legend class="dslabel">Quant band</legend>
+      <div class="flex flex-wrap gap-3 font-mono text-xs">
+        {BANDS.map((b) => (
+          <label class="flex items-center gap-1.5">
+            <input type="checkbox" class="f-band accent-ink" value={b} checked />
+            <span>{BAND_LABELS[b]}</span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+    <label class="flex items-center gap-1.5 pb-1 font-mono text-xs uppercase">
+      <input type="checkbox" id="f-vision" class="accent-ink" />
+      <span>Vision only</span>
+    </label>
+    <span id="f-count" class="ml-auto pb-1 dsnote"></span>
+  </section>
+
+  <div class="overflow-x-auto border border-edge">
+    <table class="w-full min-w-[56rem] bg-panel text-sm" id="explore-table">
+      <thead class="bg-rule text-left font-mono text-[10px] uppercase tracking-[0.14em] text-ink">
+        <tr>
+          <th class="px-3 py-2 font-medium">Model</th>
+          <th class="cursor-pointer select-none px-3 py-2 font-medium" data-sort="band">Quant band</th>
+          <th class="cursor-pointer select-none px-3 py-2 font-medium" data-sort="mem">Needs GB</th>
+          {shownDimensions.map((d) => (
+            <th class="cursor-pointer select-none px-2 py-2 text-center font-medium" data-sort={d} title={data.dimensions.find((x) => x.id === d)?.label}>
+              {dimLabelShort[d]}
+            </th>
+          ))}
+          <th class="px-3 py-2 font-medium">Issues</th>
+        </tr>
+      </thead>
+      <tbody class="font-mono">
+        {rows.map((r) => (
+          <tr
+            class="border-t border-rule hover:bg-paper"
+            data-band={r.band}
+            data-w={r.weightsGb}
+            data-kv={r.kvBytesPerToken}
+            data-kvw={r.kvWindowedBytesPerToken}
+            data-sw={r.slidingWindow}
+            data-ctxmax={r.contextLength}
+            data-vocab={r.vocabSize}
+            data-width={r.width}
+            data-vision={r.vision ? '1' : '0'}
+            data-s-band={BANDS.indexOf(r.band)}
+            data-s-mem={r.weightsGb}
+            {...Object.fromEntries(shownDimensions.map((d) => [`data-s-${d}`, r.scores[d] ?? -1]))}
+          >
+            <td class="whitespace-nowrap px-3 py-2">
+              <a href={`/models/${r.modelId}`} class="underline decoration-rule underline-offset-4 hover:decoration-serious">{r.modelName}</a>
+              {r.vision && <span class="ml-1.5 border border-faded px-1 text-[9px] uppercase tracking-[0.1em] text-faded">vis</span>}
+            </td>
+            {/* The glossary link rides on the band label. Listing every example
+                quant here repeated the same six strings down all 140 rows —
+                noise, not information. They stay in the tooltip. */}
+            <td class="whitespace-nowrap px-3 py-2 text-xs text-faded">
+              <a
+                href={quantHref(r.exampleQuants[0]!)}
+                title={`e.g. ${r.exampleQuants.join(', ')} — what does this mean?`}
+                class="underline decoration-dotted underline-offset-2 hover:text-serious"
+              >{BAND_LABELS[r.band]}</a>
+            </td>
+            <td class="px-3 py-2 tabular-nums text-faded" data-cell="mem">{r.weightsGb}</td>
+            {shownDimensions.map((d) => (
+              <td class={`px-2 py-2 text-center tabular-nums ${scoreTone(r.scores[d])}`}>{r.scores[d] ?? '·'}</td>
+            ))}
+            <td class="whitespace-nowrap px-3 py-2 text-xs">
+              {r.weaknessCount > 0 ? (
+                <a href={`/models/${r.modelId}`} class={`underline decoration-dotted underline-offset-4 ${sevTone[r.worstSeverity!]}`}>
+                  {r.weaknessCount} ({r.worstSeverity})
+                </a>
+              ) : (
+                <span class="text-rule">—</span>
+              )}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  {hiddenDimensions.length > 0 && (
+    <p class="mt-3 dsnote">
+      NOT SHOWN: {hiddenDimensions.map((d) => dimLabelShort[d]).join(' · ')} — under
+      {' '}{Math.round(COLUMN_MIN_COVERAGE * 100)}% of rows carry a rating, so the columns would be
+      mostly empty. The scores that do exist are on each model's sheet.
+    </p>
+  )}
+  <p class="mt-3 dsnote">
+    Every number is an editorial judgment over cited evidence — open a model sheet for provenance.
+    Unsure which to pick? The <a href="/" class="underline underline-offset-2">guided picker</a> weighs these for your task.
+  </p>
+</Layout>
+
+<script>
+  import { budgetFor, kvGbFrom, overheadFor } from '../lib/fit';
+  import type { Hardware, Machine, PlatformId } from '../lib/schemas';
+
+  const hardware = JSON.parse(
+    document.getElementById('explore-hw')!.textContent ?? '{}',
+  ) as Hardware;
+  const table = document.getElementById('explore-table') as HTMLTableElement;
+  const tbody = table.tBodies[0]!;
+  const rows = Array.from(tbody.rows);
+  const platformSel = document.getElementById('f-platform') as HTMLSelectElement;
+  const ramSel = document.getElementById('f-ram') as HTMLSelectElement;
+  const vramSel = document.getElementById('f-vram') as HTMLSelectElement;
+  const vramWrap = document.getElementById('f-vram-wrap')!;
+  const ctxSel = document.getElementById('f-ctx') as HTMLSelectElement;
+  const visionCb = document.getElementById('f-vision') as HTMLInputElement;
+  const bandCbs = Array.from(document.querySelectorAll<HTMLInputElement>('.f-band'));
+  const count = document.getElementById('f-count')!;
+
+  /**
+   * Demand for one row at the chosen context, clamped to the model's own max.
+   *
+   * Must match the picker's demand exactly. It did not: this omitted the runtime
+   * overhead entirely, so the same site answered "does it fit" two different
+   * ways, and this page was the optimistic one by 1-4GB.
+   */
+  function demandOf(row: HTMLTableRowElement, ctx: number): number {
+    const d = row.dataset;
+    const effective = Math.min(ctx, Number(d.ctxmax));
+    const kv = kvGbFrom(Number(d.kv), Number(d.kvw), Number(d.sw) || undefined, effective);
+    const oh = overheadFor(
+      { vocabSize: Number(d.vocab), width: Number(d.width) },
+      effective,
+      hardware,
+    );
+    // The pessimistic end, the same one fitFor uses to decide a verdict.
+    return Number(d.w) + kv + (oh?.hiGb ?? 0);
+  }
+
+  function applyFilters() {
+    const ctx = Number(ctxSel.value);
+    const platform = platformSel.value as PlatformId | '';
+    vramWrap.hidden = platform !== 'discrete';
+
+    let budget = Infinity;
+    if (platform) {
+      const machine: Machine = {
+        platform,
+        ramGb: Number(ramSel.value),
+        vramGb: platform === 'discrete' ? Number(vramSel.value) : undefined,
+      };
+      budget = budgetFor(machine, hardware).offloadGb;
+    }
+
+    const bands = new Set(bandCbs.filter((c) => c.checked).map((c) => c.value));
+    let visible = 0;
+    for (const row of rows) {
+      const demand = demandOf(row, ctx);
+      const cell = row.querySelector('[data-cell="mem"]');
+      if (cell) cell.textContent = String(Math.round(demand * 10) / 10);
+      row.dataset.sMem = String(demand);
+      const show =
+        demand <= budget &&
+        bands.has(row.dataset.band ?? '') &&
+        (!visionCb.checked || row.dataset.vision === '1');
+      row.hidden = !show;
+      if (show) visible++;
+    }
+    count.textContent = `${visible} / ${rows.length} rows`;
+  }
+
+  let sortKey: string | null = null;
+  let sortAsc = false;
+  function applySort(key: string) {
+    if (sortKey === key) sortAsc = !sortAsc;
+    else { sortKey = key; sortAsc = key === 'mem' || key === 'band'; }
+    const val = (r: HTMLTableRowElement) => Number(r.dataset[`s-${key}`.replace(/-([a-z])/g, (_, c) => c.toUpperCase())] ?? -1);
+    rows.sort((a, b) => (sortAsc ? val(a) - val(b) : val(b) - val(a)));
+    for (const r of rows) tbody.appendChild(r);
+    document.querySelectorAll('[data-sort]').forEach((th) => {
+      th.classList.toggle('is-sorted', th.getAttribute('data-sort') === key);
+    });
+  }
+
+  for (const el of [platformSel, ramSel, vramSel, ctxSel]) el.addEventListener('change', applyFilters);
+  visionCb.addEventListener('change', applyFilters);
+  bandCbs.forEach((c) => c.addEventListener('change', applyFilters));
+  document.querySelectorAll<HTMLElement>('[data-sort]').forEach((th) =>
+    th.addEventListener('click', () => applySort(th.dataset.sort!)),
+  );
+  applyFilters();
+</script>

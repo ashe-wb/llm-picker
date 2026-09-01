@@ -1,0 +1,57 @@
+{
+  "id": "qwen3-14b",
+  "name": "Qwen3 14B",
+  "family": "Qwen3",
+  "vendor": "Alibaba",
+  "architecture": "dense",
+  "paramsB": 14.8,
+  "layers": 40,
+  "vocabSize": 151936,
+  "width": 17408,
+  "attentionHeads": 40,
+  "kvHeads": 8,
+  "headDim": 128,
+  "attentionPattern": "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+  "vision": false,
+  "contextLength": 32768,
+  "license": {
+    "name": "Apache-2.0",
+    "url": "https://huggingface.co/Qwen/Qwen3-14B"
+  },
+  "releaseDate": "2025-04-29",
+  "ggufUrl": "https://huggingface.co/Qwen/Qwen3-14B-GGUF",
+  "status": "active",
+  "summary": "The sweet spot of the dense Qwen3 line: near-32B quality in a 16GB-friendly footprint, with the family's strong long-context showing (RULER 94.6 non-thinking).",
+  "kvBytesPerToken": 163840,
+  "kvSourceUrl": "https://huggingface.co/Qwen/Qwen3-14B/blob/main/config.json",
+  "bands": {
+    "low": {
+      "weightsGb": 7,
+      "exampleQuants": [
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 9,
+      "exampleQuants": [
+        "Q4_K_M",
+        "Q5_K_M",
+        "mlx-4bit"
+      ]
+    },
+    "high": {
+      "weightsGb": 12,
+      "exampleQuants": [
+        "Q6_K",
+        "Q8_0"
+      ]
+    },
+    "full": {
+      "weightsGb": 30,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  },
+  "mlxUrl": "https://huggingface.co/mlx-community/Qwen3-14B-4bit"
+}

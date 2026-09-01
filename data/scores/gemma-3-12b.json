@@ -1,0 +1,34 @@
+{
+  "modelId": "gemma-3-12b",
+  "entries": [
+    { "band": "full", "dimension": "math", "score": 5,
+      "provenance": [
+        { "sourceId": "vendor-model-card", "metric": "MATH (4-shot)", "rawValue": 43.3, "url": "https://huggingface.co/google/gemma-3-12b-it", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "GSM8K (8-shot): 71.0." }
+      ] },
+    { "band": "full", "dimension": "coding", "score": 5,
+      "provenance": [
+        { "sourceId": "vendor-model-card", "metric": "HumanEval (0-shot)", "rawValue": 45.7, "url": "https://huggingface.co/google/gemma-3-12b-it", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "MBPP (3-shot): 60.4. Absent from the Aider polyglot leaderboard (the 27B scores 4.9% there)." }
+      ] },
+    { "band": "full", "dimension": "factuality", "score": 6,
+      "provenance": [
+        { "sourceId": "vectara-hallucination", "metric": "HHEM hallucination rate % (lower is better)", "rawValue": 4.4, "url": "https://github.com/vectara/hallucination-leaderboard", "retrieved": "2026-08-30", "quant": "bf16", "method": "aggregated", "notes": "95.6% factual consistency, 97.4% answer rate." }
+      ] },
+    { "band": "full", "dimension": "creative-writing", "score": 7,
+      "provenance": [
+        { "sourceId": "community-consensus", "metric": "community reputation (no public benchmark currently lists this model)", "url": "https://www.reddit.com/r/LocalLLaMA/", "retrieved": "2026-08-30", "quant": "bf16", "method": "aggregated", "notes": "Editorial score: Gemma 3's prose quality is a consistent community finding, but the model is absent from the current EQ-Bench Creative Writing v3 list (checked 2026-08-30). Treat as unverified-by-benchmark." }
+      ] },
+    { "band": "mid", "dimension": "creative-writing", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://www.reddit.com/r/LocalLLaMA/", "retrieved": "2026-08-30", "quant": "Q4_0", "method": "aggregated", "quantNote": "Editorial derivation: Google ships QAT Q4_0 weights trained to preserve quality; prose holds up well at 4-bit." }] },
+    { "band": "mid", "dimension": "instruction-following", "score": 7,
+      "provenance": [{ "sourceId": "community-consensus", "metric": "community reputation (no IFEval-style benchmark published for this model)", "url": "https://www.reddit.com/r/LocalLLaMA/", "retrieved": "2026-08-30", "quant": "Q4_0", "method": "aggregated", "notes": "Editorial score: chat-instruction reliability is a consistent community finding; QAT weights limit quant loss. No numeric benchmark backs this cell." }] },
+    { "band": "mid", "dimension": "coding", "score": 5,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://www.reddit.com/r/LocalLLaMA/", "retrieved": "2026-08-30", "quant": "Q4_0", "method": "aggregated", "quantNote": "Editorial derivation from the vendor-reported full-band score; QAT limits quant loss." }] },
+    { "band": "mid", "dimension": "math", "score": 4,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://www.reddit.com/r/LocalLLaMA/", "retrieved": "2026-08-30", "quant": "Q4_0", "method": "aggregated", "quantNote": "Editorial derivation: small loss vs the vendor-reported full band." }] },
+    { "band": "low", "dimension": "math", "score": 3,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "degradation reports", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q3_K_M", "method": "aggregated", "quantNote": "Editorial derivation: standard ≤3-bit math cliff." }] },
+    { "band": "low", "dimension": "creative-writing", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://www.reddit.com/r/LocalLLaMA/", "retrieved": "2026-08-30", "quant": "Q3_K_M", "method": "aggregated", "quantNote": "Editorial derivation: prose survives low quants better than reasoning does." }] }
+  ],
+  "quantOverrides": []
+}

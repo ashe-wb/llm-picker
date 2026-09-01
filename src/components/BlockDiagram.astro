@@ -1,0 +1,429 @@
+---
+/**
+ * What one of this model's layers is made of, drawn from its own tensors.
+ *
+ * The companion to ArchitectureDiagram, which draws the stack: this draws a
+ * single block. Every box below corresponds to a real tensor in the checkpoint,
+ * measured by scripts/audit-shapes.ts, so nothing here is a generic transformer
+ * picture with the model's name on it.
+ *
+ * It is a drawing, not a list: the residual really does leave the spine above
+ * the norm, bypass the operation and rejoin at a + node, because that is the
+ * one thing about a block a reader cannot get from prose. The q, k and v boxes
+ * are drawn in proportion to their output widths, so grouped-query attention is
+ * visible rather than asserted -- a 24:4 model shows one wide box beside two
+ * narrow ones.
+ *
+ * ORDER IS THE HARD PART, and it is the one thing a tensor name does not carry.
+ * Only names whose position is fixed by convention are drawn; anything else is
+ * listed as present and left out, because a box in the wrong place is worse than
+ * a missing one.
+ *
+ * The trap that rule exists for: `post_attention_layernorm` sits in two
+ * different places depending on the family. In Llama it is applied AFTER the
+ * residual add and is functionally the pre-FFN norm; in Gemma it is applied to
+ * the attention output BEFORE the add, and a separate pre_feedforward_layernorm
+ * does the FFN's. Same name, different position. What decides is whether
+ * pre_feedforward_layernorm exists, which is why that is the test used here.
+ * Both orders were read off mlx-lm's own TransformerBlock implementations.
+ */
+import type { Model } from '../lib/schemas';
+import shapes from '../../data/tensor-shapes.json';
+
+interface Props { model: Model }
+const { model } = Astro.props;
+
+type Block = {
+  norms: string[];
+  attention: string[];
+  ffn: { kind: string; experts?: number; shared?: boolean; router?: boolean; intermediate?: number };
+  linearMixer: boolean;
+  unknown: string[];
+  drawable: boolean;
+};
+type Entry = {
+  blocks?: Record<string, Block>;
+  denseFfnLayers?: number;
+  finalNorm?: boolean;
+  separateLmHead?: boolean;
+  embedRows?: number;
+  hidden?: number;
+};
+const measured = (shapes.models as Record<string, Entry>)[model.id];
+const drawable = Object.entries(measured?.blocks ?? {}).filter(([, b]) => b.drawable);
+// Gemma's sliding and full layers are the same block: same tensors, same shapes,
+// differing only in how far back the mask lets attention look. Drawing the
+// identical column twice implies a difference that is not there, so identical
+// blocks are merged and the label carries the split.
+const groups: { kinds: string[]; block: Block }[] = [];
+for (const [ch, b] of drawable) {
+  const same = groups.find((g) => JSON.stringify(g.block) === JSON.stringify(b));
+  if (same) same.kinds.push(ch);
+  else groups.push({ kinds: [ch], block: b });
+}
+
+const KIND: Record<string, string> = {
+  F: 'full-attention layer',
+  S: 'sliding-window layer',
+  '.': 'linear / recurrent layer',
+  all: 'every layer',
+};
+const pat = model.attentionPattern;
+const countOf = (ch: string) =>
+  ch === 'all' ? model.layers : pat ? [...pat].filter((c) => c === ch).length : model.layers;
+const total = (kinds: string[]) => kinds.reduce((n, ch) => n + (countOf(ch) ?? 0), 0);
+
+/** Which of the two norm layouts this model uses. See the header comment. */
+const sandwich = (b: Block) => b.norms.includes('pre_feedforward_layernorm');
+const num = (n?: number) => (n === undefined ? '' : n.toLocaleString());
+const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+/* -------------------------------------------------------------------------- */
+/* Geometry                                                                   */
+/* -------------------------------------------------------------------------- */
+const W = 300;
+const BX = 10;
+const BW = 208;
+const SPINE = BX + BW / 2;
+const RAIL = 268; // where the residual runs while it bypasses the block
+const LH = 11;
+const PAD = 7;
+
+function wrap(s: string, max = 34): string[] {
+  const out: string[] = [];
+  let line = '';
+  for (const word of s.split(' ')) {
+    if (line && `${line} ${word}`.length > max) {
+      out.push(line);
+      line = word;
+    } else line = line ? `${line} ${word}` : word;
+  }
+  if (line) out.push(line);
+  return out;
+}
+
+const wire = (x1: number, y1: number, x2: number, y2: number, cls = 'bd-wire') =>
+  `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${cls}"/>`;
+const text = (x: number, y: number, s: string, cls = 'bd-t') =>
+  `<text x="${x}" y="${y}" class="${cls}">${esc(s)}</text>`;
+
+function box(y: number, title: string, lines: string[]) {
+  const h = PAD * 2 + 12 + lines.length * LH;
+  let s = `<rect x="${BX}" y="${y}" width="${BW}" height="${h}" rx="2" class="bd-box"/>`;
+  s += text(BX + PAD, y + PAD + 9, title, 'bd-t bd-title');
+  lines.forEach((l, i) => {
+    s += text(BX + PAD, y + PAD + 10 + (i + 1) * LH, l);
+  });
+  return { svg: s, h };
+}
+
+/** A thin pill — a norm has no substance, and should not look like an operation. */
+function norm(y: number, label: string) {
+  const h = 18;
+  let s = `<rect x="${BX + 20}" y="${y}" width="${BW - 40}" height="${h}" rx="9" class="bd-norm"/>`;
+  s += text(SPINE, y + 12.5, label, 'bd-t bd-mid bd-small');
+  return { svg: s, h };
+}
+
+/** The residual add: a circle with a plus, fed by the spine and by the rail. */
+function add(y: number) {
+  const r = 8;
+  const cy = y + r;
+  let s = wire(RAIL, cy, SPINE + r + 5, cy);
+  s += `<path d="M ${SPINE + r + 5} ${cy - 3.5} L ${SPINE + r} ${cy} L ${SPINE + r + 5} ${cy + 3.5} Z" class="bd-head"/>`;
+  s += `<circle cx="${SPINE}" cy="${cy}" r="${r}" class="bd-add"/>`;
+  s += wire(SPINE - 4, cy, SPINE + 4, cy, 'bd-plus') + wire(SPINE, cy - 4, SPINE, cy + 4, 'bd-plus');
+  return { svg: s, h: r * 2, cy };
+}
+
+/**
+ * Attention, drawn open. Every variant gets the same grammar -- input
+ * projections across the top, converging into the dot-product, then o_proj --
+ * so the shapes of two models can be compared by eye instead of by reading.
+ */
+function attnDraw(
+  y: number,
+  title: string,
+  inputs: { lines: string[]; w: number }[],
+  notes: string[],
+) {
+  const x0 = BX + PAD;
+  const avail = BW - PAD * 2;
+  const projH = 17;
+  const inH = Math.max(projH, 6 + Math.max(...inputs.map((i) => i.lines.length)) * 9);
+  const top = y + PAD + 14;
+
+  let s = text(x0, y + PAD + 9, title, 'bd-t bd-title');
+  let x = x0;
+  const centres: number[] = [];
+  const fits = (label: string, w: number) => label.length * 4.4 + 6 <= w;
+  for (const inp of inputs) {
+    s += `<rect x="${x}" y="${top}" width="${inp.w}" height="${inH}" rx="2" class="bd-proj"/>`;
+    const shown = inp.lines.every((l) => fits(l, inp.w))
+      ? inp.lines
+      : inp.lines.length === 1 && fits(inp.lines[0][0], inp.w)
+        ? [inp.lines[0][0]]
+        : [];
+    const y0 = top + inH / 2 - ((shown.length - 1) * 9) / 2 + 3;
+    shown.forEach((l, i) => {
+      s += text(x + inp.w / 2, y0 + i * 9, l, 'bd-t bd-mid bd-small');
+    });
+    centres.push(x + inp.w / 2);
+    x += inp.w + 4;
+  }
+
+  const meet = top + inH + 9;
+  for (const c of centres) s += wire(c, top + inH, c, meet - 5) + wire(c, meet - 5, SPINE, meet - 5);
+  s += wire(SPINE, meet - 5, SPINE, meet);
+  s += `<rect x="${x0}" y="${meet}" width="${avail}" height="${projH}" rx="2" class="bd-op"/>`;
+  s += text(SPINE, meet + 12, 'softmax(q·kᵀ/√d) · v', 'bd-t bd-mid bd-small');
+
+  let cur = meet + projH;
+  for (const n of notes) {
+    for (const l of wrap(n, 36)) {
+      cur += LH;
+      s += text(x0, cur + 3, l);
+    }
+  }
+  cur += 8;
+  s += wire(SPINE, cur - 5, SPINE, cur);
+  s += `<rect x="${x0}" y="${cur}" width="${avail}" height="${projH}" rx="2" class="bd-proj"/>`;
+  s += text(SPINE, cur + 12, 'o_proj', 'bd-t bd-mid bd-small');
+  const h = cur + projH + PAD - y;
+  return { svg: `<rect x="${BX}" y="${y}" width="${BW}" height="${h}" rx="2" class="bd-box"/>${s}`, h };
+}
+
+function attentionBox(y: number, b: Block) {
+  const has = (n: string) => b.attention.includes(n);
+  const avail = BW - PAD * 2;
+
+  if (has('kv_a_proj_with_mqa')) {
+    // Two chains rather than three projections: the query and the key/value
+    // path are each compressed and expanded again, which is the whole point of
+    // latent attention and the reason its cache is small.
+    return attnDraw(
+      y,
+      'latent attention',
+      [
+        { lines: ['q_a_proj →', 'q_a_layernorm →', 'q_b_proj'], w: (avail - 4) / 2 },
+        { lines: ['kv_a_proj_with_mqa →', 'kv_a_layernorm →', 'kv_b_proj'], w: (avail - 4) / 2 },
+      ],
+      [`one ${num(model.mlaLatentDim)}-wide latent is cached, not per-head keys and values`],
+    );
+  }
+  if (has('qkv_proj')) {
+    return attnDraw(
+      y,
+      'attention',
+      [{ lines: ['qkv_proj — q, k and v in one tensor'], w: avail }],
+      [`${model.attentionHeads} query heads over ${model.kvHeads} key/value heads`],
+    );
+  }
+  if (!has('q_proj')) return box(y, 'attention', []);
+
+  // Proportional q / k / v: grouped-query attention becomes something the
+  // reader sees rather than something the caption asserts.
+  const hq = model.attentionHeads ?? 1;
+  const hk = model.kvHeads ?? hq;
+  const units = hq + hk * 2;
+  const wq = Math.max(30, (avail - 8) * (hq / units));
+  const wk = Math.max(22, (avail - 8) * (hk / units));
+  return attnDraw(
+    y,
+    'attention',
+    [
+      { lines: ['q_proj'], w: wq },
+      { lines: ['k_proj'], w: wk },
+      { lines: ['v_proj'], w: wk },
+    ],
+    [
+      ...(has('q_norm') && has('k_norm') ? ['q_norm · k_norm before the dot product'] : []),
+      `${hq} query heads over ${hk} key/value heads`,
+    ],
+  );
+}
+
+function ffnBox(y: number, b: Block) {
+  if (b.ffn.kind === 'moe') {
+    const top = model.expertsPerToken;
+    return box(y, 'mixture of experts', [
+      ...wrap(
+        b.ffn.experts
+          ? `router picks ${top ? `${top} of ` : 'from '}${num(b.ffn.experts)} experts`
+          : 'router picks a subset of the experts',
+        36,
+      ),
+      b.ffn.intermediate
+        ? `each ${num(b.ffn.intermediate)} wide: gate·up → down`
+        : 'each expert: gate·up → down',
+      ...(b.ffn.shared ? wrap('plus a shared expert, run for every token', 36) : []),
+    ]);
+  }
+  if (b.ffn.kind === 'dense') {
+    return box(y, 'feed-forward', [
+      'gate_proj · up_proj → down_proj',
+      ...(b.ffn.intermediate ? [`${num(b.ffn.intermediate)} wide`] : []),
+    ]);
+  }
+  return box(y, 'feed-forward', []);
+}
+
+const mixerBox = (y: number) =>
+  box(y, 'gated delta-net mixer', [
+    'in_proj · conv1d · out_proj',
+    ...wrap('a fixed-size recurrent state, so this layer does not grow with context', 36),
+  ]);
+
+/** Assemble one block: two residual halves, stacked. */
+function draw(b: Block) {
+  let y = 6;
+  let s = '';
+  const gap = 7;
+
+  const half = (op: (yy: number) => { svg: string; h: number }, preNorm?: string, postNorm?: string) => {
+    const branchY = y;
+    let inner = '';
+    y = branchY + 9;
+    inner += wire(SPINE, branchY, SPINE, y);
+    if (preNorm) {
+      const n = norm(y, preNorm);
+      inner += n.svg;
+      y += n.h;
+      inner += wire(SPINE, y, SPINE, y + gap);
+      y += gap;
+    }
+    const o = op(y);
+    inner += o.svg;
+    y += o.h;
+    if (postNorm) {
+      inner += wire(SPINE, y, SPINE, y + gap);
+      y += gap;
+      const n = norm(y, postNorm);
+      inner += n.svg;
+      y += n.h;
+    }
+    inner += wire(SPINE, y, SPINE, y + gap);
+    y += gap;
+    const a = add(y);
+    // The bypass: out along the top, down the rail, back in at the +.
+    s += wire(SPINE, branchY, RAIL, branchY) + wire(RAIL, branchY, RAIL, a.cy);
+    s += `<circle cx="${SPINE}" cy="${branchY}" r="2.5" class="bd-dot"/>`;
+    s += inner + a.svg;
+    y += a.h;
+  };
+
+  const sw = sandwich(b);
+  half(
+    (yy) => (b.linearMixer ? mixerBox(yy) : attentionBox(yy, b)),
+    b.norms.includes('input_layernorm') ? 'input_layernorm' : undefined,
+    sw && b.norms.includes('post_attention_layernorm') ? 'post_attention_layernorm' : undefined,
+  );
+  s += wire(SPINE, y, SPINE, y + 12);
+  y += 12;
+  half(
+    (yy) => ffnBox(yy, b),
+    sw
+      ? b.norms.includes('pre_feedforward_layernorm')
+        ? 'pre_feedforward_layernorm'
+        : undefined
+      : b.norms.includes('post_attention_layernorm')
+        ? 'post_attention_layernorm'
+        : undefined,
+    sw && b.norms.includes('post_feedforward_layernorm') ? 'post_feedforward_layernorm' : undefined,
+  );
+  s += wire(SPINE, y, SPINE, y + 10);
+  y += 12;
+  return `<svg viewBox="0 0 ${W} ${y}" width="100%" style="max-width:${W}px" role="img" aria-label="One block: a residual around attention, then a residual around the feed-forward">${s}</svg>`;
+}
+
+const drawn = groups.map((g) => ({ ...g, svg: draw(g.block) }));
+const undrawnNames = [...new Set(groups.flatMap((g) => g.block.unknown))];
+---
+{drawn.length > 0 && (
+  <div class="border border-rule bg-panel px-3 py-3">
+    <p class="dslabel">Inside one layer, from its own tensors</p>
+
+    <div class="mt-3 grid gap-5 sm:grid-cols-2">
+      {drawn.map(({ kinds, svg }) => (
+        <div class="min-w-0">
+          <p class="dsline">
+            {total(kinds)} × {kinds.length === 1 ? (KIND[kinds[0]] ?? 'layer') : 'layer'}
+          </p>
+          {kinds.length > 1 && (
+            <p class="mb-1 dsnote">
+              {kinds.map((ch, i) => `${i > 0 ? ', ' : ''}${countOf(ch)} ${KIND[ch]}${countOf(ch) === 1 ? '' : 's'}`)} — the
+              same block either way. What differs is how far back the mask lets attention look, not what
+              the layer is built from.
+            </p>
+          )}
+          <div class="mt-1 overflow-x-auto" set:html={svg} />
+        </div>
+      ))}
+    </div>
+
+    <p class="mt-2 dsnote">
+      The green line down the right of each half is the residual: it leaves the spine above the norm,
+      skips the operation entirely and rejoins at the <span class="text-ink">+</span>. Where attention is
+      drawn open, q, k and v are scaled to their real output widths — a model that shares key and value
+      heads across many query heads shows one wide box beside two narrow ones.
+    </p>
+
+    <p class="mt-2 dsnote">
+      Around the stack: an embedding of{' '}
+      <span class="text-ink">{num(measured?.embedRows)} × {num(measured?.hidden)}</span>
+      {measured?.finalNorm && ', a final norm'}
+      {measured?.separateLmHead
+        ? ', and a separate output projection'
+        : ', and an output projection that reuses the embedding (tied weights)'}.
+      {measured?.denseFfnLayers !== undefined && (
+        <> The first <span class="text-ink">{measured.denseFfnLayers}</span> layer{measured.denseFfnLayers === 1 ? '' : 's'} use a dense feed-forward instead of the experts.</>
+      )}
+    </p>
+
+    {drawn.some((g) => !sandwich(g.block) && g.block.norms.includes('post_attention_layernorm')) && (
+      <p class="mt-2 dsnote">
+        <span class="text-ink">On the norm names:</span> despite what it is called,
+        <span class="text-ink"> post_attention_layernorm</span> is drawn after the residual add here,
+        which is where this family applies it — it normalises the input to the feed-forward, not the
+        output of attention. Models that carry a separate <span class="text-ink">pre_feedforward_layernorm</span>
+        {' '}use it the other way, and are drawn that way.
+      </p>
+    )}
+
+    {undrawnNames.length > 0 && (
+      <p class="mt-2 dsnote">
+        Also in every block and <em>not</em> drawn, because their tensor names do not fix where they
+        belong: <span class="text-ink">{undrawnNames.join(', ')}</span>. Guessing an order is the one
+        thing this diagram will not do.
+      </p>
+    )}
+  </div>
+)}
+
+{drawn.length === 0 && measured?.blocks && (
+  <div class="border border-rule bg-panel px-3 py-3">
+    <p class="dslabel">Inside one layer</p>
+    <p class="mt-2 dsnote">
+      Not drawn. This model names its per-layer norm <span class="text-ink">norm</span>, which fixes no
+      position — it could be the one before attention or the one before the feed-forward, and the name
+      does not say. The memory figures above come from its tensors either way; the block order does not,
+      so it is left out rather than guessed.
+    </p>
+  </div>
+)}
+
+<style is:global>
+  .bd-box { fill: none; stroke: var(--color-edge); stroke-width: 1; }
+  .bd-proj { fill: color-mix(in srgb, var(--color-live) 14%, transparent); stroke: var(--color-live); stroke-width: 1; }
+  .bd-op { fill: none; stroke: var(--color-rule); stroke-width: 1; stroke-dasharray: 3 2; }
+  .bd-norm { fill: var(--color-paper); stroke: var(--color-rule); stroke-width: 1; }
+  .bd-add { fill: var(--color-paper); stroke: var(--color-live); stroke-width: 1.4; }
+  .bd-plus { stroke: var(--color-live); stroke-width: 1.4; }
+  .bd-dot { fill: var(--color-live); }
+  .bd-wire { stroke: var(--color-live); stroke-width: 1.2; fill: none; }
+  .bd-head { fill: var(--color-live); }
+  .bd-t { fill: var(--color-faded); font-size: 9px; font-family: inherit; }
+  .bd-small { font-size: 8.5px; }
+  .bd-title { fill: var(--color-ink); font-size: 10px; font-weight: 700; }
+  .bd-mid { text-anchor: middle; }
+</style>

@@ -1,0 +1,35 @@
+{
+  "modelId": "glm-4.7-flash",
+  "entries": [
+    {
+      "id": "glm-4.7-flash/all/long-context-degradation",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["tool-calling", "long-context"],
+      "severity": "moderate",
+      "summary": "Output quality and tool-call formatting degrade as context grows — malformed JSON and artifacts appear well before the ~200K window is full.",
+      "mitigations": [
+        { "mitigationId": "update-runtime", "note": "Recent llama.cpp builds fixed part of this (flash-attention path); update first.", "effectiveness": "partial" },
+        { "mitigationId": "prompting", "note": "Cap working context well below the maximum and summarize long agent sessions periodically.", "effectiveness": "partial" }
+      ],
+      "citations": [
+        { "url": "https://forums.developer.nvidia.com/t/increasing-artefact-rate-on-growing-context-on-dgx-spark-glm-4-7-flash/359518", "title": "Artifact rate grows with context (GLM-4.7-Flash)", "sourceType": "other", "accessed": "2026-08-30" },
+        { "url": "https://forums.developer.nvidia.com/t/llama-cpp-glm-4-7-flash-benchmark/358749", "title": "llama.cpp GLM-4.7-Flash benchmark thread", "sourceType": "other", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "glm-4.7-flash/all/hallucination",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["factuality"],
+      "severity": "moderate",
+      "summary": "Hallucinates more than its peers (HHEM 9.3% vs 5–7% for Qwen3/Gemma 3) — the price of its agentic tuning.",
+      "mitigations": [
+        { "mitigationId": "rag", "note": "Ground factual work; keep it in its lane (code and agents).", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://github.com/vectara/hallucination-leaderboard", "title": "Vectara HHEM (GLM-4.7-flash: 9.3%)", "sourceType": "leaderboard", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    }
+  ]
+}

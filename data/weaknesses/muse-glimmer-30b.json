@@ -1,0 +1,36 @@
+{
+  "modelId": "muse-glimmer-30b",
+  "entries": [
+    {
+      "id": "muse-glimmer-30b/all/knowledge-hallucination",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["factuality"],
+      "severity": "severe",
+      "summary": "Hallucinates heavily on hard knowledge questions — independent knowledge evals place it near the bottom of its class for recall, a stark contrast with its agentic strength.",
+      "mitigations": [
+        { "mitigationId": "mcp-tools", "note": "It was built for tool use — give it search and it stops guessing.", "effectiveness": "strong" },
+        { "mitigationId": "rag", "note": "Grounded retrieval covers document work.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://kingy.ai/blog/muse-glimmer-30b-benchmarks-hardware-run/", "title": "Muse Glimmer 30B benchmark and hardware analysis", "sourceType": "blog", "accessed": "2026-08-30" },
+        { "url": "https://benchlm.ai/models/muse-glimmer-30b", "title": "BenchLM Muse Glimmer 30B profile", "sourceType": "blog", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "muse-glimmer-30b/all/generalist-gap",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["creative-writing"],
+      "severity": "moderate",
+      "summary": "An agentic specialist: general chat and prose are middling for its size, and it loses to Qwen-class peers on pure reasoning outside tool loops.",
+      "mitigations": [
+        { "mitigationId": "none", "note": "Pick it for agents, screens, and tools; pick something else to talk to." }
+      ],
+      "citations": [
+        { "url": "https://semaphore.substack.com/p/the-best-part-of-metas-glimmer-30b", "title": "Analysis: Glimmer's agentic wins vs generalist gaps", "sourceType": "blog", "accessed": "2026-08-30" },
+        { "url": "https://news.ycombinator.com/item?id=49241679", "title": "HN discussion of Muse Glimmer 30B", "sourceType": "other", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    }
+  ]
+}

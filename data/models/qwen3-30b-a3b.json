@@ -1,0 +1,59 @@
+{
+  "id": "qwen3-30b-a3b",
+  "name": "Qwen3 30B-A3B",
+  "family": "Qwen3",
+  "vendor": "Alibaba",
+  "architecture": "moe",
+  "paramsB": 30.5,
+  "activeParamsB": 3.3,
+  "layers": 48,
+  "vocabSize": 151936,
+  "width": 6144,
+  "attentionHeads": 32,
+  "kvHeads": 4,
+  "headDim": 128,
+  "attentionPattern": "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+  "expertsPerToken": 8,
+  "vision": false,
+  "contextLength": 131072,
+  "license": {
+    "name": "Apache-2.0",
+    "url": "https://huggingface.co/Qwen/Qwen3-30B-A3B"
+  },
+  "releaseDate": "2025-04-29",
+  "ggufUrl": "https://huggingface.co/Qwen/Qwen3-30B-A3B-GGUF",
+  "status": "active",
+  "summary": "A mixture-of-experts model: 30B of knowledge, but only ~3B active per token, so it runs fast on machines that can hold it. The best quality-per-second story on 32GB Macs.",
+  "kvBytesPerToken": 98304,
+  "kvSourceUrl": "https://huggingface.co/Qwen/Qwen3-30B-A3B/blob/main/config.json",
+  "bands": {
+    "low": {
+      "weightsGb": 11,
+      "exampleQuants": [
+        "IQ3_XXS",
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 17,
+      "exampleQuants": [
+        "Q4_K_M",
+        "Q5_K_M",
+        "mlx-4bit"
+      ]
+    },
+    "high": {
+      "weightsGb": 24,
+      "exampleQuants": [
+        "Q6_K"
+      ]
+    },
+    "full": {
+      "weightsGb": 61,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  },
+  "mlxUrl": "https://huggingface.co/mlx-community/Qwen3-30B-A3B-4bit"
+}

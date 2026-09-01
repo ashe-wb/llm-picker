@@ -1,0 +1,349 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { SITE } from '../config/site';
+import { BAND_LABELS } from '../lib/schemas';
+import { loadSiteData } from '../lib/data';
+import { chipPresets } from '../lib/fit';
+
+const { siteMeta, hardware } = loadSiteData();
+
+// Counted, not written down. This sentence has gone stale three times: once
+// when the datacenter cards landed, once when the Apple presets were refreshed,
+// and once when the Apple row became the chip list.
+const machines = [...hardware.presets, ...chipPresets(hardware)];
+const capacityOf = (p: (typeof machines)[number]) => `${p.vramGb ?? p.ramGb}|${p.platform === 'discrete'}`;
+const counts = new Map<string, number>();
+for (const p of machines) counts.set(capacityOf(p), (counts.get(capacityOf(p)) ?? 0) + 1);
+const shared = machines.filter((p) => (counts.get(capacityOf(p)) ?? 0) > 1).length;
+---
+
+<Layout title="Methodology">
+  <article class="max-w-2xl space-y-10">
+    <header>
+      <p class="dslabel mb-2">Document · How to read these sheets</p>
+      <h1 class="font-mono text-2xl font-bold">Methodology</h1>
+    </header>
+
+    <section class="space-y-2">
+      <h2 class="dslabel border-b border-rule pb-1">§1 Which models are here</h2>
+      <p class="text-faded">
+        Open-weight dense and MoE models up to 400B total parameters — the ones that actually fit
+        on a machine you own. Everything above 70B here is a sparse MoE, because that is what the
+        field built: total parameters decide what you have to hold in memory, active parameters
+        decide how fast it runs, and both are on every sheet. Within that bound we list what's
+        worth running <em>now</em>, not the history of how we got here.
+      </p>
+      <p class="text-faded">
+        So when a family supersedes itself, only the survivor gets a sheet.
+        <strong class="text-ink">Granite 4.0 and 4.1</strong> are absent because Granite 4.2 replaced
+        them outright; <strong class="text-ink">Qwen2.5-Coder 32B</strong> and
+        <strong class="text-ink">QwQ-32B</strong> because later Qwen releases cover the same ground
+        better on the same hardware; <strong class="text-ink">OLMo 2 32B</strong> because Olmo 3
+        exists; <strong class="text-ink">Mistral Small 3.2</strong> because Mistral Small 4
+        replaced it — though the successor is five times the
+        size and so did not look like one. A catalog that keeps every generation becomes an archive, and the question here is
+        "what do I download tonight."
+      </p>
+      <p class="text-faded">
+        Exclusion is not a verdict on quality. Those weights still run fine, and if one is already on
+        your disk there's no reason to delete it — it only means someone starting fresh, on the same
+        hardware, has a better option <em>from the same maker</em>. Competition
+        <em>between</em> families is judged differently: a model keeps its slot if it's the best
+        answer for some machine or some workload, even when a rival vendor beats it overall. That's
+        why several models here are outscored by others on this very site.
+      </p>
+    </section>
+
+    <section class="space-y-2">
+      <h2 class="dslabel border-b border-rule pb-1">§2 Quantization bands</h2>
+      <p class="text-faded">
+        Every measurement is recorded at the exact quant/precision it was taken at, but scores and
+        recommendations are presented per <strong class="text-ink">quantization band</strong>, because that's the
+        granularity a human can act on:
+      </p>
+      <ul class="space-y-1 font-mono text-sm">
+        <li><span class="font-bold">Q2–Q3</span> — 2–3 bit (Q2_K, Q3_K_M, IQ3_XXS, MLX 3-bit, …) — 1-bit formats are deliberately not rated here</li>
+        <li><span class="font-bold">Q4–Q5</span> — 4–5 bit (Q4_K_M, MLX 4-bit, MXFP4, AWQ, …) — the everyday local sweet spot</li>
+        <li><span class="font-bold">Q6–Q8</span> — 6–8 bit (Q6_K, Q8_0, MLX 8-bit, FP8) — near-lossless</li>
+        <li><span class="font-bold">FP16</span> — full precision (fp16/bf16) — what published benchmarks measure</li>
+      </ul>
+      <p class="text-faded">
+        Bands are format-agnostic: GGUF (llama.cpp, LM Studio, Ollama), MLX (Apple Silicon), and AWQ/GPTQ
+        quants all map into the same band by bits-per-weight, and every measurement records the exact
+        format it was taken at. When a specific quant deviates meaningfully from its band (e.g. IQ3_XXS vs Q3_K_M), we record
+        a per-quant override and surface it as a warning on the model sheet.
+      </p>
+    </section>
+
+    <section class="space-y-2">
+      <h2 class="dslabel border-b border-rule pb-1">§3 Does it fit? — the memory model</h2>
+      <p class="text-faded">
+        "Fits" is computed for the machine you describe, not looked up from a bucket. Two halves:
+      </p>
+      <ul class="space-y-1 font-mono text-xs">
+        <li><span class="font-bold">budget</span> = min(GPU ceiling, RAM − reserve)</li>
+        <li><span class="font-bold">demand</span> = weights + KV cache at your context + runtime overhead</li>
+      </ul>
+      <p class="text-faded">
+        On Apple Silicon the ceiling is the real constraint: macOS lets the GPU wire down about
+        75% of unified memory and llama.cpp treats that as a hard limit — roughly 24GB on a 32GB
+        Mac, not 32. <strong class="text-ink">That 75% is our assumption, not your machine's
+        answer.</strong> The real figure varies by chip and capacity — reported between two thirds
+        and three quarters, and measured at 78% on one 32GB M2 Max — and you do not have to take
+        ours: Metal will tell you, via
+        <code class="text-ink">mx.device_info()['max_recommended_working_set_size']</code>. On any
+        specific machine that number beats every percentage on this page, including this one. You can raise it, and when a model is blocked by nothing else we say so and
+        give you the command. <strong class="text-ink">How far you can raise it is not something
+        this site knows.</strong> Apple documents the setting nowhere, so there is no official
+        guidance and no number here is authoritative — ours is arithmetic, deliberately more
+        aggressive than the published advice we show beside it, and every option past that advice
+        says so. What makes it approachable is that it reverts on reboot: treat it as a session,
+        raise it, run the model, put it back. The reserve (what's left for the OS and your other
+        apps) is proportional rather than flat, because a fixed allowance is wrong at both ends of
+        the range.
+      </p>
+      <p class="text-faded">
+        The KV cache is the half everyone forgets. It grows with context, and it varies enormously
+        by architecture: Qwen3.6 27B caches only 16 of its 64 layers, so it needs 2GB at 32K where a
+        conventional model its size needs four times that. Every model's figure is computed from its
+        published <code>config.json</code> and linked from its sheet. A model with no measured figure
+        is not recommended at all rather than assigned a guess.
+      </p>
+      <p class="text-faded">
+        The third term is the one most calculators leave out, and it is derived rather than
+        guessed. A running model needs somewhere to put its working numbers, and the pieces are
+        knowable: the final <strong class="text-ink">vocabulary projection</strong> for one
+        micro-batch, the peak live <strong class="text-ink">activations</strong> through the widest
+        part of the network, and the <strong class="text-ink">attention mask</strong>, which is the
+        only part that grows with your context. The first is the one nobody expects and usually the
+        largest — turning each token into a score for every word in a 256,000-word vocabulary is
+        half a gigabyte before anything else is counted.
+      </p>
+      <p class="text-faded">
+        The check on all this is that llama.cpp publishes a worked example: a 507MB compute buffer
+        for Gemma 2 9B. The vocabulary projection alone predicts 500MB. That is the mechanism, to
+        within 1.4%, with nothing fitted to it. Only one input is not derived — llama.cpp and its
+        kernels, which published figures put between 0.5 and 1.5GB — so the estimate is a
+        <strong class="text-ink">range</strong>, and any verdict about whether a model fits takes
+        the pessimistic end.
+      </p>
+      <p class="text-faded">
+        <strong class="text-ink">It has not been checked against a real machine.</strong> It rests
+        on its mechanism, which anyone can verify against llama.cpp's published example. To test it
+        properly, <a href="https://github.com/ashe-wb/llm-picker/blob/main/docs/measuring-runtime-overhead.md" class="underline underline-offset-2">the procedure is in the repo</a> — and record the wired limit in force when you run it, since a raised cap changes the budget the reading is measured against.
+      </p>
+      <p class="text-faded">
+        Two assumptions come with it, both stated on every card that depends on them: flash
+        attention is on, which is llama.cpp's default and which saves gigabytes at long context;
+        and one serving slot at the default 512 micro-batch. Running
+        <code class="text-ink">--parallel N</code> multiplies the KV cache by N, which we do not
+        model.
+      </p>
+      <p class="text-faded">
+        Verdicts are <strong class="text-ink">comfortable</strong>,
+        <strong class="text-ink">tight</strong> (it runs, but you'll be closing other apps — or it's
+        spilling onto your GPU's slow path) or <strong class="text-ink">won't fit</strong>. A model
+        that runs at 8K but not 128K is a useful answer with a condition attached, not a yes or a no.
+      </p>
+    </section>
+
+    <section class="space-y-2">
+      <h2 class="dslabel border-b border-rule pb-1">§4 How fast? — the bandwidth model</h2>
+      <p class="text-faded">
+        Fitting is only half a buying question. {shared} of the {machines.length} machines listed
+        here share a memory capacity with another one, so "does it fit" gives the same answer for
+        most of the list. Speed is what separates them, and it comes from one number:
+      </p>
+      <ul class="space-y-1 font-mono text-xs">
+        <li><span class="font-bold">bytes read / token</span> = active weights + KV cache at your context</li>
+        <li><span class="font-bold">seconds / token</span> = bytes read ÷ memory bandwidth + layers × per-layer overhead</li>
+      </ul>
+      <p class="text-faded">
+        Generating a token means reading every active weight once and doing about two arithmetic
+        operations per byte, so the machine spends most of its time waiting on memory. Not all of
+        it: the second term is everything that happens per layer regardless of how much weight is
+        read — kernel launches, attention over the cache, sampling, expert routing — and it is
+        <strong class="text-ink">added</strong> rather than applied as a percentage.
+      </p>
+      <p class="text-faded">
+        That distinction matters more than it sounds. This site used to derate bandwidth by a
+        fixed 45–70%, and a fraction is the wrong shape for a fixed cost: it flatters anything
+        that reads little per token. Sparse mixture-of-experts models read a tenth of themselves,
+        so they were being predicted at roughly twice their real speed — a published Qwen3.5-35B-A3B
+        measurement on an M4 Max is 66–70 tok/s where the old arithmetic said 120–187. The
+        per-layer form gets it right without a special case, and it explains the same puzzle in
+        llama.cpp's own table, where 4-bit looks less "efficient" than FP16 on identical hardware.
+      </p>
+      <p class="text-faded">
+        The overhead is charged per layer because that is what the measurements show: solved as a
+        flat per-token cost it comes to 6–14ms on a 32-layer 7B and 25–41ms on an 80-layer 70B, and
+        divided by layer count both land near 0.2–0.5ms. It is checked against five published
+        measurements, three of which it was not fitted to — an 8B on an RTX 4090, Llama-3.3-70B on
+        an M2 Ultra at three different quantizations, and the sparse model above. A flat per-token
+        cost misses the 70B rows entirely. It is set per platform, since CUDA dispatches more
+        cheaply than Metal, and AMD and Intel currently sit inside the CUDA figure, which is
+        probably optimistic for them.
+      </p>
+      <p class="text-faded">
+        Two consequences worth knowing. A mixture-of-experts model reads only the experts
+        it activates, which is why a 122B-A10B generates like a 10B while occupying 122B of
+        memory. And the KV cache is read in full on every token, so the same model on the same
+        machine is markedly slower at 128K context than at 4K — a cost most tokens-per-second
+        calculators leave out, and one this site can price because it already computes your cache
+        exactly.
+      </p>
+      <p class="text-faded">
+        A model too big for a graphics card is split, not abandoned: the card holds what it can
+        and <strong class="text-ink">the CPU runs the remaining layers itself</strong>, out of
+        system RAM. This applies to a graphics card in a machine with its own RAM, and not to
+        unified memory. On Apple Silicon there is one pool: the CPU adds no memory and no
+        bandwidth, and reads that pool more slowly than the GPU does — 220–240GB/s against the
+        GPU's ~330 on an M1 Max's 400GB/s — a figure that is not assumed either, since
+        the same llama.cpp table gives 332GB/s on an M2 Max and 338 on an M3 Max at FP16. llama.cpp's maintainer puts it plainly, that if the
+        GPU has already saturated the bandwidth then the CPU cannot help; nor is there any
+        parallelism to win, since each layer needs the one before it. So a split is possible
+        there and pointless, and the site does not offer one. On those machines the lever is
+        raising the wired limit, which we say instead. Both processors work on every token, so the estimate is a weighted average of
+        their two speeds — and because system RAM is several times slower than a card's memory,
+        the CPU's share dominates. That is the arithmetic behind the warning that a half-split
+        model is usually not worth running.
+      </p>
+      <p class="text-faded">
+        The spilled layers are not streamed across PCIe; they stay in system RAM and the CPU reads
+        them there, which is why your system memory speed is what prices them. A published
+        <code class="text-ink">-ngl</code> sweep is the check: measured at 2.89 tok/s on the CPU
+        alone and 43.18 on the card alone, this model predicts the measured 83%-on-card point at
+        12.99 against 12.5 actual, with nothing fitted.
+      </p>
+      <p class="text-faded">
+        Which makes the speed of your system RAM part of the answer, so the picker asks for it.
+        Two channels of DDR5 read at about 90GB/s and an eight-channel workstation at about 384 —
+        a fourfold spread that decides how much a split costs you. One case really is
+        PCIe-bound, and it is the one nobody chooses: a driver silently spilling graphics memory
+        into system RAM behind your back is far worse than splitting the model deliberately.
+      </p>
+      <p class="text-faded">
+        On a Mac that number comes from the chip, never from the capacity. A 32GB Mac is anything
+        from an M4 at 120GB/s to an M5 Max at 614 — a fivefold spread — so the picker asks which
+        chip you have rather than guessing from the memory. Bandwidth does not track generation
+        either: the M3 Pro reads at 150GB/s where the M1 and M2 Pro both managed 200. Every
+        figure is a published Apple spec, held in a table because no formula reproduces it.
+      </p>
+      <p class="text-faded">
+        These figures assume a <strong class="text-ink">GGUF runtime</strong> — llama.cpp, LM
+        Studio, Ollama — because that is what every measurement behind them was taken on. The
+        per-layer overhead is set separately for CUDA and for Metal, from
+        <a href="https://github.com/ggml-org/llama.cpp/discussions/4167" class="underline underline-offset-2">llama.cpp's own Apple Silicon benchmark table</a>
+        and a published 70B study, rather than measuring one platform and applying it everywhere —
+        which is what the previous model did and its own note called its weakest joint. What
+        remains unmeasured is AMD and Intel, which currently borrow the CUDA figure and are
+        probably slower than it suggests.
+      </p>
+      <p class="text-faded">
+        <strong class="text-ink">MLX is a different runtime and is not modelled.</strong> It is
+        faster, and by a measured amount: controlled same-machine comparisons at 4-bit on both
+        sides put it at
+        <a href="https://jaesolshin.com/posts/apple-silicon-llm-backends/" class="underline underline-offset-2">1.63× on a dense Qwen3.5-9B</a>
+        (25 against 15.3 tok/s) and
+        <a href="https://antekapetanovic.com/blog/qwen3.5-apple-silicon-benchmark/" class="underline underline-offset-2">about 1.5× on a 35B mixture-of-experts</a>
+        (85–108 against 66–70). So on a Mac running MLX, treat everything here as a
+        <strong class="text-ink">floor</strong> rather than an estimate.
+      </p>
+      <p class="text-faded">
+        One number worth distrusting is the 3× you will see quoted. That comes from Ollama
+        switching its own backend, and roughly half of it is Ollama's wrapper rather than MLX: on
+        the same machine, raw llama.cpp reaches 89.4 tok/s where Ollama reaches 43.5. It is a
+        real speedup for Ollama users and not a measure of MLX against llama.cpp.
+      </p>
+      <p class="text-faded">
+        It stays unmodelled because a single multiplier would be the wrong shape. MLX ships its
+        own quantizations at their own bits-per-weight — the same model can be 17GB as Q4_K_M and
+        15.8GB in MLX 4-bit, which is free speed from reading less — and the ratio moves with
+        architecture and runtime version. This project has measured none of it on its own
+        hardware, and two blog benchmarks are enough to tell you the direction, not enough to
+        compute with.
+      </p>
+      <p class="text-faded">
+        Prompt processing gets a <em>class</em> — fast, moderate or slow — rather than a number.
+        It is compute-bound where generation is bandwidth-bound, and the two genuinely invert: a
+        DGX Spark ingests a long prompt several times quicker than a Ryzen AI Max+ while
+        generating no faster. A tok/s figure there would depend on the backend and is honestly
+        measured for only a handful of machines, so we grade it instead of inventing it.
+      </p>
+      <p class="border-l-2 border-warn bg-panel py-2 pl-3 pr-3 text-sm text-faded">
+        <strong class="text-ink">Speed is one axis of a buying decision, and rarely the deciding
+        one.</strong> Nothing here accounts for price, performance per pound, power draw, heat,
+        noise, physical size or portability. A four-card 3090 rig and a laptop can post similar
+        numbers and suit completely different lives — one of them wants a 1600W supply and a room
+        that can take the heat. Treat these figures as one input you can compute, not as advice
+        on what to buy.
+      </p>
+    </section>
+
+    <section class="space-y-2">
+      <h2 class="dslabel border-b border-rule pb-1">§5 Scores are editorial, evidence is cited</h2>
+      <p class="text-faded">
+        Each 0–10 score is a human judgment over the cited evidence — not an automated composite,
+        because averaging incommensurable benchmarks would be false precision. Every score carries
+        its provenance: source, metric, raw value, retrieval date, the precision it was measured at,
+        and a method tag — <em>aggregated</em> (from a public benchmark), <em>owner-verified</em>
+        (run on our own hardware, so only for models that fit it), or <em>vendor-reported</em>
+        (the maker's own numbers, trust accordingly).
+      </p>
+      <p class="text-faded">
+        Published benchmarks run at full precision, so they anchor the <em>full</em> quantization band directly.
+        Lower-band scores are editorial derivations from community quantization evidence
+        (KL-divergence and perplexity tables, degradation reports), each labeled as such. Cells with
+        no public evidence stay blank — blank is honest; a guessed number is not.
+      </p>
+      <p class="text-faded">
+        When the picker ranks models for a workload, it weights the dimensions that workload
+        needs — and most models are unrated on most dimensions. Averaging only the cells that
+        have evidence rewards ignorance: a model rated on a tenth of a task, scoring 8 there,
+        would beat one rated on seven tenths averaging 7. That is an implicit claim that the
+        90% nobody measured is as good as the 10% somebody did.
+      </p>
+      <p class="text-faded">
+        So unmeasured weight counts as merely average instead, and each recommendation shows
+        the score we measured alongside how much of the workload it covers. No cell is invented
+        and nothing is stored — the blanks above stay blank. It changes only what gets
+        recommended, and it is a weaker assumption than the one it replaces.
+      </p>
+      <p class="text-faded">
+        <strong class="text-ink">Nothing here has been spot-checked on our own hardware yet.</strong>
+        Every score is either vendor-reported or aggregated from a public benchmark — zero cells
+        carry an <em>owner-verified</em> provenance entry. The warning sits on every recommendation,
+        at every hardware tier, and comes off a model only when a real spot-check replaces it.
+      </p>
+    </section>
+
+    <section class="space-y-2">
+      <h2 class="dslabel border-b border-rule pb-1">§6 Known issues &amp; fixes</h2>
+      <p class="text-faded">
+        The point of this site. Weakness entries require citations (community-consensus claims need
+        at least two), and every workaround is a real, linked technique. When nothing fixes a
+        weakness, the entry says <strong class="text-ink">"no fix — choose a different model"</strong>
+        rather than pretending.
+      </p>
+    </section>
+
+    <section class="space-y-2">
+      <h2 class="dslabel border-b border-rule pb-1">§7 Source licensing</h2>
+      <p class="text-faded">
+        We only store numbers from sources whose terms permit republication, always with attribution.
+        Sources that forbid it (e.g. Artificial Analysis) are cited by link only — our validation
+        pipeline structurally rejects their values.
+      </p>
+    </section>
+
+    <section class="space-y-2">
+      <h2 class="dslabel border-b border-rule pb-1">§8 Revision cadence</h2>
+      <p class="text-faded">
+        The site updates every {SITE.updateCadenceDays} days: an automated pipeline proposes score
+        refreshes as a pull request; a human reviews conflicts and merges. Last editorial review:
+        <strong class="text-ink">{siteMeta.lastEditorialReview}</strong>. Evidence older than 60 days
+        is flagged in the data and on the sheets.
+      </p>
+    </section>
+  </article>
+</Layout>

@@ -1,0 +1,18 @@
+{
+  "modelId": "kat-coder-v2.5-dev",
+  "entries": [
+    { "band": "full", "dimension": "coding", "score": 8,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "SWE-bench Verified", "rawValue": 69.4, "url": "https://huggingface.co/Kwaipilot/KAT-Coder-V2.5-Dev", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "SWE-bench Multilingual 63.0, SWE-bench Pro 45.96. Kwaipilot report their own base model, Qwen3.6-35B-A3B, at 64.40 on the same harness — where Alibaba report 73.4 for it. The two vendors' harnesses disagree by nine points on an identical model, so compare the uplift within this row, not across vendors." }] },
+    { "band": "full", "dimension": "tool-calling", "score": 6,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "Terminal-Bench 2.1", "rawValue": 41.02, "url": "https://huggingface.co/Kwaipilot/KAT-Coder-V2.5-Dev", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Well behind Ornith-1.5 35B-A3B (68.5) at the same size and active-parameter count — this model is tuned for patch generation more than for long terminal sessions." }] },
+    { "band": "high", "dimension": "coding", "score": 8,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q6_K", "method": "aggregated", "quantNote": "Editorial derivation: carried from the full band; 6-bit is near-lossless even on sparse experts. 30.1GB needs a 64GB machine." }] },
+    { "band": "mid", "dimension": "coding", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: one point down, the standard MoE deduction on this site. 21.4GB — the band that fits a 32GB machine." }] },
+    { "band": "mid", "dimension": "tool-calling", "score": 5,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: one point down from an already modest full-band score." }] },
+    { "band": "low", "dimension": "coding", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q3_K_M", "method": "aggregated", "quantNote": "Editorial derivation: two points down — 3-bit expert routing degrades faster than dense weights at the same bit width." }] }
+  ],
+  "quantOverrides": []
+}

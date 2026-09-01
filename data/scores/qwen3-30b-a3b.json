@@ -1,0 +1,50 @@
+{
+  "modelId": "qwen3-30b-a3b",
+  "entries": [
+    { "band": "full", "dimension": "math", "score": 8,
+      "provenance": [
+        { "sourceId": "vendor-model-card", "metric": "AIME'24 (thinking mode)", "rawValue": 80.4, "url": "https://arxiv.org/abs/2505.09388", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Qwen3 Technical Report Table 15. Non-thinking mode drops to 32.8." },
+        { "sourceId": "vendor-model-card", "metric": "MATH-500 (thinking mode)", "rawValue": 98.0, "url": "https://arxiv.org/abs/2505.09388", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported" }
+      ] },
+    { "band": "full", "dimension": "coding", "score": 7,
+      "provenance": [
+        { "sourceId": "vendor-model-card", "metric": "LiveCodeBench v5 (thinking mode)", "rawValue": 62.6, "url": "https://arxiv.org/abs/2505.09388", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Non-thinking mode: 29.8. Model absent from the Aider polyglot leaderboard as of 2026-08-30 (Qwen3 32B scores 40.0% there for reference)." }
+      ] },
+    { "band": "full", "dimension": "tool-calling", "score": 7,
+      "provenance": [
+        { "sourceId": "vendor-model-card", "metric": "BFCL v3 (thinking mode)", "rawValue": 69.1, "url": "https://arxiv.org/abs/2505.09388", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Non-thinking mode: 58.6." }
+      ] },
+    { "band": "full", "dimension": "instruction-following", "score": 7,
+      "provenance": [
+        { "sourceId": "vendor-model-card", "metric": "IFEval strict prompt (thinking mode)", "rawValue": 86.5, "url": "https://arxiv.org/abs/2505.09388", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported" },
+        { "sourceId": "livebench", "metric": "global average (2024-11-25 question set)", "rawValue": 74.3, "url": "https://livebench.ai", "retrieved": "2026-08-30", "quant": "bf16", "method": "aggregated", "notes": "Cross-domain global average (rank #17 on the public leaderboard, retrieved via the llm-stats.com mirror); independently corroborates the vendor-reported numbers." }
+      ] },
+    { "band": "full", "dimension": "long-context", "score": 6,
+      "provenance": [
+        { "sourceId": "vendor-model-card", "metric": "RULER @128K", "rawValue": 79.2, "url": "https://arxiv.org/abs/2505.09388", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "RULER @64K: 89.1, @32K: 92.4." }
+      ] },
+    { "band": "high", "dimension": "math", "score": 8,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "KLD delta vs bf16", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q6_K", "method": "aggregated", "quantNote": "Editorial derivation: Q6_K is near-lossless; carried from full band." }] },
+    { "band": "high", "dimension": "coding", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "KLD delta vs bf16", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q6_K", "method": "aggregated", "quantNote": "Editorial derivation: near-lossless at 6-bit." }] },
+    { "band": "high", "dimension": "tool-calling", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://www.reddit.com/r/LocalLLaMA/", "retrieved": "2026-08-30", "quant": "Q6_K", "method": "aggregated", "quantNote": "Editorial derivation: near-lossless at 6-bit." }] },
+    { "band": "high", "dimension": "instruction-following", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://www.reddit.com/r/LocalLLaMA/", "retrieved": "2026-08-30", "quant": "Q6_K", "method": "aggregated", "quantNote": "Editorial derivation: near-lossless at 6-bit." }] },
+    { "band": "mid", "dimension": "math", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "KLD delta vs bf16", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: MoE models tolerate 4-bit well; small loss vs full band." }] },
+    { "band": "mid", "dimension": "coding", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "KLD delta vs bf16", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: small loss vs full band at Q4_K_M." }] },
+    { "band": "mid", "dimension": "tool-calling", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://www.reddit.com/r/LocalLLaMA/", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: occasional argument-format slips at 4-bit." }] },
+    { "band": "mid", "dimension": "instruction-following", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://www.reddit.com/r/LocalLLaMA/", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: IF not quant-sensitive." }] },
+    { "band": "low", "dimension": "math", "score": 4,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "degradation reports", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q3_K_M", "method": "aggregated", "quantNote": "Editorial derivation: ≤3-bit hits MoE expert weights hard; math cliff applies." }] },
+    { "band": "low", "dimension": "coding", "score": 5,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "degradation reports", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q3_K_M", "method": "aggregated", "quantNote": "Editorial derivation: usable but error-prone at 3-bit." }] },
+    { "band": "low", "dimension": "tool-calling", "score": 4,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://www.reddit.com/r/LocalLLaMA/", "retrieved": "2026-08-30", "quant": "Q3_K_M", "method": "aggregated", "quantNote": "Editorial derivation: malformed tool arguments become common at ≤3-bit." }] }
+  ],
+  "quantOverrides": []
+}

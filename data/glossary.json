@@ -1,0 +1,900 @@
+[
+  {
+    "id": "quantization",
+    "term": "Quantization",
+    "category": "quantization",
+    "newbieExplainer": "A model's weights are numbers. Trained at 16 bits each, a 27B model is about 54GB — more than most machines have. Quantization stores each number in fewer bits: 8, 5, 4, sometimes 2. The file shrinks roughly in proportion, and the model gets a little worse at the same time. Nearly every model you run locally is a quantized copy; the question is never whether to quantize but how far.",
+    "rule": "4-bit is the everyday choice. Below 3-bit, things break in ways you will notice.",
+    "seeAlso": [
+      "bits-per-weight",
+      "q-k-quants",
+      "perplexity",
+      "kld"
+    ]
+  },
+  {
+    "id": "bits-per-weight",
+    "term": "Bits per weight (bpw)",
+    "category": "quantization",
+    "newbieExplainer": "The average number of bits used to store one weight — the honest way to compare formats, because names lie. 'Q4_K_M' is not exactly 4 bits per weight; it mixes precisions internally and lands nearer 4.8. Multiply bits-per-weight by parameter count and divide by eight for a rough file size in bytes.",
+    "rule": "Comparing two quants? Compare bits per weight, not the labels.",
+    "seeAlso": [
+      "quantization"
+    ]
+  },
+  {
+    "id": "fp16",
+    "term": "FP16 / BF16 / FP32",
+    "expands": "16- and 32-bit floating point",
+    "category": "quantization",
+    "quants": [
+      "fp16",
+      "bf16",
+      "fp32"
+    ],
+    "newbieExplainer": "Full precision — the model as trained, before any compression. FP32 uses 32 bits per weight and is now rare for inference. FP16 and BF16 both use 16 bits but split them differently: BF16 trades decimal precision for a much wider range, which makes training more stable, so most recent models ship in BF16. For running a model the two behave alike. Published benchmark scores are almost always measured here, which is why this site anchors its full-precision band to them.",
+    "rule": "Only worth running if you have memory to spare — a 27B model needs about 54GB before context.",
+    "seeAlso": [
+      "quantization",
+      "bits-per-weight"
+    ]
+  },
+  {
+    "id": "q-k-quants",
+    "term": "Q4_K_M, Q6_K, Q3_K_S …",
+    "expands": "llama.cpp K-quants",
+    "category": "quantization",
+    "quants": [
+      "Q2_K",
+      "Q2_K_S",
+      "Q3_K_S",
+      "Q3_K_M",
+      "Q3_K_L",
+      "Q3_K_XL",
+      "Q4_K_S",
+      "Q4_K_M",
+      "Q5_K_S",
+      "Q5_K_M",
+      "Q6_K",
+      "Q6_K_XL"
+    ],
+    "newbieExplainer": "The standard llama.cpp family, and the names you will meet most often. Read them in three parts: the number is the target bits per weight (Q4 ≈ 4-bit), the K means it uses the smarter 'K-quant' scheme that spends extra bits on the layers that need them, and the final letter is size within that target — S small, M medium, L and XL larger. So Q4_K_M is a medium 4-bit K-quant, and it is the most downloaded quantization in local AI for good reason.",
+    "rule": "Q4_K_M is the default. Go to Q6_K if you have room, Q3_K_M only if you must — and prefer Q3_K_M over Q3_K_S, which loses far more than its size saving suggests.",
+    "seeAlso": [
+      "quantization",
+      "i-quants",
+      "gguf",
+      "bits-per-weight"
+    ],
+    "url": "https://github.com/ggml-org/llama.cpp"
+  },
+  {
+    "id": "q-legacy",
+    "term": "Q4_0, Q4_1, Q5_0, Q5_1, Q8_0",
+    "expands": "llama.cpp legacy quants",
+    "category": "quantization",
+    "quants": [
+      "Q4_0",
+      "Q4_1",
+      "Q5_0",
+      "Q5_1",
+      "Q8_0"
+    ],
+    "newbieExplainer": "The original, simpler llama.cpp formats — every block of weights gets the same treatment, with no cleverness about which layers matter. K-quants beat them at the same size, so they are mostly historical, with two exceptions: Q8_0 is still the standard 'near-lossless' choice, and Google ships Gemma in Q4_0 because its QAT training targets exactly that format.",
+    "rule": "Ignore these unless the model publisher shipped one deliberately, as Google does with Gemma.",
+    "seeAlso": [
+      "q-k-quants",
+      "qat"
+    ]
+  },
+  {
+    "id": "i-quants",
+    "term": "IQ2_XXS, IQ3_M, IQ4_XS …",
+    "expands": "importance-matrix quants",
+    "category": "quantization",
+    "quants": [
+      "IQ2_XXS",
+      "IQ2_XS",
+      "IQ2_S",
+      "IQ2_M",
+      "IQ3_XXS",
+      "IQ3_XS",
+      "IQ3_S",
+      "IQ3_M",
+      "IQ4_XS",
+      "IQ4_NL"
+    ],
+    "newbieExplainer": "A second llama.cpp family that squeezes further by first measuring which weights actually matter — running sample text through the model to build an 'importance matrix' — and spending its bits accordingly. At the same file size an IQ quant usually beats the equivalent K-quant, at the cost of being slower to generate on some hardware. The XXS/XS/S/M suffixes run smallest to largest. This site stops at 2-bit; 1-bit IQ builds exist but are not worth your time.",
+    "rule": "Worth it when you are squeezing a model into memory it barely fits. At 2-bit expect real damage, whatever the file size suggests.",
+    "seeAlso": [
+      "q-k-quants",
+      "quantization"
+    ]
+  },
+  {
+    "id": "ternary-1bit",
+    "term": "Ternary / 1-bit (BitNet-style)",
+    "expands": "~1.58 and ~1 bits per weight",
+    "category": "quantization",
+    "quants": [],
+    "newbieExplainer": "The extreme end: every weight stored as one of three values (-1, 0, +1) for ternary, or effectively one bit. Take an ordinary model down this far with normal quantization and it stops working, so these formats only appear on models purpose-built or purpose-compressed for them. You will see such builds advertised — a 27B in under 4GB, running on a phone — and the quality claims behind them are typically the publisher's own, averaged across their own suite, with no per-dimension breakdown.",
+    "rule": "Out of scope here. This site does not rate models at 1-bit, and you should not start there.",
+    "aliases": [],
+    "seeAlso": [
+      "quantization",
+      "i-quants",
+      "bits-per-weight"
+    ],
+    "url": "https://huggingface.co/prism-ml/Bonsai-27B-gguf"
+  },
+  {
+    "id": "fp8-int8",
+    "term": "FP8 / INT8",
+    "expands": "8-bit floating point / 8-bit integer",
+    "category": "quantization",
+    "quants": [
+      "fp8",
+      "int8"
+    ],
+    "newbieExplainer": "Eight-bit formats used mostly on server GPUs rather than in llama.cpp. FP8 keeps a floating point's exponent so it copes with outlier values; INT8 is a plain integer scale. Both are close enough to full precision that the difference rarely shows up in output quality. Model publishers often release an official FP8 build alongside the original.",
+    "rule": "Near-lossless, but half the file is the price. Q6_K gets you most of the way for less.",
+    "seeAlso": [
+      "fp16",
+      "quantization"
+    ]
+  },
+  {
+    "id": "fp4",
+    "term": "MXFP4 / NVFP4 / FP4",
+    "expands": "4-bit floating point formats",
+    "category": "quantization",
+    "quants": [
+      "mxfp4",
+      "nvfp4",
+      "fp4"
+    ],
+    "newbieExplainer": "Four-bit floating-point formats, and an easy pair to confuse. MXFP4 is the open Microscaling standard — each small block of weights shares a scaling factor — and it is what OpenAI's gpt-oss models ship in natively. NVFP4 is NVIDIA's variant, with a finer-grained scale that is more accurate but needs recent NVIDIA hardware to run fast. Plain FP4 means neither in particular.",
+    "rule": "You do not usually choose these — you get them because the publisher shipped in that format, as gpt-oss does with MXFP4.",
+    "seeAlso": [
+      "quantization",
+      "fp8-int8"
+    ],
+    "url": "https://huggingface.co/openai/gpt-oss-20b"
+  },
+  {
+    "id": "mlx-quants",
+    "term": "MLX 3-bit / 4-bit / 8-bit",
+    "category": "quantization",
+    "quants": [
+      "mlx-3bit",
+      "mlx-4bit",
+      "mlx-8bit"
+    ],
+    "newbieExplainer": "Apple's MLX framework has its own quantization, separate from GGUF. The names are refreshingly plain — 4-bit means 4-bit. On Apple Silicon these usually run faster than the GGUF equivalent because MLX is built for the hardware, and mixed-precision variants like OptiQ do better still at the same size.",
+    "rule": "On a Mac, try the MLX build of a model before assuming GGUF is your only option.",
+    "seeAlso": [
+      "mlx",
+      "gguf",
+      "quantization"
+    ]
+  },
+  {
+    "id": "awq-gptq",
+    "term": "AWQ / GPTQ",
+    "expands": "Activation-aware Weight Quantization / Generative Pre-trained Transformer Quantization",
+    "category": "quantization",
+    "quants": [
+      "awq-4bit",
+      "gptq-4bit"
+    ],
+    "newbieExplainer": "Two 4-bit schemes from the GPU-server world, used with runtimes like vLLM rather than llama.cpp. Both study the model before compressing it — AWQ protects the weights that activations depend on most, GPTQ compresses layer by layer while correcting the error as it goes. Quality sits in the same neighbourhood as a good 4-bit K-quant.",
+    "rule": "Relevant if you run on an NVIDIA GPU through vLLM. On a Mac or in LM Studio, you want GGUF or MLX instead.",
+    "seeAlso": [
+      "quantization",
+      "q-k-quants"
+    ]
+  },
+  {
+    "id": "perplexity",
+    "term": "Perplexity (PPL)",
+    "category": "quantization",
+    "newbieExplainer": "A measure of how surprised a model is by text it should find ordinary — lower is better. Quantization reports lean on it because it is cheap to compute and sensitive to damage. Its weakness is that it measures prediction, not usefulness: a quant can hold its perplexity and still get noticeably worse at multi-step reasoning.",
+    "rule": "Treat a small perplexity rise as 'probably fine' and a large one as 'definitely broken' — but do not read fine detail into it.",
+    "seeAlso": [
+      "kld",
+      "quantization"
+    ]
+  },
+  {
+    "id": "kld",
+    "term": "KLD / KL divergence",
+    "expands": "Kullback–Leibler divergence",
+    "category": "quantization",
+    "newbieExplainer": "A direct comparison between the quantized model and the original: for the same input, how far apart are the two probability distributions over the next token? Zero means identical. It is the better measure of quantization damage because it compares against the model you actually wanted, rather than against a text corpus.",
+    "rule": "When a quantization writeup reports both, trust the KL divergence over the perplexity.",
+    "seeAlso": [
+      "perplexity",
+      "quantization"
+    ]
+  },
+  {
+    "id": "kv-cache",
+    "term": "KV cache",
+    "expands": "key/value cache",
+    "category": "memory",
+    "newbieExplainer": "As a model reads your prompt it computes two vectors per token per layer and keeps them, so it never has to redo that work for tokens it has already seen. That store is the KV cache, and it grows with every token in the conversation. It is the memory cost everyone forgets: the weights are a fixed number you see on the download page, but the KV cache can quietly add tens of gigabytes on a long document. Which is why this site asks what context you need before telling you whether a model fits.",
+    "rule": "If a model loads fine and then dies partway through a long chat, this is almost always why.",
+    "seeAlso": [
+      "context-window",
+      "gqa",
+      "sliding-window",
+      "mla",
+      "tokens-per-second"
+    ]
+  },
+  {
+    "id": "context-window",
+    "term": "Context window",
+    "category": "memory",
+    "newbieExplainer": "The maximum number of tokens a model can hold at once — prompt, documents and its own reply together. A token is roughly three quarters of a word. Publishers advertise big numbers (256K is common now) but two things limit what you can actually use: the KV cache for a full window may not fit your memory, and retrieval accuracy usually falls apart long before the window does. Model sheets here show both the advertised window and the measured retrieval score.",
+    "rule": "Treat the advertised window as a ceiling, not a promise. Check the long-context score before trusting it.",
+    "seeAlso": [
+      "kv-cache",
+      "ruler",
+      "mrcr"
+    ]
+  },
+  {
+    "id": "gqa",
+    "term": "GQA / MHA",
+    "expands": "Grouped-Query Attention / Multi-Head Attention",
+    "category": "memory",
+    "newbieExplainer": "Classic attention (MHA) gives every attention head its own key and value vectors, which makes the KV cache large. GQA has several query heads share one key/value pair, cutting cache size several-fold for very little quality loss. It is now near-universal — when you see a model with 32 attention heads but only 8 key/value heads, that is GQA, and the 8 is the number that decides your memory bill.",
+    "rule": "Fewer key/value heads means a smaller KV cache. It is the single biggest architectural lever on long-context memory.",
+    "seeAlso": [
+      "kv-cache",
+      "mla"
+    ]
+  },
+  {
+    "id": "mla",
+    "term": "MLA",
+    "expands": "Multi-head Latent Attention",
+    "category": "memory",
+    "newbieExplainer": "DeepSeek's approach to the same problem: instead of caching keys and values directly, compress them into a much smaller shared latent vector and reconstruct on the fly. The KV cache becomes dramatically smaller — a model using MLA can hold a long context in a fraction of the memory a conventional one needs. GLM-4.7-Flash on this site uses it.",
+    "rule": "An MLA model is worth a look if long documents are your workload and memory is tight.",
+    "seeAlso": [
+      "kv-cache",
+      "gqa"
+    ]
+  },
+  {
+    "id": "sliding-window",
+    "term": "Sliding-window attention (SWA)",
+    "category": "memory",
+    "newbieExplainer": "Rather than letting every layer look at the whole conversation, most layers look only at the last N tokens — Gemma uses 1024 — while a few 'global' layers still see everything. The windowed layers stop accumulating cache once they hit their window, so memory growth flattens out. Gemma 4 runs five windowed layers for every global one, which is why it holds long contexts far more cheaply than its layer count suggests.",
+    "seeAlso": [
+      "kv-cache",
+      "hybrid-attention"
+    ]
+  },
+  {
+    "id": "hybrid-attention",
+    "term": "Hybrid / linear attention (DeltaNet)",
+    "category": "memory",
+    "newbieExplainer": "A newer trick: replace most attention layers with a 'linear attention' variant that keeps a fixed-size running state instead of a per-token cache, and leave a few real attention layers to do the heavy lifting. Qwen3.6 uses one full-attention layer in every four, so only 16 of its 64 layers hold a KV cache at all — the reason it needs about 2GB at 32K context where a conventional model its size needs four times that.",
+    "seeAlso": [
+      "kv-cache",
+      "sliding-window"
+    ]
+  },
+  {
+    "id": "moe",
+    "term": "MoE",
+    "expands": "Mixture of Experts",
+    "category": "memory",
+    "newbieExplainer": "The model is split into many small 'expert' sub-networks, and each token is routed to only a few of them. A 30B-A3B model has 30B total parameters but activates about 3B per token, so it generates much faster than a dense 30B. The catch, and it is a big one for local use: all 30B of weights must still be in memory, because the router may pick any expert at any moment. You pay dense memory for sparse speed.",
+    "rule": "Choose MoE for speed on a machine with memory to spare — never to save memory.",
+    "seeAlso": [
+      "dense",
+      "quantization",
+      "memory-bandwidth",
+      "tokens-per-second"
+    ]
+  },
+  {
+    "id": "dense",
+    "term": "Dense model",
+    "category": "memory",
+    "newbieExplainer": "The ordinary kind: every parameter takes part in every token. Slower than a mixture-of-experts model of the same total size, but the memory you spend is memory you actually use, and quality per gigabyte is usually better.",
+    "seeAlso": [
+      "moe"
+    ]
+  },
+  {
+    "id": "qat",
+    "term": "QAT",
+    "expands": "Quantization-Aware Training",
+    "category": "memory",
+    "newbieExplainer": "Normally a model is trained at full precision and compressed afterwards, and it loses a little in the process. With QAT the publisher fine-tunes the model while simulating the compression, so it learns to tolerate it. A QAT 4-bit build is noticeably better than the same model quantized after the fact. Google ships Gemma this way.",
+    "rule": "If an official QAT build exists at the size you want, take it over a community quant.",
+    "seeAlso": [
+      "quantization",
+      "q-legacy"
+    ]
+  },
+  {
+    "id": "unified-memory",
+    "term": "Unified memory",
+    "category": "memory",
+    "newbieExplainer": "On Apple Silicon the CPU and GPU share one pool of RAM, so there is no separate 'graphics memory' to fill and nothing to copy back and forth. That is why a 64GB Mac can run models a 24GB gaming GPU cannot. The catch is the wired limit below. Capacity and speed are separate questions on these machines: the amount is what you choose when buying, but how fast it is read depends entirely on the chip. Across the Apple line that runs from 68GB/s on an M1 to over 1200 on an M5 Ultra, and a 32GB machine alone spans 120 to 614.",
+    "seeAlso": [
+      "vram",
+      "wired-limit",
+      "memory-bandwidth"
+    ]
+  },
+  {
+    "id": "vram",
+    "term": "VRAM",
+    "expands": "video RAM",
+    "category": "memory",
+    "newbieExplainer": "Memory that lives on a discrete graphics card. It is fast and there is not much of it — 8 to 24GB on consumer cards. A model that fits entirely in VRAM runs at full speed; one that does not has to offload.",
+    "seeAlso": [
+      "unified-memory",
+      "offload",
+      "memory-bandwidth"
+    ]
+  },
+  {
+    "id": "offload",
+    "term": "Offloading",
+    "category": "memory",
+    "newbieExplainer": "When a model is too big for your graphics memory, the runtime keeps the layers that do not fit in ordinary system RAM — and your CPU runs those layers itself. Nothing is shipped back and forth: each processor works on the layers it holds, and the results pass between them. It works, and it is far slower, because system RAM is several times slower than the memory on a graphics card. This site marks any partial-offload fit as tight for that reason. How much slower depends on your system RAM, which is why the picker asks about it.",
+    "rule": "A few layers on the CPU is a slowdown. Half the model on the CPU means the CPU is setting the speed, and the card has stopped being why the machine is quick.",
+    "seeAlso": [
+      "vram",
+      "system-memory",
+      "tokens-per-second"
+    ]
+  },
+  {
+    "id": "pcie",
+    "term": "PCIe",
+    "expands": "Peripheral Component Interconnect Express",
+    "category": "memory",
+    "newbieExplainer": "The bus connecting a graphics card to the rest of the computer. It is often blamed for the cost of offloading, and mostly it should not be: when you split a model deliberately, the layers stay put and the CPU runs its own share, so only small activations cross the bus. PCIe does become the bottleneck in the other case — when a driver quietly spills graphics memory into system RAM behind your back, which is much slower than splitting the model on purpose.",
+    "seeAlso": [
+      "offload",
+      "system-memory",
+      "tokens-per-second"
+    ]
+  },
+  {
+    "id": "wired-limit",
+    "term": "Wired limit (iogpu.wired_limit_mb)",
+    "category": "memory",
+    "newbieExplainer": "macOS will not let the GPU claim all of your unified memory. By default it caps the amount at roughly 75% — about 24GB on a 32GB Mac — and llama.cpp treats that cap as a hard wall, refusing to load anything larger even when you appear to have RAM free. You can raise it with a sysctl command. How far is not settled by anyone: Apple does not document the setting, so every number you will read is somebody's experience rather than guidance. It is a permission, not spare memory — set it past what the system needs and the machine swaps and stutters. One more catch: raising it does not guarantee your runtime will use it. Serving engines apply their own ceiling on top — oMLX, for instance, reserves 6GB for the system by default and takes whichever of that and the sysctl is lower, so on a 32GB Mac anything above 26GB has no effect at all.",
+    "rule": "sudo sysctl iogpu.wired_limit_mb=<megabytes>. It reverts on reboot, so treat it as a session: raise it, run the model, put it back.",
+    "seeAlso": [
+      "unified-memory"
+    ],
+    "url": "https://github.com/ivanopcode/devnote-override-macos-metal-vram-cap"
+  },
+  {
+    "id": "thinking-mode",
+    "term": "Thinking / reasoning mode",
+    "category": "memory",
+    "newbieExplainer": "Many recent models can work through a problem in a hidden scratchpad before answering. It raises scores on hard maths and code enormously — Qwen3-8B scores 76 on AIME'24 thinking versus 29 not thinking — while costing time and tokens. Because the gap is so large, every provenance note on this site records which mode a number came from.",
+    "rule": "Turn it on for maths and debugging, off for chat, and never compare a thinking score against a non-thinking one.",
+    "seeAlso": [
+      "aime"
+    ]
+  },
+  {
+    "id": "gguf",
+    "term": "GGUF",
+    "expands": "GGML Universal Format",
+    "category": "tooling",
+    "newbieExplainer": "The single-file format llama.cpp and everything built on it reads — LM Studio, Ollama, Jan, KoboldCpp. One file holds the weights, the tokenizer and the chat template together, so there is nothing to assemble. If you are running a model locally on anything other than a Mac-native MLX stack, this is almost certainly what you are downloading.",
+    "rule": "The default choice on Windows and Linux, and a fine one on a Mac.",
+    "seeAlso": [
+      "llama-cpp",
+      "mlx",
+      "q-k-quants"
+    ]
+  },
+  {
+    "id": "mlx",
+    "term": "MLX",
+    "category": "tooling",
+    "newbieExplainer": "Apple's own machine-learning framework, built for Apple Silicon's unified memory. Models come as a folder of safetensors rather than one GGUF file, and are widely reported as faster than the equivalent GGUF on the same Mac — though by how much is genuinely unsettled: published comparisons range from a clear win on mixture-of-experts models to roughly level, with at least one measurement putting MLX behind llama.cpp. The gap is also said to narrow at long context. mlx-vlm handles the vision models.",
+    "rule": "On Apple Silicon, worth trying first — and worth measuring, because the speed claims vary a lot.",
+    "seeAlso": [
+      "gguf",
+      "mlx-quants",
+      "unified-memory"
+    ],
+    "url": "https://github.com/ml-explore/mlx"
+  },
+  {
+    "id": "llama-cpp",
+    "term": "llama.cpp",
+    "category": "tooling",
+    "newbieExplainer": "The C++ inference engine underneath most local AI tooling. You may never run it directly, but its decisions reach you anyway: the GGUF format, the K-quant and I-quant families, and the bugs. Several known issues on this site are llama.cpp problems rather than model defects — which is why 'update your runtime' is one of the standard fixes here.",
+    "rule": "When a model produces garbage right after release, suspect the runtime before the weights.",
+    "seeAlso": [
+      "gguf",
+      "q-k-quants"
+    ],
+    "url": "https://github.com/ggml-org/llama.cpp"
+  },
+  {
+    "id": "ollama-lmstudio",
+    "term": "Ollama / LM Studio",
+    "category": "tooling",
+    "newbieExplainer": "The two most common front ends for running models locally. Ollama is command-line first with a simple pull-and-run model registry; LM Studio is a desktop app with a model browser and a chat window. Both wrap llama.cpp, and LM Studio also runs MLX on Macs. Either is a reasonable starting point.",
+    "seeAlso": [
+      "llama-cpp",
+      "gguf"
+    ]
+  },
+  {
+    "id": "safetensors",
+    "term": "Safetensors",
+    "category": "tooling",
+    "newbieExplainer": "The standard file format for unquantized model weights on Hugging Face, designed so that loading a file cannot execute code — which the older PyTorch pickle format allowed. This is what you get if you download a model's original repository rather than a quantized build.",
+    "seeAlso": [
+      "gguf",
+      "config-json"
+    ]
+  },
+  {
+    "id": "config-json",
+    "term": "config.json",
+    "category": "tooling",
+    "newbieExplainer": "The small file in every model repository that describes its architecture — layer count, attention head counts, context length, which layers use which kind of attention. Unglamorous, but it is where this site's KV-cache figures come from: those numbers are computed from it rather than estimated, and every model sheet links to the file it used.",
+    "seeAlso": [
+      "kv-cache",
+      "gqa"
+    ]
+  },
+  {
+    "id": "rag",
+    "term": "RAG",
+    "expands": "Retrieval-Augmented Generation",
+    "category": "tooling",
+    "newbieExplainer": "Instead of relying on what a model memorised during training, you search your own documents first and paste the relevant passages into the prompt. It is the standard fix for two problems at once: models inventing facts, and small models not knowing much. It also sidesteps long-context weakness — retrieving one page beats stuffing a whole book into a window the model cannot really use.",
+    "rule": "The highest-value habit for anyone running a small model.",
+    "seeAlso": [
+      "context-window",
+      "hhem"
+    ]
+  },
+  {
+    "id": "mcp",
+    "term": "MCP",
+    "expands": "Model Context Protocol",
+    "category": "tooling",
+    "newbieExplainer": "An open standard for letting a model call outside services — file access, web search, a calculator, your own scripts — through a consistent interface. It is how a local model gets to do things rather than just talk. Whether it works well depends on the model's tool-calling ability, which this site scores.",
+    "seeAlso": [
+      "tool-calling",
+      "bfcl"
+    ],
+    "url": "https://modelcontextprotocol.io"
+  },
+  {
+    "id": "tool-calling",
+    "term": "Tool calling / function calling",
+    "category": "tooling",
+    "newbieExplainer": "The model emitting a structured request — a function name and arguments as JSON — that your program executes before handing back the result. It is what turns a chat model into an agent, and it is fragile in a way plain chat is not: a malformed call, or an empty one, stops the loop dead. Several known issues on this site are exactly that failure.",
+    "seeAlso": [
+      "mcp",
+      "bfcl",
+      "chat-template"
+    ]
+  },
+  {
+    "id": "chat-template",
+    "term": "Chat template",
+    "category": "tooling",
+    "newbieExplainer": "The exact formatting a model expects around your messages — the special tokens marking where the system prompt ends and the user's turn begins. It ships inside the GGUF or alongside the weights. Get it wrong, or let a runtime auto-detect it wrong, and the model gets quietly worse rather than visibly broken: rambling replies, ignored instructions, tool calls that never fire.",
+    "rule": "A model that seems dumber than its reputation is often running the wrong template.",
+    "seeAlso": [
+      "tool-calling",
+      "llama-cpp"
+    ]
+  },
+  {
+    "id": "speculative-decoding",
+    "term": "Speculative decoding / MTP",
+    "expands": "Multi-Token Prediction",
+    "category": "tooling",
+    "newbieExplainer": "A speed trick: a small fast model drafts several tokens ahead and the real model checks them in one pass, accepting the ones it agrees with. Output is identical to running the big model alone, just quicker. MTP is a variant where the model drafts for itself. It is a pure speed feature — and, being newer code, a common source of bugs.",
+    "rule": "If generation looks broken, turn this off before blaming the model.",
+    "seeAlso": [
+      "llama-cpp"
+    ]
+  },
+  {
+    "id": "aime",
+    "term": "AIME",
+    "expands": "American Invitational Mathematics Examination",
+    "category": "benchmark",
+    "aliases": [
+      "AIME'24",
+      "AIME 2024",
+      "AIME 25",
+      "AIME26",
+      "AIME 2026",
+      "AIME-120"
+    ],
+    "newbieExplainer": "A hard high-school maths competition, used as a reasoning test because the answers are exact integers and cannot be bluffed. Scores swing enormously with thinking mode on or off, so always check which was used.",
+    "seeAlso": [
+      "thinking-mode",
+      "math-bench"
+    ]
+  },
+  {
+    "id": "math-bench",
+    "term": "MATH / MATH-500",
+    "category": "benchmark",
+    "aliases": [
+      "MATH",
+      "MATH CoT",
+      "MATH-500",
+      "MATH (4-shot)"
+    ],
+    "newbieExplainer": "A set of competition maths problems, easier than AIME and long the standard maths benchmark. MATH-500 is a commonly used 500-problem subset.",
+    "seeAlso": [
+      "aime"
+    ]
+  },
+  {
+    "id": "gpqa",
+    "term": "GPQA Diamond",
+    "expands": "Graduate-Level Google-Proof Q&A",
+    "category": "benchmark",
+    "aliases": [
+      "GPQA"
+    ],
+    "newbieExplainer": "Physics, chemistry and biology questions written by PhDs to be hard to look up — the point is that searching the web does not help. 'Diamond' is the hardest curated subset. A proxy for genuine scientific reasoning rather than recall.",
+    "seeAlso": [
+      "mmlu"
+    ]
+  },
+  {
+    "id": "mmlu",
+    "term": "MMLU / MMLU-Pro",
+    "expands": "Massive Multitask Language Understanding",
+    "category": "benchmark",
+    "aliases": [
+      "MMLU-Pro",
+      "MMLU STEM"
+    ],
+    "newbieExplainer": "Multiple-choice questions across 57 subjects — the long-standing general-knowledge yardstick. Top models saturated the original, so MMLU-Pro raised the difficulty and added answer options. Best read as breadth of knowledge, not reasoning.",
+    "seeAlso": [
+      "gpqa",
+      "simpleqa"
+    ]
+  },
+  {
+    "id": "humaneval",
+    "term": "HumanEval / EvalPlus / MBPP",
+    "category": "benchmark",
+    "aliases": [
+      "HumanEval+",
+      "EvalPlus",
+      "MBPP"
+    ],
+    "newbieExplainer": "Small self-contained programming problems — write one function, pass the unit tests. Easy to run, and now largely saturated and partly leaked into training data. A high HumanEval score does not mean a model can work in your codebase: Gemma 3 27B scores 48.8 here and 4.9% on Aider's real-editing benchmark.",
+    "seeAlso": [
+      "swe-bench",
+      "livecodebench",
+      "aider"
+    ]
+  },
+  {
+    "id": "livecodebench",
+    "term": "LiveCodeBench",
+    "category": "benchmark",
+    "newbieExplainer": "Competitive-programming problems collected continuously from contest sites, so the test set postdates most training data and contamination is harder. Versions (v5, v6) mark different collection windows and are not comparable with each other.",
+    "seeAlso": [
+      "humaneval",
+      "swe-bench"
+    ]
+  },
+  {
+    "id": "swe-bench",
+    "term": "SWE-bench Verified / Pro",
+    "category": "benchmark",
+    "newbieExplainer": "Real GitHub issues from real Python projects: the model gets the repository and the bug report, and must produce a patch that makes the project's own tests pass. The closest thing to measuring useful engineering. 'Verified' is a human-checked 500-task subset; 'Pro' is a harder, more recent one.",
+    "seeAlso": [
+      "terminal-bench",
+      "livecodebench"
+    ],
+    "aliases": [
+      "SWE-Bench",
+      "SWE-bench"
+    ]
+  },
+  {
+    "id": "terminal-bench",
+    "term": "Terminal-Bench",
+    "category": "benchmark",
+    "newbieExplainer": "Tasks completed by driving a real terminal — install this, fix that, make the command succeed. Measures agentic competence over many steps rather than single-shot code generation.",
+    "seeAlso": [
+      "swe-bench",
+      "osworld"
+    ]
+  },
+  {
+    "id": "aider",
+    "term": "Aider polyglot",
+    "aliases": [
+      "percent correct (whole format)",
+      "percent correct (diff format)"
+    ],
+    "category": "benchmark",
+    "newbieExplainer": "Exercises across several languages performed through the Aider coding tool, which requires the model to edit existing files correctly rather than write from scratch. Brutal on models that look strong on HumanEval — the gap between the two is one of the more useful signals on this site.",
+    "seeAlso": [
+      "humaneval",
+      "swe-bench"
+    ],
+    "url": "https://aider.chat/docs/leaderboards/"
+  },
+  {
+    "id": "bfcl",
+    "term": "BFCL",
+    "expands": "Berkeley Function-Calling Leaderboard",
+    "category": "benchmark",
+    "aliases": [
+      "BFCL v3",
+      "BFCL V2"
+    ],
+    "newbieExplainer": "Measures whether a model calls tools correctly: does it pick the right function, fill the arguments properly, and know when not to call anything at all. The standard reference for tool-calling ability, and the number to check before building an agent.",
+    "seeAlso": [
+      "tool-calling",
+      "tau-bench",
+      "mcp"
+    ]
+  },
+  {
+    "id": "tau-bench",
+    "term": "Tau-Bench / Tau2",
+    "category": "benchmark",
+    "aliases": [
+      "Tau2",
+      "Tau2-Bench",
+      "Tau2 average",
+      "Tau-Bench Retail"
+    ],
+    "newbieExplainer": "Multi-turn conversations where the model must follow a business policy while using tools and talking to a simulated customer. Harder and more realistic than single-call tool tests, because it has to stay coherent across a whole exchange.",
+    "seeAlso": [
+      "bfcl",
+      "tool-calling"
+    ]
+  },
+  {
+    "id": "osworld",
+    "term": "OSWorld / AndroidWorld / MCP Atlas",
+    "category": "benchmark",
+    "aliases": [
+      "OSWorld-Verified",
+      "AndroidWorld",
+      "MCP Atlas"
+    ],
+    "newbieExplainer": "Agentic benchmarks where the model operates a real computer or phone environment — open the app, click the thing, complete the task. Vendor-reported far more often than independently run, so treat the numbers cautiously.",
+    "seeAlso": [
+      "terminal-bench",
+      "tool-calling"
+    ]
+  },
+  {
+    "id": "ifeval",
+    "term": "IFEval / IFBench",
+    "expands": "Instruction-Following Evaluation",
+    "category": "benchmark",
+    "aliases": [
+      "IFEval strict prompt",
+      "IFBench",
+      "internal IF accuracy"
+    ],
+    "newbieExplainer": "Tests whether a model obeys precise, checkable instructions — 'reply in exactly three bullet points', 'do not use the letter e'. Verifiable by program, so there is no judgement involved. A good proxy for whether a model will respect your formatting demands.",
+    "seeAlso": [
+      "chat-template"
+    ]
+  },
+  {
+    "id": "hhem",
+    "term": "HHEM",
+    "expands": "Hughes Hallucination Evaluation Model",
+    "category": "benchmark",
+    "aliases": [
+      "HHEM hallucination rate"
+    ],
+    "newbieExplainer": "Vectara's hallucination leaderboard. The model summarises a document, and a detector checks whether the summary states anything the source does not support. Reported as a rate, so lower is better — the one number on this site where a small figure is the good one.",
+    "seeAlso": [
+      "simpleqa",
+      "rag"
+    ],
+    "url": "https://github.com/vectara/hallucination-leaderboard"
+  },
+  {
+    "id": "simpleqa",
+    "term": "SimpleQA",
+    "category": "benchmark",
+    "newbieExplainer": "Short factual questions with one correct answer, chosen to be hard enough that models frequently get them wrong. Measures both what a model knows and whether it admits when it does not.",
+    "seeAlso": [
+      "hhem",
+      "mmlu"
+    ]
+  },
+  {
+    "id": "ruler",
+    "term": "RULER",
+    "category": "benchmark",
+    "newbieExplainer": "A long-context test that goes beyond finding a single planted sentence: it adds multi-hop tracing, aggregation and multiple needles at once. Models usually score far worse here than their advertised window suggests, which is the point of running it.",
+    "seeAlso": [
+      "mrcr",
+      "context-window"
+    ]
+  },
+  {
+    "id": "mrcr",
+    "term": "MRCR / needle-in-a-haystack",
+    "expands": "Multi-Round Co-reference Resolution",
+    "aliases": [
+      "MRCR v2",
+      "NIH multi-needle recall"
+    ],
+    "category": "benchmark",
+    "newbieExplainer": "Long-context retrieval: several similar items are hidden in a long input and the model must recall a specific one. Usually quoted at a length such as 128K. Gemma 4 31B scores 66.4% at 128K — the best on this site, and still a third of the needles missed.",
+    "seeAlso": [
+      "ruler",
+      "context-window"
+    ]
+  },
+  {
+    "id": "eqbench",
+    "term": "EQ-Bench Creative Writing",
+    "category": "benchmark",
+    "newbieExplainer": "A judged creative-writing evaluation — another model grades the prose against a rubric. Softer than the rest, and the reason creative-writing scores are sparse here: few of these models have been run through it.",
+    "seeAlso": [
+      "livebench"
+    ]
+  },
+  {
+    "id": "livebench",
+    "term": "LiveBench",
+    "category": "benchmark",
+    "newbieExplainer": "A general leaderboard that refreshes its questions monthly from recent sources, so contamination stays low. Covers maths, coding, reasoning and instruction-following in one place.",
+    "seeAlso": [
+      "mmlu"
+    ],
+    "url": "https://livebench.ai",
+    "aliases": [
+      "global average"
+    ]
+  },
+  {
+    "id": "pass-at-k",
+    "term": "pass@k / n-shot / CoT",
+    "expands": "Chain of Thought",
+    "category": "benchmark",
+    "aliases": [
+      "pass@5",
+      "0-shot",
+      "4-shot",
+      "CoT"
+    ],
+    "newbieExplainer": "Qualifiers attached to benchmark numbers, and each one changes the score. pass@k allows k attempts and counts success if any works. n-shot means n worked examples were included in the prompt. CoT means the model was told to reason step by step. A pass@5 score is not comparable to a pass@1 score of the same benchmark.",
+    "rule": "Always read the qualifier before comparing two numbers.",
+    "seeAlso": [
+      "thinking-mode"
+    ]
+  },
+  {
+    "id": "vendor-benchmarks",
+    "term": "Vendor-built benchmarks",
+    "category": "benchmark",
+    "aliases": [
+      "agentic coding suite",
+      "on-device tool calling",
+      "retention vs"
+    ],
+    "newbieExplainer": "Model makers sometimes quote benchmarks they built themselves — QwenSWEBench, CoWorkBench, an 'agentic coding suite'. These are not necessarily dishonest, but nobody else has run them, the tasks may suit the model's training, and there is no leaderboard to check against. Treat a headline number from a benchmark you have never heard of as a claim rather than a measurement.",
+    "rule": "If you cannot find the benchmark run by anyone but its maker, discount it.",
+    "seeAlso": [
+      "swe-bench",
+      "bfcl"
+    ],
+    "quants": []
+  },
+  {
+    "id": "memory-bandwidth",
+    "term": "Memory bandwidth",
+    "category": "memory",
+    "newbieExplainer": "How fast a machine can read its own memory, in gigabytes per second. It is the number that decides generation speed, because producing one token means reading every active weight once and doing only about two arithmetic operations per byte read — so the processor spends its time waiting on memory, not calculating. This is why two machines with the same amount of memory can differ several-fold in speed: a Tesla M40 reads 288GB/s and an RTX 4090 reads 1008GB/s, and both hold a 24GB model.",
+    "rule": "Capacity decides what you can run. Bandwidth decides how fast it runs. They are different numbers and vendors advertise the first.",
+    "seeAlso": [
+      "tokens-per-second",
+      "prompt-processing",
+      "vram",
+      "unified-memory",
+      "moe"
+    ]
+  },
+  {
+    "id": "tokens-per-second",
+    "term": "Tokens per second",
+    "expands": "tok/s",
+    "category": "memory",
+    "newbieExplainer": "How fast text comes out. Roughly ten tok/s reads like a person typing quickly; below about five it is uncomfortable to sit and watch. Estimate it by dividing memory bandwidth by the bytes read per token — the active weights plus the whole KV cache — and taking about half, since real engines never reach peak bandwidth. That KV term is why the same model on the same machine generates noticeably slower at 128K context than at 4K.",
+    "rule": "A long context costs speed as well as memory. Both bills come due every token.",
+    "seeAlso": [
+      "memory-bandwidth",
+      "kv-cache",
+      "prompt-processing"
+    ]
+  },
+  {
+    "id": "prompt-processing",
+    "term": "Prompt processing / prefill",
+    "category": "memory",
+    "newbieExplainer": "Reading what you sent before writing anything back. Unlike generation this part is compute-bound, so it rewards a fast processor rather than fast memory — and the two can point in opposite directions. An NVIDIA DGX Spark ingests a long prompt several times quicker than a Ryzen AI Max+ while generating no faster, and a Mac Studio reverses that. If you paste whole files into a chat you will feel prefill; if you type a sentence and read a long answer you will feel generation.",
+    "rule": "Big prompts: watch prompt processing. Long answers: watch tokens per second.",
+    "seeAlso": [
+      "tokens-per-second",
+      "memory-bandwidth",
+      "time-to-first-token"
+    ]
+  },
+  {
+    "id": "time-to-first-token",
+    "term": "Time to first token",
+    "expands": "TTFT",
+    "category": "memory",
+    "newbieExplainer": "The pause between hitting enter and the first word appearing. It is prompt processing plus whatever the runtime has to set up, so it grows with the length of what you sent, not the length of the reply. A model that generates quickly can still feel sluggish if every turn starts with a long silence — which is what happens when you keep pasting a large document into a machine with weak prefill.",
+    "seeAlso": [
+      "prompt-processing",
+      "tokens-per-second"
+    ]
+  },
+  {
+    "id": "system-memory",
+    "term": "System memory bandwidth",
+    "category": "memory",
+    "newbieExplainer": "How fast your CPU can read ordinary RAM, in gigabytes per second. Set by the memory generation and how many channels the board has — two channels of DDR5 read at about 90GB/s, an eight-channel workstation at about 384. It matters here because any layer your graphics card cannot hold is run by the CPU out of this memory, so it sets the speed of that half of the model. On a machine with no graphics card it sets the speed of all of it.",
+    "rule": "More channels beats faster sticks. It is the channel count that moves this number.",
+    "seeAlso": [
+      "offload",
+      "tokens-per-second",
+      "vram"
+    ]
+  },
+  {
+    "id": "compute-buffer",
+    "term": "Compute buffer",
+    "category": "memory",
+    "newbieExplainer": "The third memory cost, after the weights and the KV cache, and the one nearly every calculator leaves out. While a model runs it needs somewhere to put its working numbers, and the biggest single piece is a surprise: the final step turns each token into a score for every word in the model's vocabulary, and with a 256,000-word vocabulary that table alone is half a gigabyte. It is set by vocabulary size, model width and batch size — not by how many parameters the model has, so a 400B model needs no more of it than an 8B of the same shape.",
+    "rule": "Budget about 1.5-2GB for the runtime before you count weights or cache.",
+    "seeAlso": [
+      "kv-cache",
+      "flash-attention",
+      "vram"
+    ]
+  },
+  {
+    "id": "flash-attention",
+    "term": "Flash attention",
+    "category": "tooling",
+    "newbieExplainer": "A way of computing attention that never writes the full score table to memory. Without it a model has to materialise one number per token pair per head, which at 128K context is several gigabytes of scratch on top of everything else; with it, a small mask does the same job. llama.cpp turns it on by default now, and every memory figure on this site assumes it is on. If a model that should fit refuses to load at long context, this is the first thing to check.",
+    "rule": "Leave it on. Turning it off costs gigabytes at long context and buys nothing.",
+    "seeAlso": [
+      "compute-buffer",
+      "kv-cache",
+      "context-window"
+    ]
+  }
+]

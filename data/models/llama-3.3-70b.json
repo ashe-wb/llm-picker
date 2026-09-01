@@ -1,0 +1,55 @@
+{
+  "id": "llama-3.3-70b",
+  "name": "Llama 3.3 70B",
+  "family": "Llama 3.3",
+  "vendor": "Meta",
+  "architecture": "dense",
+  "paramsB": 70,
+  "layers": 80,
+  "vocabSize": 128256,
+  "width": 28672,
+  "attentionHeads": 64,
+  "kvHeads": 8,
+  "headDim": 128,
+  "attentionPattern": "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+  "vision": false,
+  "contextLength": 131072,
+  "license": {
+    "name": "Llama 3.3 Community License",
+    "url": "https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct"
+  },
+  "releaseDate": "2024-12-06",
+  "ggufUrl": "https://huggingface.co/bartowski/Llama-3.3-70B-Instruct-GGUF",
+  "status": "active",
+  "summary": "The largest dense model in this catalogue — everything above it is a sparse MoE. Best instruction-following evidence on the site at IFEval 92.1, and it needs a 96GB machine to be comfortable at any real context, because its KV cache costs 10GB at 32K before the weights are counted.",
+  "kvBytesPerToken": 327680,
+  "kvSourceUrl": "https://huggingface.co/unsloth/Llama-3.3-70B-Instruct/blob/main/config.json",
+  "bands": {
+    "low": {
+      "weightsGb": 34.3,
+      "exampleQuants": [
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 42.5,
+      "exampleQuants": [
+        "Q4_K_M",
+        "mlx-4bit"
+      ]
+    },
+    "high": {
+      "weightsGb": 57.9,
+      "exampleQuants": [
+        "Q6_K"
+      ]
+    },
+    "full": {
+      "weightsGb": 141.1,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  },
+  "mlxUrl": "https://huggingface.co/mlx-community/Llama-3.3-70B-Instruct-4bit"
+}

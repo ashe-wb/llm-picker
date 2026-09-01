@@ -1,0 +1,19 @@
+---
+interface Props {
+  label: string;
+  score: number; // 0–10
+}
+const { label, score } = Astro.props;
+const tone = score >= 7 ? 'bg-ok border-ok' : score >= 5 ? 'bg-warn border-warn' : 'bg-serious border-serious';
+const cells = Array.from({ length: 10 }, (_, i) => i < score);
+---
+
+<div class="flex items-center gap-3">
+  <span class="dslabel w-40 shrink-0 normal-case tracking-normal text-[12px]">{label}</span>
+  <div class="flex gap-[3px]" role="img" aria-label={`${score} out of 10`}>
+    {cells.map((filled) => (
+      <span class={`h-3 w-2.5 border ${filled ? tone : 'border-rule'}`}></span>
+    ))}
+  </div>
+  <span class="font-mono text-sm font-semibold tabular-nums">{score}<span class="font-normal text-faded">/10</span></span>
+</div>

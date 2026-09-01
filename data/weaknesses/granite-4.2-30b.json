@@ -1,0 +1,35 @@
+{
+  "modelId": "granite-4.2-30b",
+  "entries": [
+    {
+      "id": "granite-4.2-30b/all/unreplicated-and-brand-new",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["coding", "tool-calling"],
+      "severity": "mild",
+      "summary": "Released 2026-08-25 — five days before this entry was written. Every score here is IBM's own; no independent leaderboard lists it, and the BFCL v3 figure in particular is a vendor number for a benchmark that has a public leaderboard it has not yet appeared on.",
+      "mitigations": [
+        { "mitigationId": "none", "note": "Not a defect — a caveat. Scores will be revisited when independent measurements land." }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/blog/ibm-granite/granite-4-2", "title": "Granite 4.2 LLMs: How They're Built (IBM's own benchmark reporting)", "sourceType": "vendor", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    },
+    {
+      "id": "granite-4.2-30b/high/large-context-failures",
+      "bands": ["high", "full"],
+      "dimensions": ["long-context"],
+      "severity": "moderate",
+      "summary": "The Granite 4 line has an open llama.cpp report of Q6/Q8 builds failing outright at very large contexts (100K–200K) — which is most of the advertised 131K window. Separately, Granite 4 chat-template auto-detection has failed in llama.cpp, producing subtly wrong prompting rather than an error.",
+      "mitigations": [
+        { "mitigationId": "update-runtime", "note": "Track current llama.cpp and pass the chat template explicitly rather than relying on auto-detection. Both reports are runtime-side, not weights-side.", "effectiveness": "partial" },
+        { "mitigationId": "rag", "note": "Retrieve rather than filling 100K+ of context — this sidesteps the failure entirely.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://github.com/ggml-org/llama.cpp/issues/18606", "title": "Eval bug: granite 4-h small (Q6/Q8) and micro fail on very large context (100k/200k)", "sourceType": "github", "accessed": "2026-08-30" },
+        { "url": "https://github.com/ggml-org/llama.cpp/issues/16415", "title": "Eval bug: Granite 4 template detection fails", "sourceType": "github", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    }
+  ]
+}

@@ -1,0 +1,241 @@
+{
+  "modelId": "qwen3.5-397b-a17b",
+  "entries": [
+    {
+      "band": "full",
+      "dimension": "coding",
+      "score": 9,
+      "provenance": [
+        {
+          "sourceId": "vendor-model-card",
+          "metric": "SWE-bench Verified",
+          "rawValue": 76.4,
+          "url": "https://huggingface.co/Qwen/Qwen3.5-397B-A17B",
+          "retrieved": "2026-08-31",
+          "quant": "bf16",
+          "method": "vendor-reported",
+          "notes": "LiveCodeBench v6 83.6, Terminal Bench 2 52.5. Beats GLM-4.7's 73.8 on SWE-bench."
+        }
+      ]
+    },
+    {
+      "band": "full",
+      "dimension": "factuality",
+      "score": 8,
+      "provenance": [
+        {
+          "sourceId": "vendor-model-card",
+          "metric": "MMLU-Pro",
+          "rawValue": 87.8,
+          "url": "https://huggingface.co/Qwen/Qwen3.5-397B-A17B",
+          "retrieved": "2026-08-31",
+          "quant": "bf16",
+          "method": "vendor-reported",
+          "notes": "No hallucination benchmark published; this is a knowledge score, not a truthfulness one."
+        }
+      ]
+    },
+    {
+      "band": "full",
+      "dimension": "instruction-following",
+      "score": 9,
+      "provenance": [
+        {
+          "sourceId": "vendor-model-card",
+          "metric": "IFEval",
+          "rawValue": 92.6,
+          "url": "https://huggingface.co/Qwen/Qwen3.5-397B-A17B",
+          "retrieved": "2026-08-31",
+          "quant": "bf16",
+          "method": "vendor-reported",
+          "notes": "IFBench 76.5. Both are program-checkable, so there is little interpretive room."
+        }
+      ]
+    },
+    {
+      "band": "full",
+      "dimension": "math",
+      "score": 9,
+      "provenance": [
+        {
+          "sourceId": "vendor-model-card",
+          "metric": "AIME26",
+          "rawValue": 91.3,
+          "url": "https://huggingface.co/Qwen/Qwen3.5-397B-A17B",
+          "retrieved": "2026-08-31",
+          "quant": "bf16",
+          "method": "vendor-reported",
+          "notes": "GPQA 88.4, MMLU-Pro 87.8 — the highest GPQA figure in this catalogue."
+        }
+      ]
+    },
+    {
+      "band": "full",
+      "dimension": "tool-calling",
+      "score": 8,
+      "provenance": [
+        {
+          "sourceId": "vendor-model-card",
+          "metric": "BFCL-V4",
+          "rawValue": 72.9,
+          "url": "https://huggingface.co/Qwen/Qwen3.5-397B-A17B",
+          "retrieved": "2026-08-31",
+          "quant": "bf16",
+          "method": "vendor-reported",
+          "notes": "Terminal Bench 2 52.5 — the best terminal-agent figure here, though BFCL trails GLM-4.7's Tau2 result."
+        }
+      ]
+    },
+    {
+      "band": "high",
+      "dimension": "coding",
+      "score": 9,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q6_K",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: no drop from the measured bf16 figure. 6-8 bit is effectively lossless on a model this size — the differences that show up at 4-bit and below are not measurable here. Recorded explicitly rather than left to band fallback, which would otherwise borrow the 4-bit number and subtract a point."
+        }
+      ]
+    },
+    {
+      "band": "high",
+      "dimension": "factuality",
+      "score": 8,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q6_K",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: no drop from the measured bf16 figure. 6-8 bit is effectively lossless on a model this size — the differences that show up at 4-bit and below are not measurable here. Recorded explicitly rather than left to band fallback, which would otherwise borrow the 4-bit number and subtract a point."
+        }
+      ]
+    },
+    {
+      "band": "high",
+      "dimension": "instruction-following",
+      "score": 9,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q6_K",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: no drop from the measured bf16 figure. 6-8 bit is effectively lossless on a model this size — the differences that show up at 4-bit and below are not measurable here. Recorded explicitly rather than left to band fallback, which would otherwise borrow the 4-bit number and subtract a point."
+        }
+      ]
+    },
+    {
+      "band": "high",
+      "dimension": "math",
+      "score": 9,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q6_K",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: no drop from the measured bf16 figure. 6-8 bit is effectively lossless on a model this size — the differences that show up at 4-bit and below are not measurable here. Recorded explicitly rather than left to band fallback, which would otherwise borrow the 4-bit number and subtract a point."
+        }
+      ]
+    },
+    {
+      "band": "high",
+      "dimension": "tool-calling",
+      "score": 8,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q6_K",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: no drop from the measured bf16 figure. 6-8 bit is effectively lossless on a model this size — the differences that show up at 4-bit and below are not measurable here. Recorded explicitly rather than left to band fallback, which would otherwise borrow the 4-bit number and subtract a point."
+        }
+      ]
+    },
+    {
+      "band": "mid",
+      "dimension": "coding",
+      "score": 8,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q4_K_M",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: one point down from the measured bf16 figure. 4-bit is the band a model this size is actually run at, and the loss is real but modest."
+        }
+      ]
+    },
+    {
+      "band": "mid",
+      "dimension": "math",
+      "score": 8,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q4_K_M",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: one point down from the measured bf16 figure. 4-bit is the band a model this size is actually run at, and the loss is real but modest."
+        }
+      ]
+    },
+    {
+      "band": "mid",
+      "dimension": "tool-calling",
+      "score": 7,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q4_K_M",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: one point down from the measured bf16 figure. 4-bit is the band a model this size is actually run at, and the loss is real but modest."
+        }
+      ]
+    },
+    {
+      "band": "low",
+      "dimension": "coding",
+      "score": 6,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q3_K_M",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: two points down. At 3-bit a MoE this large loses expert-routing precision first, which surfaces as dropped tool arguments and broken multi-file edits before prose visibly suffers."
+        }
+      ]
+    },
+    {
+      "band": "low",
+      "dimension": "tool-calling",
+      "score": 5,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q3_K_M",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: two points down. At 3-bit a MoE this large loses expert-routing precision first, which surfaces as dropped tool arguments and broken multi-file edits before prose visibly suffers."
+        }
+      ]
+    }
+  ],
+  "quantOverrides": []
+}

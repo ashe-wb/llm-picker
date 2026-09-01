@@ -1,0 +1,49 @@
+{
+  "modelId": "gemma-4-e4b",
+  "entries": [
+    {
+      "id": "gemma-4-e4b/all/tool-calling-ceiling",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["tool-calling"],
+      "severity": "moderate",
+      "summary": "Tau2 42.2 against the 12B's 69.0 — by the vendor's own measurement, roughly two in five tool-use episodes go wrong. This is a capacity ceiling at 4.5B effective parameters, not a bug, and no runtime update moves it.",
+      "mitigations": [
+        { "mitigationId": "prompting", "note": "One or two tools with unambiguous schemas, single-step calls, and validate every argument before executing. Multi-step agent loops are out of reach at this size.", "effectiveness": "partial" },
+        { "mitigationId": "none", "note": "If the workload genuinely needs reliable tool use, move up to Gemma 4 12B (Tau2 69.0) — a 9GB rather than 7GB footprint.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://ai.google.dev/gemma/docs/core/model_card_4", "title": "Gemma 4 model card — Tau2 per variant (E2B 24.5, E4B 42.2, 12B 69.0)", "sourceType": "vendor", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    },
+    {
+      "id": "gemma-4-e4b/all/long-context-nominal",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["long-context"],
+      "severity": "severe",
+      "summary": "The 128K context window is nominal: MRCR v2 at 128K is 25.4%, so three quarters of the needles are missed. Loading a long document and asking questions about it will silently produce confident, wrong answers.",
+      "mitigations": [
+        { "mitigationId": "rag", "note": "Chunk and retrieve — feed it a page, not a book. This is the single highest-value mitigation for the E-series.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://ai.google.dev/gemma/docs/core/model_card_4", "title": "Gemma 4 model card — MRCR v2 @128K per variant", "sourceType": "vendor", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    },
+    {
+      "id": "gemma-4-e4b/all/gguf-runtime-churn",
+      "bands": ["low", "mid", "high"],
+      "dimensions": ["instruction-following"],
+      "severity": "moderate",
+      "summary": "Inherits the family's local-runtime churn — official GGUF refreshes that would not load, and gibberish past ~230 tokens with KV offload enabled.",
+      "mitigations": [
+        { "mitigationId": "update-runtime", "note": "Current llama.cpp, a re-cut community quant, and no -nkvo.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://github.com/ggml-org/llama.cpp/issues/21726", "title": "Eval bug: Gemma4 models produce gibberish at some point with -nkvo", "sourceType": "github", "accessed": "2026-08-30" },
+        { "url": "https://github.com/lmstudio-ai/lmstudio-bug-tracker/issues/2169", "title": "Latest official Google Gemma 4 GGUF models fail to load in LM Studio 0.4.19", "sourceType": "github", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    }
+  ]
+}

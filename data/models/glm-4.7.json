@@ -1,0 +1,55 @@
+{
+  "id": "glm-4.7",
+  "name": "GLM-4.7",
+  "family": "GLM",
+  "vendor": "Z.ai",
+  "architecture": "moe",
+  "paramsB": 358,
+  "activeParamsB": 32,
+  "layers": 92,
+  "vocabSize": 151552,
+  "width": 12288,
+  "attentionHeads": 96,
+  "kvHeads": 8,
+  "headDim": 128,
+  "attentionPattern": "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+  "expertsPerToken": 8,
+  "vision": false,
+  "contextLength": 202752,
+  "license": {
+    "name": "MIT",
+    "url": "https://huggingface.co/zai-org/GLM-4.7"
+  },
+  "releaseDate": "2025-12-22",
+  "ggufUrl": "https://huggingface.co/unsloth/GLM-4.7-GGUF",
+  "status": "active",
+  "summary": "The full-size GLM behind the 30B Flash already listed here, and the strongest open coding scores on this site — SWE-bench Verified 73.8. It is also the most expensive model here to hold in memory: all 92 layers use full attention, so the KV cache costs 368KB per token, more than any other model in the catalogue.",
+  "kvBytesPerToken": 376832,
+  "kvSourceUrl": "https://huggingface.co/zai-org/GLM-4.7/blob/main/config.json",
+  "bands": {
+    "low": {
+      "weightsGb": 171,
+      "exampleQuants": [
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 205,
+      "exampleQuants": [
+        "Q4_K_M"
+      ]
+    },
+    "high": {
+      "weightsGb": 294,
+      "exampleQuants": [
+        "Q6_K"
+      ]
+    },
+    "full": {
+      "weightsGb": 717,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  }
+}

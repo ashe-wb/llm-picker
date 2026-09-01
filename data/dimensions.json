@@ -1,0 +1,9 @@
+[
+  { "id": "math", "label": "Math & reasoning", "newbieBlurb": "Multi-step arithmetic, word problems, and logical deduction.", "quantSensitive": true },
+  { "id": "coding", "label": "Coding", "newbieBlurb": "Writing, explaining, and fixing code.", "quantSensitive": true },
+  { "id": "tool-calling", "label": "Tool calling / agentic", "newbieBlurb": "Reliably calling external tools (MCP servers, functions) with the right arguments.", "quantSensitive": true },
+  { "id": "long-context", "label": "Long context", "newbieBlurb": "Staying accurate when the conversation or document gets very long.", "quantSensitive": false },
+  { "id": "factuality", "label": "Factuality", "newbieBlurb": "How often it makes things up when asked factual questions.", "quantSensitive": false },
+  { "id": "instruction-following", "label": "Instruction following", "newbieBlurb": "Doing exactly what you asked, in the format you asked for.", "quantSensitive": false },
+  { "id": "creative-writing", "label": "Creative writing", "newbieBlurb": "Prose quality, voice, and variety in stories and roleplay.", "quantSensitive": false }
+]

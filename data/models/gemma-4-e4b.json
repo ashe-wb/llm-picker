@@ -1,0 +1,62 @@
+{
+  "id": "gemma-4-e4b",
+  "name": "Gemma 4 E4B",
+  "family": "Gemma 4",
+  "vendor": "Google",
+  "architecture": "dense",
+  "paramsB": 8,
+  "activeParamsB": 4.5,
+  "layers": 42,
+  "vocabSize": 262144,
+  "width": 10240,
+  "attentionHeads": 8,
+  "kvHeads": 2,
+  "headDim": 256,
+  "globalKvHeads": 2,
+  "globalHeadDim": 512,
+  "attentionPattern": "SSSSSFSSSSSFSSSSSFSSSSSFSSSSSFSSSSSFSSSSSF",
+  "kvSharedLayers": 18,
+  "kvBytesPerToken": 16384,
+  "kvWindowedBytesPerToken": 40960,
+  "slidingWindow": 512,
+  "kvSourceUrl": "https://huggingface.co/google/gemma-4-E4B-it/blob/main/config.json",
+  "vision": true,
+  "contextLength": 131072,
+  "license": {
+    "name": "Apache-2.0",
+    "url": "https://huggingface.co/google/gemma-4-E4B-it"
+  },
+  "releaseDate": "2026-07-02",
+  "ggufUrl": "https://huggingface.co/google/gemma-4-E4B-it-qat-q4_0-gguf",
+  "status": "active",
+  "summary": "Phone-class Gemma: Per-Layer Embeddings mean 8B of weights behave like 4.5B at inference, and the official QAT build is 5.15GB. Text, image and audio in the 8GB tier — but the benchmarks are honest about the ceiling.",
+  "bands": {
+    "low": {
+      "weightsGb": 4,
+      "exampleQuants": [
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 5,
+      "exampleQuants": [
+        "Q4_0",
+        "Q4_K_M",
+        "mlx-4bit"
+      ]
+    },
+    "high": {
+      "weightsGb": 6.5,
+      "exampleQuants": [
+        "Q6_K"
+      ]
+    },
+    "full": {
+      "weightsGb": 16,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  },
+  "mlxUrl": "https://huggingface.co/mlx-community/gemma-4-E4B-it-qat-4bit"
+}

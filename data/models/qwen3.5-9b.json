@@ -1,0 +1,56 @@
+{
+  "id": "qwen3.5-9b",
+  "name": "Qwen3.5 9B",
+  "family": "Qwen3.5",
+  "vendor": "Alibaba",
+  "architecture": "dense",
+  "paramsB": 9,
+  "layers": 32,
+  "vocabSize": 248320,
+  "width": 12288,
+  "attentionHeads": 16,
+  "kvHeads": 4,
+  "headDim": 256,
+  "attentionPattern": "...F...F...F...F...F...F...F...F",
+  "vision": true,
+  "contextLength": 262144,
+  "license": {
+    "name": "Apache-2.0",
+    "url": "https://huggingface.co/Qwen/Qwen3.5-9B"
+  },
+  "releaseDate": "2026-03-02",
+  "ggufUrl": "https://huggingface.co/unsloth/Qwen3.5-9B-GGUF",
+  "status": "active",
+  "summary": "The most-downloaded local model of 2026 (12M+/month): vision, 256K context, and vendor claims that beat gpt-oss-20b from 9B dense. Sparse independent data so far — most cells honestly unrated.",
+  "kvBytesPerToken": 32768,
+  "kvSourceUrl": "https://huggingface.co/Qwen/Qwen3.5-9B/blob/main/config.json",
+  "bands": {
+    "low": {
+      "weightsGb": 4.5,
+      "exampleQuants": [
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 5.5,
+      "exampleQuants": [
+        "Q4_K_M",
+        "mlx-4bit"
+      ]
+    },
+    "high": {
+      "weightsGb": 7.5,
+      "exampleQuants": [
+        "Q6_K",
+        "Q8_0"
+      ]
+    },
+    "full": {
+      "weightsGb": 18,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  },
+  "mlxUrl": "https://huggingface.co/mlx-community/Qwen3.5-9B-MLX-4bit"
+}

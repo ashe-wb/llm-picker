@@ -1,0 +1,83 @@
+{
+  "modelId": "gemma-3-12b",
+  "entries": [
+    {
+      "id": "gemma-3-12b/all/tool-calling",
+      "bands": [
+        "low",
+        "mid",
+        "high",
+        "full"
+      ],
+      "dimensions": [
+        "tool-calling"
+      ],
+      "severity": "moderate",
+      "summary": "Tool calling is unreliable at every precision — Gemma 3 was not trained with a strong native function-calling format, so agents built on it misfire.",
+      "mitigations": [
+        {
+          "mitigationId": "prompting",
+          "note": "Strict system prompts with exact JSON examples improve reliability somewhat.",
+          "effectiveness": "partial"
+        },
+        {
+          "mitigationId": "none",
+          "note": "For serious agent/MCP work, pick a Qwen3 model instead — this is a training gap, not a quant artifact."
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://gorilla.cs.berkeley.edu/leaderboard.html",
+          "title": "BFCL — Gemma 3 12B is absent from the function-calling leaderboard entirely (checked 2026-08-30)",
+          "sourceType": "leaderboard",
+          "accessed": "2026-08-30"
+        },
+        {
+          "url": "https://www.reddit.com/r/LocalLLaMA/",
+          "title": "r/LocalLLaMA threads on Gemma function-calling reliability",
+          "sourceType": "reddit",
+          "accessed": "2026-08-30"
+        }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "gemma-3-12b/low/math",
+      "bands": [
+        "low"
+      ],
+      "dimensions": [
+        "math"
+      ],
+      "severity": "severe",
+      "summary": "Already mid-pack at math, and the ≤3-bit cliff makes multi-step arithmetic untrustworthy.",
+      "mitigations": [
+        {
+          "mitigationId": "higher-quant",
+          "note": "Google's QAT Q4_0 build is only ~1GB larger and much stronger — there is little reason to run this model below 4-bit.",
+          "effectiveness": "strong"
+        },
+        {
+          "mitigationId": "code-interpreter",
+          "note": "Offload arithmetic to a tool — but note this model's tool calling is itself weak, so verify your setup works.",
+          "effectiveness": "partial"
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://github.com/ggml-org/llama.cpp/discussions",
+          "title": "llama.cpp quantization quality discussions",
+          "sourceType": "github",
+          "accessed": "2026-08-30"
+        },
+        {
+          "url": "https://www.reddit.com/r/LocalLLaMA/",
+          "title": "r/LocalLLaMA consensus on ≤3-bit degradation",
+          "sourceType": "reddit",
+          "accessed": "2026-08-30"
+        }
+      ],
+      "confidence": "community-consensus"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "modelId": "gemma-3-4b",
+  "entries": [
+    {
+      "id": "gemma-3-4b/all/math-coding",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["math", "coding"],
+      "severity": "severe",
+      "summary": "Weakest math and coding in its size class (MATH 24.2, HumanEval 36.0 — vendor's own numbers). Its strengths are chat, languages, and vision; STEM is not on the list.",
+      "mitigations": [
+        { "mitigationId": "code-interpreter", "note": "A calculator tool helps with arithmetic — though check tool-calling works in your setup, since Gemma's function calling is prompt-based.", "effectiveness": "partial" },
+        { "mitigationId": "none", "note": "For math or code at 4B, use Qwen3-4B or Phi-4-mini instead." }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/google/gemma-3-4b-it", "title": "Gemma 3 4B model card (MATH 24.2, HumanEval 36.0)", "sourceType": "vendor", "accessed": "2026-08-30" },
+        { "url": "https://zazencodes.substack.com/p/ultimate-gemma-3-guide-testing-1b", "title": "Gemma 3 hands-on testing guide", "sourceType": "blog", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "gemma-3-4b/all/knowledge-refusals",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["factuality"],
+      "severity": "moderate",
+      "summary": "Thin world knowledge plus a 67.3% answer rate on HHEM — it either doesn't know or declines to say, a third of the time.",
+      "mitigations": [
+        { "mitigationId": "rag", "note": "Grounding raises both accuracy and answer rate.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://github.com/vectara/hallucination-leaderboard", "title": "Vectara HHEM (answer rate 67.3%)", "sourceType": "leaderboard", "accessed": "2026-08-30" },
+        { "url": "https://zazencodes.substack.com/p/ultimate-gemma-3-guide-testing-1b", "title": "Gemma 3 practical testing (knowledge gaps)", "sourceType": "blog", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    }
+  ]
+}

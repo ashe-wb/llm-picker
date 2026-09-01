@@ -1,0 +1,49 @@
+{
+  "modelId": "gemma-4-12b",
+  "entries": [
+    {
+      "id": "gemma-4-12b/all/mtp-speculative-decoding",
+      "bands": ["low", "mid", "high"],
+      "dimensions": ["instruction-following"],
+      "severity": "moderate",
+      "summary": "The 12B ships a Multi-Token-Prediction drafter for speculative decoding, and that path has its own bug reports in llama.cpp — enabling it (`-fit on`) can break generation on this size specifically. The speed feature is the risk, not the model.",
+      "mitigations": [
+        { "mitigationId": "update-runtime", "note": "Run without MTP/speculative decoding until the issue closes, or track a llama.cpp build that has the Gemma4 MTP fix. Plain Q4_0 decoding is unaffected.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://github.com/ggml-org/llama.cpp/issues/24350", "title": "Eval bug: Gemma4 MTP", "sourceType": "github", "accessed": "2026-08-30" },
+        { "url": "https://huggingface.co/unsloth/gemma-4-12B-it-qat-GGUF", "title": "unsloth Gemma 4 12B QAT GGUF — ships the MTP drafter for speculative decoding", "sourceType": "other", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "gemma-4-12b/all/gguf-runtime-churn",
+      "bands": ["low", "mid", "high"],
+      "dimensions": ["instruction-following", "coding"],
+      "severity": "severe",
+      "summary": "Shares the family's rocky local-runtime history: Google's refreshed official GGUFs (2026-07-15) failed to load in LM Studio 0.4.19, and the family produces gibberish past ~230 tokens when KV offload (-nkvo) is on.",
+      "mitigations": [
+        { "mitigationId": "update-runtime", "note": "Take a re-cut community quant and a current llama.cpp; don't run Gemma 4 with -nkvo.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://github.com/lmstudio-ai/lmstudio-bug-tracker/issues/2169", "title": "Latest official Google Gemma 4 GGUF models fail to load in LM Studio 0.4.19", "sourceType": "github", "accessed": "2026-08-30" },
+        { "url": "https://github.com/ggml-org/llama.cpp/issues/21726", "title": "Eval bug: Gemma4 models produce gibberish at some point with -nkvo", "sourceType": "github", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "gemma-4-12b/all/long-context-retrieval",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["long-context"],
+      "severity": "moderate",
+      "summary": "The 256K window oversells it: retrieval accuracy at 128K is 43.4% (vendor's own MRCR v2 number), essentially the same as the 26B-A4B. Don't stuff the window and expect recall.",
+      "mitigations": [
+        { "mitigationId": "rag", "note": "Retrieve and paste the relevant chunk rather than the whole corpus.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://ai.google.dev/gemma/docs/core/model_card_4", "title": "Gemma 4 model card — MRCR v2 @128K per variant", "sourceType": "vendor", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    }
+  ]
+}

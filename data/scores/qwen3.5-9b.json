@@ -1,0 +1,8 @@
+{
+  "modelId": "qwen3.5-9b",
+  "entries": [
+    { "band": "full", "dimension": "math", "score": 8,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "GPQA Diamond", "rawValue": 81.7, "url": "https://huggingface.co/Qwen/Qwen3.5-9B", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "MMLU-Pro: 82.5 — vendor-reported; absent from Vectara HHEM and Aider as of 2026-08-30, so everything else is unrated." }] }
+  ],
+  "quantOverrides": []
+}

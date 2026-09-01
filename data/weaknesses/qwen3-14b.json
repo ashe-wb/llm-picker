@@ -1,0 +1,35 @@
+{
+  "modelId": "qwen3-14b",
+  "entries": [
+    {
+      "id": "qwen3-14b/all/greedy-repetition",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["instruction-following"],
+      "severity": "mild",
+      "summary": "Endless repetition under greedy decoding — the model card warns against it explicitly; quantized builds are more susceptible.",
+      "mitigations": [
+        { "mitigationId": "prompting", "note": "Card samplers: temp 0.6 / top_p 0.95 / top_k 20 (thinking) or 0.7 / 0.8 / 20 (non-thinking); presence_penalty 0–2 for stubborn loops.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/Qwen/Qwen3-14B", "title": "Qwen3-14B card (greedy-decoding warning)", "sourceType": "vendor", "accessed": "2026-08-30" },
+        { "url": "https://github.com/ggml-org/llama.cpp/issues/13310", "title": "llama.cpp issue: Qwen3 GGUF repetition", "sourceType": "github", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "qwen3-14b/all/world-knowledge",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["factuality"],
+      "severity": "moderate",
+      "summary": "Family-wide math/code tilt at the expense of world knowledge — grounding is good, recall is not.",
+      "mitigations": [
+        { "mitigationId": "rag", "note": "Its 94.6% HHEM consistency means retrieval fixes what recall lacks.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/Qwen/Qwen3-235B-A22B/discussions/16", "title": "Family-wide knowledge-gap discussion", "sourceType": "other", "accessed": "2026-08-30" },
+        { "url": "https://patmcguinness.substack.com/p/qwen-3-release-brings-ai-home", "title": "Qwen3 release analysis (SimpleQA weakness)", "sourceType": "blog", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    }
+  ]
+}

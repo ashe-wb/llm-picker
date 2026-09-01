@@ -1,0 +1,20 @@
+{
+  "modelId": "llama-3.1-8b",
+  "entries": [
+    {
+      "id": "llama-3.1-8b/all/aging",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["math", "coding"],
+      "severity": "moderate",
+      "summary": "A 2024 model in a 2026 field: newer 8–9B releases (Qwen3-8B and successors) clearly beat it on reasoning, math, and multilingual work.",
+      "mitigations": [
+        { "mitigationId": "none", "note": "No tool closes a generation gap. Its real value is the mature ecosystem — if you need a specific Llama fine-tune or maximum tool compatibility, that trade can still be worth it." }
+      ],
+      "citations": [
+        { "url": "https://willitrunai.com/blog/qwen-3-5-9b-vs-llama-3-1-8b", "title": "Qwen3.5-9B vs Llama 3.1 8B comparison", "sourceType": "blog", "accessed": "2026-08-30" },
+        { "url": "https://www.siliconflow.com/models/compare/meta-llama-3-1-8b-instruct-vs-qwen3-8b", "title": "Llama 3.1 8B vs Qwen3-8B comparison", "sourceType": "blog", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    }
+  ]
+}

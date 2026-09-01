@@ -1,0 +1,22 @@
+{
+  "modelId": "ornith-1.5-35b-a3b",
+  "entries": [
+    { "band": "full", "dimension": "coding", "score": 8,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "SWE-bench Verified", "rawValue": 79.0, "url": "https://datanorth.ai/news/ornith-releases-ornith-1-5", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "The highest figure in this catalog, ahead of Qwen3.6 27B's 77.2 — from 3B active parameters. Held at 8 rather than 9 because it is DeepReinforce's own run, averaged over five attempts with their harness; nobody else has reproduced it in the eleven days since release." }] },
+    { "band": "full", "dimension": "tool-calling", "score": 7,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "Terminal-Bench 2.1", "rawValue": 68.5, "url": "https://datanorth.ai/news/ornith-releases-ornith-1-5", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Agentic terminal work over many steps. The model is trained by building its own scaffolds, so agentic behaviour is the design target rather than a side effect. Vendor-measured." }] },
+    { "band": "high", "dimension": "coding", "score": 8,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q6_K", "method": "aggregated", "quantNote": "Editorial derivation: carried from the full band — 6-bit holds MoE expert weights without meaningful loss. At 30.5GB this band needs a 64GB machine." }] },
+    { "band": "high", "dimension": "tool-calling", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q6_K", "method": "aggregated", "quantNote": "Editorial derivation: carried from the full band." }] },
+    { "band": "mid", "dimension": "coding", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: one point down, the standard MoE deduction used across this site — sparse experts are individually more quant-sensitive than dense weights. This is the band that fits a 32GB machine." }] },
+    { "band": "mid", "dimension": "tool-calling", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: one point down for expert quantization; long agentic runs compound small errors." }] },
+    { "band": "low", "dimension": "coding", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q3_K_M", "method": "aggregated", "quantNote": "Editorial derivation: two points down. 3-bit expert routing degrades faster than 3-bit dense weights." }] },
+    { "band": "low", "dimension": "tool-calling", "score": 5,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q3_K_M", "method": "aggregated", "quantNote": "Editorial derivation: two points down from the full band." }] }
+  ],
+  "quantOverrides": []
+}

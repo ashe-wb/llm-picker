@@ -1,0 +1,89 @@
+---
+import '../styles/global.css';
+import { SITE } from '../config/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title, description } = Astro.props;
+const pageTitle = title ? `${title} · ${SITE.name}` : `${SITE.name} — ${SITE.tagline}`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description ?? SITE.description} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- One variable face over 400..700, which is every weight the stylesheet
+         asks for — so nothing is synthesised. The `opsz` axis is included so
+         Inter uses its wider, more open cut at label sizes and its tighter one
+         at display sizes, which is the axis it was designed around.
+         `display=swap` means text paints in the fallback immediately rather
+         than holding the page blank while the font arrives. -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&display=swap"
+    />
+  </head>
+  <body class="flex min-h-screen flex-col">
+    <header class="border-b-2 border-edge">
+      <div class="mx-auto w-full max-w-5xl px-4">
+        <div class="flex flex-wrap justify-between gap-x-4 border-b border-rule py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-faded">
+          <span>Known-issues sheets for local language models</span>
+          <span>Rev 0.1.0 · reviewed every {SITE.updateCadenceDays} days</span>
+        </div>
+        <div class="flex flex-wrap items-center justify-between gap-4 py-4">
+          <a href="/" class="flex items-center gap-2 font-mono text-xl font-bold uppercase tracking-tight">
+            <span class="inline-block h-3.5 w-3.5 bg-serious" aria-hidden="true"></span>
+            {SITE.name}
+          </a>
+          <nav class="flex gap-6 font-mono text-xs font-medium uppercase tracking-[0.12em]">
+            <a href="/" class="hover:text-serious">Picker</a>
+            <a href="/explore" class="hover:text-serious">Explore</a>
+            <a href="/glossary" class="hover:text-serious">Glossary</a>
+            <a href="/methodology" class="hover:text-serious">Methodology</a>
+            <a href={SITE.repoUrl} class="hover:text-serious">Source</a>
+          </nav>
+        </div>
+      </div>
+    </header>
+    <main class="mx-auto w-full max-w-5xl flex-1 px-4 py-10">
+      <slot />
+    </main>
+    <footer class="mt-12 border-t-2 border-edge">
+      <div class="mx-auto w-full max-w-5xl px-4 py-6">
+        <p class="dslabel mb-3">Document control</p>
+        <div class="grid gap-4 font-mono text-xs text-faded sm:grid-cols-3">
+          <div>
+            <p class="text-ink">Cadence</p>
+            <p>Automated refresh proposes; a human reviews and merges, every {SITE.updateCadenceDays} days.</p>
+          </div>
+          <div>
+            <p class="text-ink">Method</p>
+            <p>Editorial 0–10 scores over cited public evidence. Unverifiable cells stay blank. <a href="/methodology" class="underline underline-offset-2">Full methodology</a>.</p>
+          </div>
+          <div>
+            <p class="text-ink">License</p>
+            {/* CC BY only works if a reader can find the terms and knows who to
+                credit, so the deed and the source are linked rather than named. */}
+            <p>
+              Code <a href={`${SITE.repoUrl}/blob/main/LICENSE`} class="underline underline-offset-2" rel="license noopener">MIT</a>
+              {' · '}data <a href="https://creativecommons.org/licenses/by/4.0/" class="underline underline-offset-2" rel="license noopener">CC BY 4.0</a>
+              {' · '}benchmark values remain their sources' work.
+            </p>
+            <p class="mt-1">
+              © {new Date().getFullYear()} {SITE.name} contributors ·
+              {' '}<a href={SITE.repoUrl} class="underline underline-offset-2" rel="noopener">source</a>
+              {' · '}<a href={`${SITE.repoUrl}/blob/main/DATA_LICENSE`} class="underline underline-offset-2" rel="noopener">reusing this data</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

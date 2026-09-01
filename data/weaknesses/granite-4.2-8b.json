@@ -1,0 +1,48 @@
+{
+  "modelId": "granite-4.2-8b",
+  "entries": [
+    {
+      "id": "granite-4.2-8b/all/unreplicated-and-brand-new",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["coding", "tool-calling"],
+      "severity": "mild",
+      "summary": "Released 2026-08-25. Every score here is IBM's own — including the BFCL v3 number, which is the model's main selling point and comes from a benchmark whose public leaderboard has not yet listed it.",
+      "mitigations": [
+        { "mitigationId": "none", "note": "Not a defect — a caveat. Revisit when independent numbers land." }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/blog/ibm-granite/granite-4-2", "title": "Granite 4.2 LLMs: How They're Built (IBM's own benchmark reporting)", "sourceType": "vendor", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    },
+    {
+      "id": "granite-4.2-8b/all/template-detection",
+      "bands": ["low", "mid", "high"],
+      "dimensions": ["instruction-following", "tool-calling"],
+      "severity": "moderate",
+      "summary": "Granite 4 chat-template auto-detection has failed in llama.cpp, and the Granite 4 line also has an open report of quantized builds failing at very large contexts. A mis-detected template degrades tool calling quietly — the model looks dumber than it is.",
+      "mitigations": [
+        { "mitigationId": "update-runtime", "note": "Pass the Granite chat template explicitly instead of relying on auto-detection, and keep llama.cpp current.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://github.com/ggml-org/llama.cpp/issues/16415", "title": "Eval bug: Granite 4 template detection fails", "sourceType": "github", "accessed": "2026-08-30" },
+        { "url": "https://github.com/ggml-org/llama.cpp/issues/18606", "title": "Eval bug: granite 4 quantized builds fail on very large context", "sourceType": "github", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "granite-4.2-8b/all/knowledge-ceiling",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["factuality"],
+      "severity": "moderate",
+      "summary": "MMLU 73.8 against the 30B sibling's 80.2. Nine billion parameters caps how much world knowledge it can hold, and no hallucination benchmark lists it, so the factuality score is a knowledge proxy rather than a measurement.",
+      "mitigations": [
+        { "mitigationId": "rag", "note": "Ground it in retrieved documents — this model is built for enterprise RAG and tool use, which is exactly the workload that avoids the ceiling.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/blog/ibm-granite/granite-4-2", "title": "Granite 4.2 LLMs: How They're Built (MMLU per variant)", "sourceType": "vendor", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    }
+  ]
+}

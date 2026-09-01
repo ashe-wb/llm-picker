@@ -1,0 +1,107 @@
+{
+  "modelId": "qwen3.8-27b",
+  "entries": [
+    {
+      "id": "qwen3.8-27b/all/overthinking-default",
+      "bands": [
+        "low",
+        "mid",
+        "high",
+        "full"
+      ],
+      "dimensions": [
+        "instruction-following"
+      ],
+      "severity": "moderate",
+      "summary": "Ships with reasoning effort defaulted to 'xhigh' and wildly overthinks simple prompts — one reviewer measured 21 minutes and 22K reasoning tokens on a trivial question at default settings.",
+      "mitigations": [
+        {
+          "mitigationId": "prompting",
+          "note": "Turn the reasoning-effort setting down for everyday use; save xhigh for problems that earn it.",
+          "effectiveness": "strong"
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://simonwillison.net/2026/Aug/16/qwen-38-27b/",
+          "title": "Qwen3.8-27B first-run notes (default overthinking)",
+          "sourceType": "blog",
+          "accessed": "2026-08-30"
+        }
+      ],
+      "confidence": "anecdotal"
+    },
+    {
+      "id": "qwen3.8-27b/low-mid/runtime-support",
+      "bands": [
+        "low",
+        "mid",
+        "high"
+      ],
+      "dimensions": [
+        "coding",
+        "instruction-following"
+      ],
+      "severity": "severe",
+      "summary": "Its new DeltaNet architecture had a CUDA bug producing silent garbage output on older llama.cpp builds — quantized local runs on stale runtimes can look broken when the model is fine.",
+      "mitigations": [
+        {
+          "mitigationId": "update-runtime",
+          "note": "Use llama.cpp ≥ b10419 (or a runner built on it). This is a tooling bug, not a model defect.",
+          "effectiveness": "strong"
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://github.com/ggml-org/llama.cpp/discussions/27164",
+          "title": "llama.cpp discussion: Qwen3.8 DeltaNet CUDA bug",
+          "sourceType": "github",
+          "accessed": "2026-08-30"
+        },
+        {
+          "url": "https://simonwillison.net/2026/Aug/16/qwen-38-27b/",
+          "title": "Early local-run notes (rough llama.cpp support)",
+          "sourceType": "blog",
+          "accessed": "2026-08-30"
+        }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "qwen3.8-27b/all/unreplicated-benchmarks",
+      "bands": [
+        "low",
+        "mid",
+        "high",
+        "full"
+      ],
+      "dimensions": [
+        "coding",
+        "math"
+      ],
+      "severity": "mild",
+      "summary": "Partly resolved. Within two weeks of release the coding claim picked up independent third-party corroboration — a top-10 overall placing on Code Arena's WebDev board and the #1 open-weight slot on Arena.ai's Image-to-WebDev board — and an outside quantization study reproduced the GPQA, IFBench and Terminal-Bench figures across the quant ladder. What remains unmeasured by anyone is factuality and long context: no hallucination benchmark and no RULER or MRCR result exists for this model, so those cells are blank rather than estimated. Note also that the flashiest numbers on the vendor card — QwenSWEBench, CoWorkBench — are Qwen's own benchmarks and are deliberately not scored here.",
+      "mitigations": [
+        {
+          "mitigationId": "none",
+          "note": "Coding and reasoning now have outside support. Treat the factuality and long-context blanks as genuinely unknown, not as implied strength."
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.orcarouter.ai/blog/qwen-3-8-27b-benchmarks",
+          "title": "Qwen3.8-27B independent leaderboard placements (Code Arena, Arena.ai)",
+          "sourceType": "blog",
+          "accessed": "2026-08-31"
+        },
+        {
+          "url": "https://quesma.com/blog/qwen38-27b-quantizations-benchmarked/",
+          "title": "Third-party quantization study reproducing GPQA, IFBench and Terminal-Bench 2.1",
+          "sourceType": "blog",
+          "accessed": "2026-08-31"
+        }
+      ],
+      "confidence": "community-consensus"
+    }
+  ]
+}

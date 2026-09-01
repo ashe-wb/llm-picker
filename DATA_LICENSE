@@ -1,0 +1,29 @@
+The contents of the /data directory (model entries, editorial scores, weakness
+and mitigation write-ups) are licensed under the Creative Commons Attribution
+4.0 International License (CC BY 4.0):
+
+  https://creativecommons.org/licenses/by/4.0/
+
+Attribution: link back to this repository.
+
+`data/tensor-shapes.json` is measured from the published weights of the models
+listed here, by reading each safetensors file's header (see
+scripts/audit-shapes.ts). It records tensor names, their shapes and dtypes, and
+counts derived from them. It contains no weights, no parameter values and no code
+from any model, and the files themselves are never downloaded — only the header
+at the front of each one.
+
+Those checkpoints are released under terms of their own, and this repository
+grants nothing in respect of them: Apache-2.0 and MIT for most, and for the rest
+the Gemma Terms of Use, the NVIDIA Nemotron Open Model License, and the Llama 3.1,
+3.2 and 3.3 Community Licenses. Each model's own entry links its license. Anyone
+using a model must go to that license, not to this one.
+
+What CC BY 4.0 covers here is our own work: the measuring, the selection of what
+to record, and the arrangement. The measurements themselves are facts about
+published files and we make no claim on the facts.
+
+Raw benchmark values referenced in provenance entries remain the work of their
+cited sources and are reproduced under their respective terms; sources whose
+terms forbid republication are cited by link only and their values are never
+stored here.

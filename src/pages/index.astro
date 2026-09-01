@@ -1,0 +1,38 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Picker from '../components/Picker.astro';
+import { SITE } from '../config/site';
+import { loadSiteData } from '../lib/data';
+
+const { models } = loadSiteData();
+---
+
+<Layout>
+  <section class="mb-10">
+    <p class="dslabel mb-3">Known-issues database · {models.length} models on file</p>
+    <h1 class="max-w-3xl font-mono text-2xl font-bold leading-tight tracking-tight sm:text-3xl">
+      {SITE.tagline}
+    </h1>
+    <!-- The one line telling a first-time reader how to use the thing, and it
+         was set in the site's smallest, dimmest style — 11px faded, the
+         footnote treatment — directly beneath a 3xl headline. Size and contrast
+         both raised: 14px and the full text colour. Still mono and still one
+         sentence, so it reads as instruction rather than a second tagline. -->
+    <p class="mt-4 max-w-2xl font-mono text-sm text-ink">
+      Pick your machine, say what you need the model for, and the output ranks what fits.
+    </p>
+  </section>
+  <Picker />
+  <section class="mt-14 border-t border-rule pt-6">
+    <p class="dslabel mb-3">All models</p>
+    <ul class="space-y-2 text-sm">
+      {models.map((m) => (
+        <li class="flex flex-wrap items-baseline gap-2">
+          <a href={`/models/${m.id}`} class="font-mono font-semibold underline decoration-rule underline-offset-4 hover:decoration-serious">{m.name}</a>
+          {m.vision && <span class="border border-faded px-1 font-mono text-[10px] uppercase tracking-[0.12em] text-faded">vision</span>}
+          <span class="text-faded">{m.summary}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Layout>

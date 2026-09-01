@@ -1,0 +1,53 @@
+{
+  "id": "mistral-small-4",
+  "name": "Mistral Small 4",
+  "family": "Mistral Small",
+  "vendor": "Mistral AI",
+  "architecture": "moe",
+  "paramsB": 119,
+  "activeParamsB": 6.5,
+  "layers": 36,
+  "vocabSize": 131072,
+  "width": 8192,
+  "attentionHeads": 32,
+  "mlaLatentDim": 320,
+  "expertsPerToken": 4,
+  "vision": true,
+  "contextLength": 262144,
+  "license": {
+    "name": "Apache-2.0",
+    "url": "https://huggingface.co/mistralai/Mistral-Small-4-119B-2603"
+  },
+  "releaseDate": "2026-03-16",
+  "ggufUrl": "https://huggingface.co/unsloth/Mistral-Small-4-119B-2603-GGUF",
+  "status": "active",
+  "summary": "Mistral folded Magistral, Pixtral and Devstral into one model: reasoning, vision and agentic coding, Apache licensed, 6.5B active of 119B. The catch is attention. It kept full multi-head attention where everything else its size uses grouped-query, so its KV cache costs 576KB per token — the most expensive on this site, and more than a 358B model's. Cheap to compute, dear to give context to.",
+  "kvBytesPerToken": 23040,
+  "kvSourceUrl": "https://huggingface.co/mistralai/Mistral-Small-4-119B-2603/blob/main/config.json",
+  "bands": {
+    "low": {
+      "weightsGb": 54.4,
+      "exampleQuants": [
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 73.8,
+      "exampleQuants": [
+        "Q4_K_M"
+      ]
+    },
+    "high": {
+      "weightsGb": 99.4,
+      "exampleQuants": [
+        "Q6_K"
+      ]
+    },
+    "full": {
+      "weightsGb": 238,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  }
+}

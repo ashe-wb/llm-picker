@@ -1,0 +1,22 @@
+{
+  "modelId": "phi-4-mini",
+  "entries": [
+    { "band": "full", "dimension": "math", "score": 6,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "MATH", "rawValue": 64.0, "url": "https://huggingface.co/microsoft/Phi-4-mini-instruct", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "GSM8K: 88.6 — best-in-class for 4B." }] },
+    { "band": "full", "dimension": "coding", "score": 6,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "HumanEval", "rawValue": 74.4, "url": "https://arxiv.org/html/2503.01743", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "MBPP: 65.3, BigCodeBench-Complete: 43.0 (tech report)." }] },
+    { "band": "full", "dimension": "instruction-following", "score": 5,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "IFEval", "rawValue": 70.1, "url": "https://arxiv.org/html/2503.01743", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported" }] },
+    { "band": "full", "dimension": "tool-calling", "score": 6,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "BFCL", "rawValue": 70.3, "url": "https://arxiv.org/html/2503.01743", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported" }] },
+    { "band": "full", "dimension": "factuality", "score": 2,
+      "provenance": [{ "sourceId": "vectara-hallucination", "metric": "HHEM hallucination rate % (lower is better)", "rawValue": 23.5, "url": "https://github.com/vectara/hallucination-leaderboard", "retrieved": "2026-08-30", "quant": "bf16", "method": "aggregated", "notes": "Roughly 5× the rate of same-size peers — the worst on this site." }] },
+    { "band": "mid", "dimension": "math", "score": 5,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "KLD/perplexity delta vs bf16", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: small models lose proportionally more at 4-bit." }] },
+    { "band": "mid", "dimension": "coding", "score": 5,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "KLD/perplexity delta vs bf16", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: small loss at 4-bit." }] },
+    { "band": "mid", "dimension": "tool-calling", "score": 5,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://www.reddit.com/r/LocalLLaMA/", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: small loss at 4-bit." }] }
+  ],
+  "quantOverrides": []
+}

@@ -1,0 +1,55 @@
+{
+  "id": "granite-4.2-8b",
+  "name": "Granite 4.2 8B",
+  "family": "Granite 4.2",
+  "vendor": "IBM",
+  "architecture": "dense",
+  "paramsB": 9,
+  "layers": 40,
+  "vocabSize": 100352,
+  "width": 12800,
+  "attentionHeads": 32,
+  "kvHeads": 8,
+  "headDim": 128,
+  "attentionPattern": "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+  "vision": false,
+  "contextLength": 131072,
+  "license": {
+    "name": "Apache-2.0",
+    "url": "https://huggingface.co/ibm-granite/granite-4.2-8b-instruct"
+  },
+  "releaseDate": "2026-08-25",
+  "ggufUrl": "https://huggingface.co/bartowski/granite-4.2-8b-GGUF",
+  "status": "active",
+  "summary": "The tool-calling specialist of the 8GB tier: Apache-2.0, a thinking switch, and function-calling trained in live sandboxes rather than scraped transcripts. Its predecessor's 8B matched a 32B MoE across ten benchmarks — this is that lineage, five days old.",
+  "kvBytesPerToken": 163840,
+  "kvSourceUrl": "https://huggingface.co/ibm-granite/granite-4.2-8b/blob/main/config.json",
+  "bands": {
+    "low": {
+      "weightsGb": 4.5,
+      "exampleQuants": [
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 5.5,
+      "exampleQuants": [
+        "Q4_K_M",
+        "mlx-4bit"
+      ]
+    },
+    "high": {
+      "weightsGb": 7.5,
+      "exampleQuants": [
+        "Q6_K"
+      ]
+    },
+    "full": {
+      "weightsGb": 18,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  },
+  "mlxUrl": "https://huggingface.co/lmstudio-community/granite-4.2-8b-MLX-4bit"
+}

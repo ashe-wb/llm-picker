@@ -1,0 +1,55 @@
+{
+  "id": "qwen3-coder-next-80b-a3b",
+  "name": "Qwen3-Coder-Next 80B-A3B",
+  "family": "Qwen3-Next",
+  "vendor": "Alibaba",
+  "architecture": "moe",
+  "paramsB": 80,
+  "activeParamsB": 3,
+  "layers": 48,
+  "vocabSize": 151936,
+  "width": 5120,
+  "attentionHeads": 16,
+  "kvHeads": 2,
+  "headDim": 256,
+  "attentionPattern": "...F...F...F...F...F...F...F...F...F...F...F...F",
+  "expertsPerToken": 10,
+  "vision": false,
+  "contextLength": 262144,
+  "license": {
+    "name": "Apache-2.0",
+    "url": "https://huggingface.co/Qwen/Qwen3-Coder-Next"
+  },
+  "releaseDate": "2026-02-03",
+  "ggufUrl": "https://huggingface.co/unsloth/Qwen3-Coder-Next-GGUF",
+  "status": "active",
+  "summary": "Three billion active parameters out of eighty, and 70.6 on SWE-bench Verified — within striking distance of models that activate ten times as much. The 49GB 4-bit build is the cheapest way onto this site's upper tier, and the sparsity that makes it fast is also what makes it fragile at low quant.",
+  "kvBytesPerToken": 24576,
+  "kvSourceUrl": "https://huggingface.co/Qwen/Qwen3-Coder-Next/blob/main/config.json",
+  "bands": {
+    "low": {
+      "weightsGb": 38.3,
+      "exampleQuants": [
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 49.3,
+      "exampleQuants": [
+        "Q4_K_M"
+      ]
+    },
+    "high": {
+      "weightsGb": 65.6,
+      "exampleQuants": [
+        "Q6_K"
+      ]
+    },
+    "full": {
+      "weightsGb": 159,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  }
+}

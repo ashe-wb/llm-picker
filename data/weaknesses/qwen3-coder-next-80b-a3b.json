@@ -1,0 +1,76 @@
+{
+  "modelId": "qwen3-coder-next-80b-a3b",
+  "entries": [
+    {
+      "id": "qwen3-coder-next-80b-a3b/low/sparsity-is-fragile",
+      "bands": [
+        "low"
+      ],
+      "dimensions": [
+        "tool-calling",
+        "coding"
+      ],
+      "severity": "moderate",
+      "summary": "Only 3B of 80B parameters are active per token, routed across 512 experts. That extreme sparsity is what makes the model fast and small to run, and it is also what makes 3-bit risky: every routing decision is made on a thin slice of the network, and quantization noise there costs more than it would in a dense model of the same footprint.",
+      "mitigations": [
+        {
+          "mitigationId": "higher-quant",
+          "note": "Run the 49.3GB 4-bit build. Unsloth's own guidance is more than 45GB of unified memory or RAM/VRAM for 4-bit, which is a modest ask for this tier.",
+          "effectiveness": "strong"
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://unsloth.ai/docs/models/qwen3-coder-next",
+          "title": "Unsloth Qwen3-Coder-Next guide: >45GB recommended for 4-bit quants",
+          "sourceType": "blog",
+          "accessed": "2026-08-31"
+        },
+        {
+          "url": "https://huggingface.co/unsloth/Qwen3-Coder-Next-GGUF",
+          "title": "unsloth Qwen3-Coder-Next-GGUF: UD-IQ2_XXS 23.3GB, Q3_K_M 38.3GB, UD-Q4_K_M 49.3GB",
+          "sourceType": "other",
+          "accessed": "2026-08-31"
+        }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "qwen3-coder-next-80b-a3b/all/coder-only-evidence",
+      "bands": [
+        "low",
+        "mid",
+        "high",
+        "full"
+      ],
+      "dimensions": [
+        "math",
+        "factuality",
+        "instruction-following"
+      ],
+      "severity": "moderate",
+      "summary": "This is a coding model and its published evidence is coding-only: SWE-bench Verified, SWE-bench Pro and Terminal-Bench, and nothing else. There is no AIME, GPQA, MMLU, IFEval or hallucination figure for it, so five of the seven dimensions on this site are genuinely unmeasured rather than merely low. The coverage discount on its cards reflects that, and it should — do not read the blank cells as strength.",
+      "mitigations": [
+        {
+          "mitigationId": "none",
+          "note": "Use it for what it was measured on. For general work, a Qwen3.5 model of similar size has evidence across the board."
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://huggingface.co/Qwen/Qwen3-Coder-Next",
+          "title": "Qwen3-Coder-Next model card: SWE-bench and Terminal-Bench only",
+          "sourceType": "vendor",
+          "accessed": "2026-08-31"
+        },
+        {
+          "url": "https://unsloth.ai/docs/models/qwen3-coder-next",
+          "title": "Unsloth Qwen3-Coder-Next guide",
+          "sourceType": "blog",
+          "accessed": "2026-08-31"
+        }
+      ],
+      "confidence": "community-consensus"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  // Cloudflare Workers Static Assets config.
+  //
+  // Without this, the dashboard defaults the assets directory to `public/`,
+  // which this project does not have — Astro builds to `dist/`. That mismatch
+  // fails the deploy with "Missing file or directory: public/.assetsignore".
+  //
+  // Keeping it in the repo means the deploy is reproducible and does not depend
+  // on remembering a dashboard setting.
+  "name": "llm-picker",
+  "compatibility_date": "2026-08-30",
+  "assets": {
+    "directory": "./dist"
+  }
+}

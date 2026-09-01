@@ -1,0 +1,56 @@
+{
+  "id": "llama-3.1-8b",
+  "name": "Llama 3.1 8B",
+  "family": "Llama 3.1",
+  "vendor": "Meta",
+  "architecture": "dense",
+  "paramsB": 8,
+  "layers": 32,
+  "vocabSize": 128256,
+  "width": 14336,
+  "attentionHeads": 32,
+  "kvHeads": 8,
+  "headDim": 128,
+  "attentionPattern": "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+  "vision": false,
+  "contextLength": 131072,
+  "license": {
+    "name": "Llama 3.1 Community License",
+    "url": "https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct"
+  },
+  "releaseDate": "2024-07-23",
+  "ggufUrl": "https://huggingface.co/bartowski/Meta-Llama-3.1-8B-Instruct-GGUF",
+  "status": "active",
+  "summary": "The compatibility baseline. Every local tool, tutorial, and fine-tune supports it, and its tool calling is still excellent — but 2025–26 peers beat it on raw reasoning. Pick it for ecosystem, not scores.",
+  "kvBytesPerToken": 131072,
+  "kvSourceUrl": "https://huggingface.co/unsloth/Meta-Llama-3.1-8B-Instruct/blob/main/config.json",
+  "bands": {
+    "low": {
+      "weightsGb": 4,
+      "exampleQuants": [
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 5,
+      "exampleQuants": [
+        "Q4_K_M",
+        "mlx-4bit"
+      ]
+    },
+    "high": {
+      "weightsGb": 7,
+      "exampleQuants": [
+        "Q6_K",
+        "Q8_0"
+      ]
+    },
+    "full": {
+      "weightsGb": 16,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  },
+  "mlxUrl": "https://huggingface.co/mlx-community/Meta-Llama-3.1-8B-Instruct-4bit"
+}

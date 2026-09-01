@@ -1,0 +1,56 @@
+{
+  "id": "nemotron-3-super-120b-a12b",
+  "name": "Nemotron 3 Super 120B-A12B",
+  "family": "Nemotron 3",
+  "vendor": "NVIDIA",
+  "architecture": "moe",
+  "paramsB": 120,
+  "activeParamsB": 12,
+  "layers": 88,
+  "vocabSize": 131072,
+  "width": 59136,
+  "attentionHeads": 32,
+  "kvHeads": 2,
+  "headDim": 128,
+  "attentionPattern": ".......F........F........F..........F..........F..........F..........F........F.........",
+  "expertsPerToken": 22,
+  "vision": false,
+  "contextLength": 262144,
+  "license": {
+    "name": "NVIDIA Nemotron Open Model License",
+    "url": "https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-nemotron-open-model-license/"
+  },
+  "releaseDate": "2026-03-11",
+  "ggufUrl": "https://huggingface.co/bartowski/nvidia_Nemotron-3-Super-120B-A12B-GGUF",
+  "status": "active",
+  "summary": "The Super tier of Nemotron 3, scaling the Nano's hybrid Mamba-MoE design to 120B. Only 8 of its 88 layers are attention, so the KV cache costs 8KB per token — a quarter of what a dense model this size would ask, and the reason a 256K context stays affordable on a machine that can hold the weights.",
+  "kvBytesPerToken": 8192,
+  "kvSourceUrl": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16/blob/main/config.json",
+  "bands": {
+    "low": {
+      "weightsGb": 64.7,
+      "exampleQuants": [
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 87,
+      "exampleQuants": [
+        "Q4_K_M"
+      ]
+    },
+    "high": {
+      "weightsGb": 113.6,
+      "exampleQuants": [
+        "Q6_K",
+        "Q8_0"
+      ]
+    },
+    "full": {
+      "weightsGb": 240,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  }
+}

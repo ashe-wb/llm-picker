@@ -1,0 +1,34 @@
+{
+  "modelId": "kat-coder-v2.5-dev",
+  "entries": [
+    {
+      "id": "kat-coder-v2.5-dev/all/harness-disagreement",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["coding"],
+      "severity": "moderate",
+      "summary": "Kwaipilot measure their own base model — Qwen3.6-35B-A3B — at 64.40 on SWE-bench Verified, while Alibaba publish 73.4 for the same weights. Nine points of disagreement on an identical model tells you the harness, scaffold and sampling settings move the score as much as the model does. KAT-Coder's own 69.4 is measured on Kwaipilot's harness, so it can be compared to their 64.40 base figure but not to numbers from anyone else's.",
+      "mitigations": [
+        { "mitigationId": "none", "note": "No fix — read within-vendor deltas, not cross-vendor rankings. This is why the site records the exact metric string and source for every number." }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/Kwaipilot/KAT-Coder-V2.5-Dev/discussions/12", "title": "Community benchmark results discussion", "sourceType": "vendor", "accessed": "2026-08-30" },
+        { "url": "https://daily.dev/posts/kat-coder-v2-5-dev-vs-qwen3-6-35b-is-8x-fewer-tokens-actually-better-for-agentic-coding--jqvo5mh3e", "title": "KAT-Coder-V2.5-Dev vs Qwen3.6-35B — comparing the reported figures", "sourceType": "blog", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "kat-coder-v2.5-dev/all/no-vision",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["instruction-following"],
+      "severity": "mild",
+      "summary": "The base model, Qwen3.6-35B-A3B, is multimodal. The open-weight KAT-Coder release ships language weights only — the vision components were removed. If you picked it expecting the base model's screenshot handling, it is not there.",
+      "mitigations": [
+        { "mitigationId": "none", "note": "Use the Qwen3.6 35B-A3B base if you need vision at this size; it is Apache-2.0 too." }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/Kwaipilot/KAT-Coder-V2.5-Dev", "title": "KAT-Coder-V2.5-Dev — language-model weights only", "sourceType": "vendor", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    }
+  ]
+}

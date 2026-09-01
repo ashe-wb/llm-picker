@@ -1,0 +1,241 @@
+{
+  "modelId": "nemotron-3-super-120b-a12b",
+  "entries": [
+    {
+      "band": "full",
+      "dimension": "coding",
+      "score": 8,
+      "provenance": [
+        {
+          "sourceId": "vendor-model-card",
+          "metric": "LiveCodeBench",
+          "rawValue": 81.19,
+          "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16",
+          "retrieved": "2026-08-31",
+          "quant": "bf16",
+          "method": "vendor-reported",
+          "notes": "SWE-Bench 60.47 under OpenHands, 59.20 under OpenCode — NVIDIA reports both harnesses, which is more honest than most cards."
+        }
+      ]
+    },
+    {
+      "band": "full",
+      "dimension": "factuality",
+      "score": 7,
+      "provenance": [
+        {
+          "sourceId": "vendor-model-card",
+          "metric": "MMLU-Pro",
+          "rawValue": 83.73,
+          "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16",
+          "retrieved": "2026-08-31",
+          "quant": "bf16",
+          "method": "vendor-reported",
+          "notes": "No hallucination-rate benchmark is published for this model, so factuality rests on a knowledge benchmark alone."
+        }
+      ]
+    },
+    {
+      "band": "full",
+      "dimension": "instruction-following",
+      "score": 7,
+      "provenance": [
+        {
+          "sourceId": "vendor-model-card",
+          "metric": "IFBench",
+          "rawValue": 72.56,
+          "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16",
+          "retrieved": "2026-08-31",
+          "quant": "bf16",
+          "method": "vendor-reported",
+          "notes": "Slightly ahead of Nemotron 3 Nano's 71.5 on the same program-checkable benchmark, so there is little interpretive room."
+        }
+      ]
+    },
+    {
+      "band": "full",
+      "dimension": "math",
+      "score": 9,
+      "provenance": [
+        {
+          "sourceId": "vendor-model-card",
+          "metric": "AIME25 (no tools)",
+          "rawValue": 90.21,
+          "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16",
+          "retrieved": "2026-08-31",
+          "quant": "bf16",
+          "method": "vendor-reported",
+          "notes": "GPQA 79.23 without tools, 82.70 with. Reasoning is the tier's strongest axis."
+        }
+      ]
+    },
+    {
+      "band": "full",
+      "dimension": "tool-calling",
+      "score": 7,
+      "provenance": [
+        {
+          "sourceId": "vendor-model-card",
+          "metric": "Tau2-Bench average",
+          "rawValue": 61.15,
+          "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16",
+          "retrieved": "2026-08-31",
+          "quant": "bf16",
+          "method": "vendor-reported",
+          "notes": "Terminal Bench Core 2.0 31.00 — the weakest number on the card, and low for a model NVIDIA positions for agents."
+        }
+      ]
+    },
+    {
+      "band": "high",
+      "dimension": "coding",
+      "score": 8,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q6_K",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: no drop from the measured bf16 figure. 6-8 bit is effectively lossless on a model this size — the differences that show up at 4-bit and below are not measurable here. Recorded explicitly rather than left to band fallback, which would otherwise borrow the 4-bit number and subtract a point."
+        }
+      ]
+    },
+    {
+      "band": "high",
+      "dimension": "factuality",
+      "score": 7,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q6_K",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: no drop from the measured bf16 figure. 6-8 bit is effectively lossless on a model this size — the differences that show up at 4-bit and below are not measurable here. Recorded explicitly rather than left to band fallback, which would otherwise borrow the 4-bit number and subtract a point."
+        }
+      ]
+    },
+    {
+      "band": "high",
+      "dimension": "instruction-following",
+      "score": 7,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q6_K",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: no drop from the measured bf16 figure. 6-8 bit is effectively lossless on a model this size — the differences that show up at 4-bit and below are not measurable here. Recorded explicitly rather than left to band fallback, which would otherwise borrow the 4-bit number and subtract a point."
+        }
+      ]
+    },
+    {
+      "band": "high",
+      "dimension": "math",
+      "score": 9,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q6_K",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: no drop from the measured bf16 figure. 6-8 bit is effectively lossless on a model this size — the differences that show up at 4-bit and below are not measurable here. Recorded explicitly rather than left to band fallback, which would otherwise borrow the 4-bit number and subtract a point."
+        }
+      ]
+    },
+    {
+      "band": "high",
+      "dimension": "tool-calling",
+      "score": 7,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q6_K",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: no drop from the measured bf16 figure. 6-8 bit is effectively lossless on a model this size — the differences that show up at 4-bit and below are not measurable here. Recorded explicitly rather than left to band fallback, which would otherwise borrow the 4-bit number and subtract a point."
+        }
+      ]
+    },
+    {
+      "band": "mid",
+      "dimension": "coding",
+      "score": 7,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q4_K_M",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: one point down from the measured bf16 figure. 4-bit is the band these are actually run at, and the loss is real but modest."
+        }
+      ]
+    },
+    {
+      "band": "mid",
+      "dimension": "math",
+      "score": 8,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q4_K_M",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: one point down from the measured bf16 figure. 4-bit is the band these are actually run at, and the loss is real but modest."
+        }
+      ]
+    },
+    {
+      "band": "mid",
+      "dimension": "tool-calling",
+      "score": 6,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q4_K_M",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: one point down from the measured bf16 figure. 4-bit is the band these are actually run at, and the loss is real but modest."
+        }
+      ]
+    },
+    {
+      "band": "low",
+      "dimension": "coding",
+      "score": 5,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q3_K_M",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: two points down. At 3-bit a MoE of this size loses expert-routing precision first, which shows up as dropped tool arguments and broken multi-file edits before it shows up as worse prose."
+        }
+      ]
+    },
+    {
+      "band": "low",
+      "dimension": "tool-calling",
+      "score": 4,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q3_K_M",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: two points down. At 3-bit a MoE of this size loses expert-routing precision first, which shows up as dropped tool arguments and broken multi-file edits before it shows up as worse prose."
+        }
+      ]
+    }
+  ],
+  "quantOverrides": []
+}

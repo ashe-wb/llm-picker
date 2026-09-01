@@ -1,0 +1,62 @@
+{
+  "id": "gemma-4-e2b",
+  "name": "Gemma 4 E2B",
+  "family": "Gemma 4",
+  "vendor": "Google",
+  "architecture": "dense",
+  "paramsB": 5.1,
+  "activeParamsB": 2.3,
+  "layers": 35,
+  "vocabSize": 262144,
+  "width": 12288,
+  "attentionHeads": 8,
+  "kvHeads": 1,
+  "headDim": 256,
+  "globalKvHeads": 1,
+  "globalHeadDim": 512,
+  "attentionPattern": "SSSSFSSSSFSSSSFSSSSFSSSSFSSSSFSSSSF",
+  "kvSharedLayers": 20,
+  "kvBytesPerToken": 6144,
+  "kvWindowedBytesPerToken": 12288,
+  "slidingWindow": 512,
+  "kvSourceUrl": "https://huggingface.co/google/gemma-4-E2B-it/blob/main/config.json",
+  "vision": true,
+  "contextLength": 131072,
+  "license": {
+    "name": "Apache-2.0",
+    "url": "https://huggingface.co/google/gemma-4-E2B-it"
+  },
+  "releaseDate": "2026-07-02",
+  "ggufUrl": "https://huggingface.co/google/gemma-4-E2B-it-qat-q4_0-gguf",
+  "status": "active",
+  "summary": "The smallest Gemma 4, at 3.35GB in Google's QAT build — genuinely multimodal on hardware that cannot run anything else in this catalog. Use it for dictation, captioning and simple chat; its own vendor numbers rule out reasoning and tools.",
+  "bands": {
+    "low": {
+      "weightsGb": 2.5,
+      "exampleQuants": [
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 3.2,
+      "exampleQuants": [
+        "Q4_0",
+        "Q4_K_M",
+        "mlx-4bit"
+      ]
+    },
+    "high": {
+      "weightsGb": 4,
+      "exampleQuants": [
+        "Q6_K"
+      ]
+    },
+    "full": {
+      "weightsGb": 10,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  },
+  "mlxUrl": "https://huggingface.co/mlx-community/gemma-4-E2B-it-qat-4bit"
+}

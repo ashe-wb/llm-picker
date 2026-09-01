@@ -1,0 +1,35 @@
+{
+  "modelId": "qwen3.6-27b",
+  "entries": [
+    {
+      "id": "qwen3.6-27b/all/empty-tool-calls",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["tool-calling"],
+      "severity": "moderate",
+      "summary": "The model regularly announces that it is about to call a tool and then emits an empty tool call, which terminates the agent loop with the task unfinished. Reported across the whole 3.6 family (27B and 35B) and reproduced on Alibaba's own FP8 build, so it is not a quantization artifact — users upgrading from 3.5, which had no such problem, notice it immediately.",
+      "mitigations": [
+        { "mitigationId": "update-runtime", "note": "Largely a chat-template and harness problem: run a current llama.cpp/vLLM build with the official 3.6 template rather than a 3.5 template carried over. This clears most, not all, of the empty calls.", "effectiveness": "partial" },
+        { "mitigationId": "prompting", "note": "Have the harness retry on an empty tool call instead of ending the run, and prefer fewer, coarser tools over many fine-grained ones.", "effectiveness": "partial" }
+      ],
+      "citations": [
+        { "url": "https://github.com/QwenLM/Qwen3.6/issues/150", "title": "Qwen3.6-27B frequently stopped with empty tool call", "sourceType": "github", "accessed": "2026-08-30" },
+        { "url": "https://huggingface.co/Qwen/Qwen3.6-27B/discussions/13", "title": "Anyone is having issues with tool calling with the 3.6 family?", "sourceType": "vendor", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "qwen3.6-27b/low/q3-k-s-collapse",
+      "bands": ["low"],
+      "dimensions": ["math", "coding"],
+      "severity": "moderate",
+      "summary": "The Q2–Q3 band is not uniform for this model. In a systematic quantization study, Q3_K_M held full-precision math accuracy (73.3 on AIME-120 vs bf16's 70.8) while Q3_K_S fell to 54.2 — a ~16-point drop for a file barely a gigabyte smaller. 2-bit quants degrade visibly in generation quality on top of that.",
+      "mitigations": [
+        { "mitigationId": "higher-quant", "note": "Within the same band, choose Q3_K_M over Q3_K_S — it costs almost nothing extra and recovers the whole gap. If you have 19GB free, Q4_K_M is indistinguishable from bf16 on this model.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://quesma.com/blog/qwen-quantization-quality/", "title": "Do Qwen3.6 27B quantizations break the pelican? (KLD, perplexity, AIME-120, Terminal-Bench 2.1 across 2–16 bit)", "sourceType": "blog", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    }
+  ]
+}

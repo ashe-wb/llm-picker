@@ -1,0 +1,74 @@
+{
+  "modelId": "gpt-oss-120b",
+  "entries": [
+    {
+      "band": "mid",
+      "dimension": "math",
+      "score": 9,
+      "provenance": [
+        {
+          "sourceId": "vendor-model-card",
+          "metric": "AIME 2024 (high reasoning, no tools)",
+          "rawValue": 95.8,
+          "url": "https://arxiv.org/html/2508.10925",
+          "retrieved": "2026-08-31",
+          "quant": "mxfp4",
+          "method": "vendor-reported",
+          "notes": "96.6 with tools. GPQA Diamond 80.1, MMLU 90.0. More than double the 20b's 42.1 on the same benchmark — the clearest size effect in this family."
+        }
+      ]
+    },
+    {
+      "band": "mid",
+      "dimension": "coding",
+      "score": 7,
+      "provenance": [
+        {
+          "sourceId": "vendor-model-card",
+          "metric": "SWE-bench Verified",
+          "rawValue": 62.4,
+          "url": "https://arxiv.org/html/2508.10925",
+          "retrieved": "2026-08-31",
+          "quant": "mxfp4",
+          "method": "vendor-reported",
+          "notes": "Codeforces Elo 2463, Aider Polyglot 44.4. Only 1.7 points above the 20b despite 5.6x the parameters; the Aider figure is the more sober read of everyday editing."
+        }
+      ]
+    },
+    {
+      "band": "mid",
+      "dimension": "tool-calling",
+      "score": 8,
+      "provenance": [
+        {
+          "sourceId": "vendor-model-card",
+          "metric": "Tau-Bench Retail",
+          "rawValue": 67.8,
+          "url": "https://arxiv.org/html/2508.10925",
+          "retrieved": "2026-08-31",
+          "quant": "mxfp4",
+          "method": "vendor-reported",
+          "notes": "Against the 20b's 54.8. Tool use is the family's organizing principle — browsing, python and functions are first-class in the harmony format."
+        }
+      ]
+    },
+    {
+      "band": "mid",
+      "dimension": "factuality",
+      "score": 3,
+      "provenance": [
+        {
+          "sourceId": "vendor-model-card",
+          "metric": "SimpleQA",
+          "rawValue": 16.8,
+          "url": "https://arxiv.org/html/2508.10925",
+          "retrieved": "2026-08-31",
+          "quant": "mxfp4",
+          "method": "vendor-reported",
+          "notes": "PersonQA hallucination rate 49.1% — OpenAI's own number. Better than the 20b's 6.7 / 53.2% and still poor in absolute terms. HealthBench 57.6."
+        }
+      ]
+    }
+  ],
+  "quantOverrides": []
+}

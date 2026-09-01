@@ -1,0 +1,130 @@
+{
+  "modelId": "qwen3-coder-next-80b-a3b",
+  "entries": [
+    {
+      "band": "full",
+      "dimension": "coding",
+      "score": 8,
+      "provenance": [
+        {
+          "sourceId": "vendor-model-card",
+          "metric": "SWE-bench Verified",
+          "rawValue": 70.6,
+          "url": "https://huggingface.co/Qwen/Qwen3-Coder-Next",
+          "retrieved": "2026-08-31",
+          "quant": "bf16",
+          "method": "vendor-reported",
+          "notes": "SWE-bench Pro 44.3. Qwen claim performance comparable to models with 10-20x more active parameters, and on SWE-bench Verified the figure supports it."
+        }
+      ]
+    },
+    {
+      "band": "full",
+      "dimension": "tool-calling",
+      "score": 7,
+      "provenance": [
+        {
+          "sourceId": "vendor-model-card",
+          "metric": "Terminal-Bench 2.0",
+          "rawValue": 36.2,
+          "url": "https://huggingface.co/Qwen/Qwen3-Coder-Next",
+          "retrieved": "2026-08-31",
+          "quant": "bf16",
+          "method": "vendor-reported",
+          "notes": "Below GLM-4.7's 41.0 and well below Qwen3.5-397B's 52.5 — the gap that 3B active parameters buys you."
+        }
+      ]
+    },
+    {
+      "band": "high",
+      "dimension": "coding",
+      "score": 8,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q6_K",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: no drop from the measured bf16 figure. 6-8 bit is effectively lossless on a model this size — the differences that show up at 4-bit and below are not measurable here. Recorded explicitly rather than left to band fallback, which would otherwise borrow the 4-bit number and subtract a point."
+        }
+      ]
+    },
+    {
+      "band": "high",
+      "dimension": "tool-calling",
+      "score": 7,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q6_K",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: no drop from the measured bf16 figure. 6-8 bit is effectively lossless on a model this size — the differences that show up at 4-bit and below are not measurable here. Recorded explicitly rather than left to band fallback, which would otherwise borrow the 4-bit number and subtract a point."
+        }
+      ]
+    },
+    {
+      "band": "mid",
+      "dimension": "coding",
+      "score": 7,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q4_K_M",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: one point down from the measured bf16 figure. 4-bit is the band a model this size is actually run at, and the loss is real but modest."
+        }
+      ]
+    },
+    {
+      "band": "mid",
+      "dimension": "tool-calling",
+      "score": 6,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q4_K_M",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: one point down from the measured bf16 figure. 4-bit is the band a model this size is actually run at, and the loss is real but modest."
+        }
+      ]
+    },
+    {
+      "band": "low",
+      "dimension": "coding",
+      "score": 5,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q3_K_M",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: two points down. At 3-bit a sparse MoE loses expert-routing precision first, which surfaces as dropped tool arguments and broken multi-file edits before prose visibly suffers."
+        }
+      ]
+    },
+    {
+      "band": "low",
+      "dimension": "tool-calling",
+      "score": 4,
+      "provenance": [
+        {
+          "sourceId": "quant-degradation-community",
+          "metric": "editorial band derivation",
+          "retrieved": "2026-08-31",
+          "quant": "Q3_K_M",
+          "method": "aggregated",
+          "quantNote": "Editorial derivation: two points down. At 3-bit a sparse MoE loses expert-routing precision first, which surfaces as dropped tool arguments and broken multi-file edits before prose visibly suffers."
+        }
+      ]
+    }
+  ],
+  "quantOverrides": []
+}

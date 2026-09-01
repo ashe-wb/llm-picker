@@ -1,0 +1,51 @@
+{
+  "modelId": "gemma-4-31b",
+  "entries": [
+    {
+      "id": "gemma-4-31b/all/duplicate-tool-calls",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["tool-calling"],
+      "severity": "moderate",
+      "summary": "Emits the same tool call twice back-to-back, and sometimes closes a thinking block only to immediately open another right before tool handling breaks. Reported on both the 31B and its 26B-A4B sibling — slightly less often on the 31B — so agent harnesses need to be idempotent or de-duplicate.",
+      "mitigations": [
+        { "mitigationId": "update-runtime", "note": "Track current llama.cpp; the Gemma 4 tool-call and template handling has been patched repeatedly since launch.", "effectiveness": "partial" },
+        { "mitigationId": "mcp-tools", "note": "Make the tools themselves idempotent, or have the harness drop an identical repeat call, so a duplicate is harmless rather than a double write.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://github.com/ggml-org/llama.cpp/issues/21882", "title": "Eval bug: More Gemma4 edge cases (duplicate tool calls, thinking-block restarts)", "sourceType": "github", "accessed": "2026-08-30" },
+        { "url": "https://huggingface.co/bartowski/google_gemma-4-26B-A4B-it-GGUF/discussions/1", "title": "Problems with using the model in llama.cpp", "sourceType": "other", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "gemma-4-31b/all/gguf-runtime-churn",
+      "bands": ["low", "mid", "high"],
+      "dimensions": ["instruction-following", "coding"],
+      "severity": "severe",
+      "summary": "Local Gemma 4 builds have been a moving target. Google's refreshed official GGUFs (2026-07-15) would not load in LM Studio 0.4.19 at all, and with KV-offload (-nkvo) enabled the family emits gibberish after roughly 230 tokens. Both look like model defects and are not.",
+      "mitigations": [
+        { "mitigationId": "update-runtime", "note": "Use a llama.cpp build newer than the -nkvo regression and a re-uploaded quant (unsloth and bartowski both re-cut theirs after the upstream fixes). Avoid -nkvo on Gemma 4 until the issue closes.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://github.com/lmstudio-ai/lmstudio-bug-tracker/issues/2169", "title": "Latest official Google Gemma 4 GGUF models fail to load in LM Studio 0.4.19", "sourceType": "github", "accessed": "2026-08-30" },
+        { "url": "https://github.com/ggml-org/llama.cpp/issues/21726", "title": "Eval bug: Gemma4 models produce gibberish at some point with -nkvo", "sourceType": "github", "accessed": "2026-08-30" },
+        { "url": "https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF/discussions/11", "title": "New uploads add llama.cpp fixes", "sourceType": "other", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "gemma-4-31b/all/long-context-retrieval",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["long-context"],
+      "severity": "mild",
+      "summary": "Best-in-catalog long-context retrieval is still only 66.4% MRCR v2 at 128K — on a model advertised at 256K. A third of the needles are missed at half the window.",
+      "mitigations": [
+        { "mitigationId": "rag", "note": "Retrieve the relevant passages instead of pasting the corpus. Cheaper and more accurate than relying on the tail of a 256K window.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://ai.google.dev/gemma/docs/core/model_card_4", "title": "Gemma 4 model card — MRCR v2 @128K per variant", "sourceType": "vendor", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    }
+  ]
+}

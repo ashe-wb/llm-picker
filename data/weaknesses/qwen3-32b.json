@@ -1,0 +1,35 @@
+{
+  "modelId": "qwen3-32b",
+  "entries": [
+    {
+      "id": "qwen3-32b/all/thinking-burn",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["instruction-following"],
+      "severity": "mild",
+      "summary": "Thinking mode burns thousands of tokens per answer — painful at the <10 tok/s this dense 32B manages on consumer hardware, especially in agent loops.",
+      "mitigations": [
+        { "mitigationId": "prompting", "note": "Set enable_thinking=False or append /no_think for tasks that don't need deep reasoning; consider Qwen3-30B-A3B for ~5× the speed at similar quality.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://docs.nvidia.com/nim/large-language-models/1.12.0/thinking-budget-control.html", "title": "NVIDIA docs on Qwen3 thinking-budget control", "sourceType": "vendor", "accessed": "2026-08-30" },
+        { "url": "https://kaitchup.substack.com/p/qwen3-30b-a3b-vs-qwen3-32b-is-the", "title": "Qwen3-30B-A3B vs 32B speed/quality analysis", "sourceType": "blog", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "qwen3-32b/all/greedy-repetition",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["instruction-following"],
+      "severity": "mild",
+      "summary": "Endless repetition under greedy decoding — the model card warns against it explicitly.",
+      "mitigations": [
+        { "mitigationId": "prompting", "note": "Card samplers (0.6/0.95/20 thinking; 0.7/0.8/20 non-thinking); presence_penalty up to 1.5.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/Qwen/Qwen3-32B", "title": "Qwen3-32B card (greedy-decoding warning)", "sourceType": "vendor", "accessed": "2026-08-30" },
+        { "url": "https://github.com/ggml-org/llama.cpp/issues/13310", "title": "llama.cpp issue: Qwen3 GGUF repetition", "sourceType": "github", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    }
+  ]
+}

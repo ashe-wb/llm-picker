@@ -1,0 +1,34 @@
+{
+  "modelId": "ornith-1.5-9b",
+  "entries": [
+    {
+      "id": "ornith-1.5-9b/all/self-reported-only",
+      "bands": ["mid", "high", "full"],
+      "dimensions": ["coding", "tool-calling"],
+      "severity": "moderate",
+      "summary": "70.6 on SWE-bench Verified from a 9B model would be remarkable if independently confirmed. It is not: the number is DeepReinforce's own five-run average, published eleven days ago, on a model trained against tasks it generated for itself.",
+      "mitigations": [
+        { "mitigationId": "none", "note": "No fix — a caveat. If you need a coding model you can trust at this size today, the scores on this site with independent backing are lower and older." }
+      ],
+      "citations": [
+        { "url": "https://datanorth.ai/news/ornith-releases-ornith-1-5", "title": "Ornith-1.5 benchmark provenance — vendor runs averaged over five attempts", "sourceType": "blog", "accessed": "2026-08-30" },
+        { "url": "https://simonwillison.net/2026/Jun/29/ornith/", "title": "Ornith-1.0: Self-Scaffolding LLMs for Agentic Coding", "sourceType": "blog", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "ornith-1.5-9b/all/no-low-band",
+      "bands": ["mid"],
+      "dimensions": ["coding"],
+      "severity": "mild",
+      "summary": "No Q2–Q3 build is published for this size, so the smallest practical download is the 5.8GB Q4_K_M. That is fine on 16GB and awkward on 8GB, where the 4-bit weights plus a working context leave very little room.",
+      "mitigations": [
+        { "mitigationId": "none", "note": "On an 8GB machine, pick a smaller model rather than a smaller quant of this one — the quant does not exist." }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/ornith-ai/Ornith-1.5-9B-GGUF", "title": "Official Ornith-1.5-9B GGUF builds (Q4_K_M and above only)", "sourceType": "vendor", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    }
+  ]
+}

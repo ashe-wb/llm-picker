@@ -1,0 +1,50 @@
+{
+  "modelId": "phi-4",
+  "entries": [
+    {
+      "id": "phi-4/all/knowledge-recall",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["factuality"],
+      "severity": "severe",
+      "summary": "Near-zero open-domain knowledge (SimpleQA 3.0 — vendor's own number). It will confidently invent facts it was never taught, even though it grounds provided text well (HHEM 3.7%).",
+      "mitigations": [
+        { "mitigationId": "rag", "note": "Feed it the facts and it behaves: its grounding is excellent. Never use it as an encyclopedia.", "effectiveness": "strong" },
+        { "mitigationId": "mcp-tools", "note": "Web-search tooling covers the recall gap for current-events questions.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/microsoft/phi-4", "title": "Phi-4 model card (SimpleQA 3.0, self-reported)", "sourceType": "vendor", "accessed": "2026-08-30" },
+        { "url": "https://github.com/vectara/hallucination-leaderboard", "title": "Vectara HHEM leaderboard (grounding vs recall split)", "sourceType": "leaderboard", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "phi-4/all/short-context",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["long-context"],
+      "severity": "moderate",
+      "summary": "16K context window — a quarter of what 2025+ peers offer. Long documents and long agent sessions simply don't fit.",
+      "mitigations": [
+        { "mitigationId": "rag", "note": "Chunked retrieval keeps each request inside 16K.", "effectiveness": "partial" },
+        { "mitigationId": "none", "note": "For genuinely long context, pick a 128K model." }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/microsoft/phi-4", "title": "Phi-4 model card (16K context)", "sourceType": "vendor", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    },
+    {
+      "id": "phi-4/all/benchmark-tuned",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["instruction-following"],
+      "severity": "moderate",
+      "summary": "Benchmark scores flatter it: in longer interactive sessions it drifts off instructions and feels less capable than its numbers suggest.",
+      "mitigations": [
+        { "mitigationId": "prompting", "note": "Use it for one-shot, well-specified tasks; restate constraints each turn in longer sessions.", "effectiveness": "partial" }
+      ],
+      "citations": [
+        { "url": "https://dev.to/maximsaplin/tried-phi-4-it-didnt-impress-27oc", "title": "Tried Phi-4 — it didn't impress (interactive-use writeup)", "sourceType": "blog", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    }
+  ]
+}

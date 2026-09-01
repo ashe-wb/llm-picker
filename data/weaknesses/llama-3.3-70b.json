@@ -1,0 +1,48 @@
+{
+  "modelId": "llama-3.3-70b",
+  "entries": [
+    {
+      "id": "llama-3.3-70b/all/kv-cache-cost",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["long-context"],
+      "severity": "severe",
+      "summary": "Eighty layers with eight KV heads and no sliding window or linear attention: 320KB of cache per token, the most expensive in this catalogue. That is 2.5GB at 8K, 10GB at 32K and 40GB at 128K — on top of 42.5GB of 4-bit weights. Filling the advertised 128K window needs more memory for the cache than most machines have in total.",
+      "mitigations": [
+        { "mitigationId": "rag", "note": "Retrieve rather than fill the window. On this model the context is what breaks your memory budget, not the weights.", "effectiveness": "strong" },
+        { "mitigationId": "higher-quant", "note": "Inverted advice: on a 64GB machine, dropping from Q4_K_M to Q3_K_M buys 8GB of weights, which is 25K more tokens of context. The quant you can afford depends on the context you need.", "effectiveness": "partial" }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/unsloth/Llama-3.3-70B-Instruct/blob/main/config.json", "title": "Llama 3.3 70B config.json — 80 layers, 8 KV heads, head_dim 128, no sliding window", "sourceType": "vendor", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    },
+    {
+      "id": "llama-3.3-70b/all/aging-benchmarks",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["coding", "math"],
+      "severity": "moderate",
+      "summary": "Released December 2024 and measured on the benchmarks of that moment — HumanEval, MBPP, BFCL v2. It has no SWE-bench Verified or Terminal-Bench figure, so it cannot be compared with the 2026 agentic models on the work people now use these for. Where the comparison does exist it shows its age: GPQA Diamond 50.5 against 84–88 for the current 27–31B models.",
+      "mitigations": [
+        { "mitigationId": "none", "note": "Not a defect to fix. It remains the strongest instruction-follower here; it is simply not the model to reach for on agentic coding." }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct", "title": "Llama 3.3 70B evaluation table — HumanEval, MBPP, BFCL v2, GPQA 50.5", "sourceType": "vendor", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    },
+    {
+      "id": "llama-3.3-70b/all/licence",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["instruction-following"],
+      "severity": "mild",
+      "summary": "Llama 3.3 Community License, not Apache-2.0 or MIT. Commercial use is allowed but the terms carry conditions, including an attribution requirement and a monthly-active-user threshold above which a separate licence is needed.",
+      "mitigations": [
+        { "mitigationId": "none", "note": "Read the licence before shipping on it. If a permissive licence is a hard requirement, the Apache-2.0 and MIT models here are the alternatives." }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct", "title": "Llama 3.3 Community License Agreement", "sourceType": "vendor", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+[
+  {
+    "id": "livebench",
+    "name": "LiveBench",
+    "url": "https://livebench.ai",
+    "dataAccess": "huggingface-dataset",
+    "licenseNote": "Results published as HF datasets; verify current license before automated ingestion.",
+    "fetchMethod": "api",
+    "republishOk": true,
+    "dimensions": [
+      "math",
+      "coding",
+      "instruction-following"
+    ]
+  },
+  {
+    "id": "aider-polyglot",
+    "name": "Aider polyglot leaderboard",
+    "url": "https://aider.chat/docs/leaderboards/",
+    "dataAccess": "github-yaml",
+    "licenseNote": "Apache-2.0 repo",
+    "fetchMethod": "api",
+    "republishOk": true,
+    "dimensions": [
+      "coding"
+    ]
+  },
+  {
+    "id": "eqbench-creative",
+    "name": "EQ-Bench Creative Writing",
+    "url": "https://eqbench.com/creative_writing.html",
+    "dataAccess": "github-json",
+    "fetchMethod": "manual",
+    "republishOk": true,
+    "dimensions": [
+      "creative-writing"
+    ]
+  },
+  {
+    "id": "bfcl",
+    "name": "Berkeley Function-Calling Leaderboard",
+    "url": "https://gorilla.cs.berkeley.edu/leaderboard.html",
+    "fetchMethod": "manual",
+    "republishOk": true,
+    "dimensions": [
+      "tool-calling"
+    ]
+  },
+  {
+    "id": "vectara-hallucination",
+    "name": "Vectara Hallucination Leaderboard (HHEM)",
+    "url": "https://github.com/vectara/hallucination-leaderboard",
+    "fetchMethod": "manual",
+    "republishOk": true,
+    "dimensions": [
+      "factuality"
+    ]
+  },
+  {
+    "id": "ruler",
+    "name": "RULER long-context benchmark",
+    "url": "https://github.com/NVIDIA/RULER",
+    "fetchMethod": "manual",
+    "republishOk": true,
+    "dimensions": [
+      "long-context"
+    ]
+  },
+  {
+    "id": "artificial-analysis",
+    "name": "Artificial Analysis",
+    "url": "https://artificialanalysis.ai",
+    "fetchMethod": "link-only",
+    "republishOk": false,
+    "licenseNote": "ToS restricts republication of their data. NEVER ingest numbers; link-out citations only. validate.ts rejects any provenance entry with this sourceId carrying a rawValue."
+  },
+  {
+    "id": "vendor-model-card",
+    "name": "Vendor model card",
+    "fetchMethod": "manual",
+    "republishOk": true,
+    "licenseNote": "Self-reported numbers; always tagged method: vendor-reported."
+  },
+  {
+    "id": "quant-degradation-community",
+    "name": "Community quant-quality data (llama.cpp KLD/perplexity tables, quantizer writeups)",
+    "url": "https://github.com/ggml-org/llama.cpp/discussions",
+    "fetchMethod": "manual",
+    "republishOk": true,
+    "dimensions": [
+      "math",
+      "coding",
+      "tool-calling"
+    ]
+  },
+  {
+    "id": "owner-spot-check",
+    "name": "Spot-check on our own hardware",
+    "fetchMethod": "manual",
+    "republishOk": true,
+    "licenseNote": "Probe protocol documented on the methodology page; only feasible for the 8/16/32GB tiers."
+  },
+  {
+    "id": "community-consensus",
+    "name": "r/LocalLLaMA community consensus",
+    "url": "https://www.reddit.com/r/LocalLLaMA/",
+    "fetchMethod": "manual",
+    "republishOk": true,
+    "licenseNote": "Used only for editorial scores where no public benchmark lists the model; every such cell says so in its provenance notes."
+  },
+  {
+    "id": "vals-ai",
+    "name": "Vals AI independent evaluations",
+    "url": "https://www.vals.ai",
+    "fetchMethod": "link-only",
+    "republishOk": false,
+    "licenseNote": "Third-party evaluation house. Cited as independent corroboration only — never ingest their numbers; validate.ts rejects any provenance entry with this sourceId carrying a rawValue. Same treatment as artificial-analysis.",
+    "dimensions": [
+      "coding"
+    ]
+  }
+]

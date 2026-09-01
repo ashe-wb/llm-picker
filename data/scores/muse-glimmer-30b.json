@@ -1,0 +1,24 @@
+{
+  "modelId": "muse-glimmer-30b",
+  "entries": [
+    { "band": "full", "dimension": "math", "score": 8,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "AIME 2026", "rawValue": 94.7, "url": "https://huggingface.co/meta-models/Muse-Glimmer-30B", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "GPQA-Diamond: 83.5. Too new for independent leaderboards (absent from Vectara HHEM and Aider)." }] },
+    { "band": "full", "dimension": "coding", "score": 7,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "SWE-bench Verified", "rawValue": 76.0, "url": "https://huggingface.co/meta-models/Muse-Glimmer-30B", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "SWE-bench Pro: 51.2. Community judges its agentic coding stronger than its raw single-file coding." }] },
+    { "band": "full", "dimension": "tool-calling", "score": 8,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "MCP Atlas", "rawValue": 75.5, "url": "https://huggingface.co/meta-models/Muse-Glimmer-30B", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "TerminalBench 2.1: 51.7, ScreenSpot Pro: 75.4 — the agentic story is why this model exists." }] },
+    { "band": "full", "dimension": "instruction-following", "score": 7,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "IFBench", "rawValue": 77.0, "url": "https://huggingface.co/meta-models/Muse-Glimmer-30B", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported" }] },
+    { "band": "full", "dimension": "factuality", "score": 3,
+      "provenance": [{ "sourceId": "artificial-analysis", "metric": "AA-Omniscience (value at source — their terms bar republication)", "url": "https://artificialanalysis.ai", "retrieved": "2026-08-30", "quant": "bf16", "method": "aggregated", "notes": "Secondary coverage of AA's knowledge eval reports very high hallucination on hard recall; see the known issue below for citable analysis." }] },
+    { "band": "mid", "dimension": "math", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "KLD/perplexity delta vs bf16", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: small loss at 4-bit for a 30B dense model." }] },
+    { "band": "mid", "dimension": "coding", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "KLD/perplexity delta vs bf16", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: small loss at 4-bit." }] },
+    { "band": "mid", "dimension": "tool-calling", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: tool-call formatting holds at 4-bit; official Q4_K_M is Meta's own recommended local build." }] },
+    { "band": "mid", "dimension": "instruction-following", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: IF is not quant-sensitive." }] }
+  ],
+  "quantOverrides": []
+}

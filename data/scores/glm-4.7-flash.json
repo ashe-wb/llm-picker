@@ -1,0 +1,20 @@
+{
+  "modelId": "glm-4.7-flash",
+  "entries": [
+    { "band": "full", "dimension": "math", "score": 8,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "AIME 25", "rawValue": 91.6, "url": "https://huggingface.co/zai-org/GLM-4.7-Flash", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "GPQA: 75.2." }] },
+    { "band": "full", "dimension": "coding", "score": 7,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "SWE-bench Verified", "rawValue": 59.2, "url": "https://huggingface.co/zai-org/GLM-4.7-Flash", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Best agentic-coding claim in the sub-35B MoE class. Absent from Aider polyglot." }] },
+    { "band": "full", "dimension": "tool-calling", "score": 7,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "Tau2-Bench", "rawValue": 79.5, "url": "https://huggingface.co/zai-org/GLM-4.7-Flash", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Strong at short context; see the known issue on long-context degradation." }] },
+    { "band": "full", "dimension": "factuality", "score": 4,
+      "provenance": [{ "sourceId": "vectara-hallucination", "metric": "HHEM hallucination rate % (lower is better)", "rawValue": 9.3, "url": "https://github.com/vectara/hallucination-leaderboard", "retrieved": "2026-08-30", "quant": "bf16", "method": "aggregated", "notes": "Noticeably worse than Qwen3 (5.4–5.9%) and Gemma 3 (6.4–7.4%) peers." }] },
+    { "band": "mid", "dimension": "math", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "KLD/perplexity delta vs bf16", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: MoE expert weights lose a little at 4-bit." }] },
+    { "band": "mid", "dimension": "coding", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "KLD/perplexity delta vs bf16", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: small loss at 4-bit." }] },
+    { "band": "mid", "dimension": "tool-calling", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: quant plus long context compounds the tool-call fraying — keep context modest at 4-bit." }] }
+  ],
+  "quantOverrides": []
+}

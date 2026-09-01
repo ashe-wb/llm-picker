@@ -1,0 +1,28 @@
+{
+  "modelId": "llama-3.3-70b",
+  "entries": [
+    { "band": "full", "dimension": "instruction-following", "score": 9,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "IFEval", "rawValue": 92.1, "url": "https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "The highest instruction-following figure on this site, on a dimension only a third of the catalogue has any evidence for at all. IFEval is program-checkable, so there is less room for interpretation than most benchmarks." }] },
+    { "band": "full", "dimension": "math", "score": 7,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "MATH (CoT)", "rawValue": 77.0, "url": "https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "MGSM 91.1, MMLU (CoT) 86.0, MMLU-Pro 68.9. GPQA Diamond is only 50.5 — well behind the 2026 models here, which is what two years of progress looks like on graduate science questions." }] },
+    { "band": "full", "dimension": "coding", "score": 6,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "HumanEval", "rawValue": 88.4, "url": "https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "MBPP EvalPlus 87.6. Scored well below those numbers on purpose: HumanEval is saturated and predates the agentic benchmarks the 2026 models are measured on, and this model has no SWE-bench or Terminal-Bench figure to compare against them." }] },
+    { "band": "full", "dimension": "tool-calling", "score": 7,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "BFCL v2", "rawValue": 77.3, "url": "https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Measured on BFCL v2; most entries here quote v3 or v4, which are not directly comparable." }] },
+    { "band": "high", "dimension": "instruction-following", "score": 9,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q6_K", "method": "aggregated", "quantNote": "Editorial derivation: 6-bit is near-lossless, and a 70B has more redundancy to spare than anything else here. Carried unchanged." }] },
+    { "band": "high", "dimension": "math", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q6_K", "method": "aggregated", "quantNote": "Editorial derivation: carried from the full band." }] },
+    { "band": "mid", "dimension": "instruction-following", "score": 8,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: one point down. At 42.5GB this is the only band most people will realistically run, and large dense models tolerate 4-bit better than small ones." }] },
+    { "band": "mid", "dimension": "math", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: one point down; multi-step arithmetic is the first thing 4-bit costs you." }] },
+    { "band": "mid", "dimension": "tool-calling", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: one point down from the full band." }] },
+    { "band": "low", "dimension": "instruction-following", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q3_K_M", "method": "aggregated", "quantNote": "Editorial derivation: two points down. 3-bit on a 70B still beats 4-bit on many smaller models, which is the argument for running one at all." }] },
+    { "band": "low", "dimension": "math", "score": 5,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q3_K_M", "method": "aggregated", "quantNote": "Editorial derivation: two points down from the full band." }] }
+  ],
+  "quantOverrides": []
+}

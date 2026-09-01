@@ -1,0 +1,55 @@
+{
+  "id": "qwen3.5-122b-a10b",
+  "name": "Qwen3.5 122B-A10B",
+  "family": "Qwen3.5",
+  "vendor": "Alibaba",
+  "architecture": "moe",
+  "paramsB": 122,
+  "activeParamsB": 10,
+  "layers": 48,
+  "vocabSize": 248320,
+  "width": 8192,
+  "attentionHeads": 32,
+  "kvHeads": 2,
+  "headDim": 256,
+  "attentionPattern": "...F...F...F...F...F...F...F...F...F...F...F...F",
+  "expertsPerToken": 8,
+  "vision": true,
+  "contextLength": 262144,
+  "license": {
+    "name": "Apache-2.0",
+    "url": "https://huggingface.co/Qwen/Qwen3.5-122B-A10B"
+  },
+  "releaseDate": "2026-02-24",
+  "ggufUrl": "https://huggingface.co/unsloth/Qwen3.5-122B-A10B-GGUF",
+  "status": "active",
+  "summary": "The Qwen3.5 that fits: 76GB at 4-bit puts it inside a 96GB machine with room for context, and it gives up surprisingly little to the 397B — 72.0 on SWE-bench against 76.4. The best accuracy-per-gigabyte on this site above 70B.",
+  "kvBytesPerToken": 24576,
+  "kvSourceUrl": "https://huggingface.co/Qwen/Qwen3.5-122B-A10B/blob/main/config.json",
+  "bands": {
+    "low": {
+      "weightsGb": 56.4,
+      "exampleQuants": [
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 76.5,
+      "exampleQuants": [
+        "Q4_K_M"
+      ]
+    },
+    "high": {
+      "weightsGb": 101,
+      "exampleQuants": [
+        "Q6_K"
+      ]
+    },
+    "full": {
+      "weightsGb": 244,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  }
+}

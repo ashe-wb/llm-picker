@@ -1,0 +1,147 @@
+{
+  "modelId": "qwen3-8b",
+  "entries": [
+    {
+      "id": "qwen3-8b/low/math",
+      "bands": [
+        "low"
+      ],
+      "dimensions": [
+        "math"
+      ],
+      "severity": "severe",
+      "summary": "At 3-bit and below, multi-step arithmetic degrades sharply — expect dropped carries, wrong intermediate steps, and confidently wrong answers.",
+      "mitigations": [
+        {
+          "mitigationId": "code-interpreter",
+          "note": "Route calculations to a Python tool; the model plans fine, it just can't execute arithmetic reliably at this quant.",
+          "effectiveness": "strong"
+        },
+        {
+          "mitigationId": "higher-quant",
+          "note": "Q4_K_M needs only ~7GB and recovers most math ability.",
+          "effectiveness": "strong"
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://github.com/ggml-org/llama.cpp/discussions",
+          "title": "llama.cpp quantization quality discussions (KLD/perplexity by quant type)",
+          "sourceType": "github",
+          "accessed": "2026-08-30"
+        },
+        {
+          "url": "https://www.reddit.com/r/LocalLLaMA/",
+          "title": "r/LocalLLaMA recurring consensus on ≤3-bit math degradation",
+          "sourceType": "reddit",
+          "accessed": "2026-08-30"
+        }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "qwen3-8b/low/coding-tools",
+      "bands": [
+        "low"
+      ],
+      "dimensions": [
+        "coding",
+        "tool-calling"
+      ],
+      "severity": "moderate",
+      "summary": "At ≤3-bit, code gains subtle logic slips and tool calls start producing malformed JSON arguments.",
+      "mitigations": [
+        {
+          "mitigationId": "higher-quant",
+          "note": "The 4–5 bit band fixes most of this for ~1GB more memory.",
+          "effectiveness": "strong"
+        },
+        {
+          "mitigationId": "prompting",
+          "note": "Constrain output with explicit format examples; helps somewhat with tool-call formatting.",
+          "effectiveness": "weak"
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://github.com/ggml-org/llama.cpp/discussions",
+          "title": "llama.cpp quantization quality discussions",
+          "sourceType": "github",
+          "accessed": "2026-08-30"
+        },
+        {
+          "url": "https://www.reddit.com/r/LocalLLaMA/",
+          "title": "r/LocalLLaMA reports on tool-calling reliability at low quants",
+          "sourceType": "reddit",
+          "accessed": "2026-08-30"
+        }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "qwen3-8b/all/creative-writing",
+      "bands": [
+        "low",
+        "mid",
+        "high",
+        "full"
+      ],
+      "dimensions": [
+        "creative-writing"
+      ],
+      "severity": "moderate",
+      "summary": "Prose is competent but flat, with repetitive phrasing in longer outputs. This is the model's character, not a quant artifact.",
+      "mitigations": [
+        {
+          "mitigationId": "none",
+          "note": "No tool meaningfully changes voice. If prose quality is the goal, Gemma 3 12B is the better pick at similar memory."
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.reddit.com/r/LocalLLaMA/",
+          "title": "r/LocalLLaMA model-recommendation threads for writing",
+          "sourceType": "reddit",
+          "accessed": "2026-08-30"
+        }
+      ],
+      "confidence": "anecdotal"
+    },
+    {
+      "id": "qwen3-8b/all/greedy-repetition",
+      "bands": [
+        "low",
+        "mid",
+        "high",
+        "full"
+      ],
+      "dimensions": [
+        "instruction-following"
+      ],
+      "severity": "mild",
+      "summary": "Qwen3 models fall into endless repetition loops under greedy decoding — the model card itself warns 'DO NOT use greedy decoding'. Quantized builds hit it more often.",
+      "mitigations": [
+        {
+          "mitigationId": "prompting",
+          "note": "Use the card's sampler settings (temp 0.6 / top_p 0.95 / top_k 20 in thinking mode; 0.7 / 0.8 / 20 non-thinking) and presence_penalty up to 1.5 if loops persist.",
+          "effectiveness": "strong"
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://huggingface.co/Qwen/Qwen3-8B",
+          "title": "Qwen3 model card (greedy-decoding warning + recommended samplers)",
+          "sourceType": "vendor",
+          "accessed": "2026-08-30"
+        },
+        {
+          "url": "https://github.com/ggml-org/llama.cpp/issues/13310",
+          "title": "llama.cpp issue: Qwen3 GGUF repetition reports",
+          "sourceType": "github",
+          "accessed": "2026-08-30"
+        }
+      ],
+      "confidence": "community-consensus"
+    }
+  ]
+}

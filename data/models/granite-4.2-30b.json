@@ -1,0 +1,55 @@
+{
+  "id": "granite-4.2-30b",
+  "name": "Granite 4.2 30B",
+  "family": "Granite 4.2",
+  "vendor": "IBM",
+  "architecture": "dense",
+  "paramsB": 29,
+  "layers": 64,
+  "vocabSize": 100352,
+  "width": 32768,
+  "attentionHeads": 32,
+  "kvHeads": 8,
+  "headDim": 128,
+  "attentionPattern": "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+  "vision": false,
+  "contextLength": 131072,
+  "license": {
+    "name": "Apache-2.0",
+    "url": "https://huggingface.co/ibm-granite/granite-4.2-30b-instruct"
+  },
+  "releaseDate": "2026-08-25",
+  "ggufUrl": "https://huggingface.co/bartowski/granite-4.2-30b-GGUF",
+  "status": "active",
+  "summary": "IBM's enterprise reasoner with a thinking switch — one checkpoint that either reasons step by step or answers directly. Trained to use tools inside sandboxed environments rather than on transcripts of tool use, which shows in its function-calling scores. Five days old at time of writing; every number here is IBM's.",
+  "kvBytesPerToken": 262144,
+  "kvSourceUrl": "https://huggingface.co/ibm-granite/granite-4.2-30b/blob/main/config.json",
+  "bands": {
+    "low": {
+      "weightsGb": 14,
+      "exampleQuants": [
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 18,
+      "exampleQuants": [
+        "Q4_K_M",
+        "mlx-4bit"
+      ]
+    },
+    "high": {
+      "weightsGb": 24,
+      "exampleQuants": [
+        "Q6_K"
+      ]
+    },
+    "full": {
+      "weightsGb": 59,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  },
+  "mlxUrl": "https://huggingface.co/lmstudio-community/granite-4.2-30b-MLX-4bit"
+}

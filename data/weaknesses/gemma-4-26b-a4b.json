@@ -1,0 +1,33 @@
+{
+  "modelId": "gemma-4-26b-a4b",
+  "entries": [
+    {
+      "id": "gemma-4-26b-a4b/all/long-context-retrieval",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["long-context"],
+      "severity": "moderate",
+      "summary": "The 256K window oversells it: retrieval accuracy at 128K is only 44.1% (vendor's own MRCR v2 number). Don't stuff the window and expect recall.",
+      "mitigations": [
+        { "mitigationId": "rag", "note": "Retrieve narrowly instead of filling the context — smaller, relevant chunks beat a full window.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://ai.google.dev/gemma/docs/core/model_card_4", "title": "Gemma 4 model card (MRCR v2 128K: 44.1)", "sourceType": "vendor", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    },
+    {
+      "id": "gemma-4-26b-a4b/all/name-hallucination",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["factuality"],
+      "severity": "moderate",
+      "summary": "Early reports of the Gemma-family habit: hallucinated names and specific details on general-knowledge questions. No independent hallucination benchmark lists it yet.",
+      "mitigations": [
+        { "mitigationId": "rag", "note": "Ground factual work until independent measurements arrive.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/google/gemma-4-26B-A4B-it/discussions/6", "title": "Gemma 4 factual hallucination reports", "sourceType": "other", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    }
+  ]
+}

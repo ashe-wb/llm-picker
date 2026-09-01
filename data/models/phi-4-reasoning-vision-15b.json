@@ -1,0 +1,56 @@
+{
+  "id": "phi-4-reasoning-vision-15b",
+  "name": "Phi-4-reasoning-vision",
+  "family": "Phi",
+  "vendor": "Microsoft",
+  "architecture": "dense",
+  "paramsB": 15,
+  "layers": 40,
+  "vocabSize": 100352,
+  "width": 17920,
+  "attentionHeads": 40,
+  "kvHeads": 10,
+  "headDim": 128,
+  "attentionPattern": "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+  "vision": true,
+  "contextLength": 16384,
+  "license": {
+    "name": "MIT",
+    "url": "https://huggingface.co/microsoft/Phi-4-reasoning-vision-15B"
+  },
+  "releaseDate": "2026-03-04",
+  "ggufUrl": "https://huggingface.co/jamesburton/Phi-4-reasoning-vision-15B-GGUF",
+  "status": "active",
+  "summary": "Microsoft's selective-reasoning vision model — it decides when to think. Catalogued for completeness with a hard local caveat: llama.cpp cannot run its vision tower, so local GGUFs are text-only; the headline capability needs the full weights via transformers.",
+  "kvBytesPerToken": 204800,
+  "kvSourceUrl": "https://huggingface.co/microsoft/Phi-4-reasoning-vision-15B/blob/main/config.json",
+  "bands": {
+    "low": {
+      "weightsGb": 7,
+      "exampleQuants": [
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 9,
+      "exampleQuants": [
+        "Q4_K_M",
+        "mlx-4bit"
+      ]
+    },
+    "high": {
+      "weightsGb": 12,
+      "exampleQuants": [
+        "Q6_K",
+        "Q8_0"
+      ]
+    },
+    "full": {
+      "weightsGb": 29,
+      "exampleQuants": [
+        "fp16"
+      ]
+    }
+  },
+  "mlxUrl": "https://huggingface.co/mlx-community/Phi-4-reasoning-vision-15B-4bit"
+}

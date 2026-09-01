@@ -1,0 +1,20 @@
+{
+  "modelId": "gemma-4-e2b",
+  "entries": [
+    { "band": "full", "dimension": "math", "score": 3,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "AIME 2026 (no tools)", "rawValue": 37.5, "url": "https://ai.google.dev/gemma/docs/core/model_card_4", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "MMLU-Pro: 60.0, GPQA Diamond: 43.4 — the knowledge floor of this catalog." }] },
+    { "band": "full", "dimension": "coding", "score": 3,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "LiveCodeBench v6", "rawValue": 44.0, "url": "https://ai.google.dev/gemma/docs/core/model_card_4", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Snippets and single functions only." }] },
+    { "band": "full", "dimension": "tool-calling", "score": 2,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "Tau2 average (with tools)", "rawValue": 24.5, "url": "https://ai.google.dev/gemma/docs/core/model_card_4", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "The vendor's own number says tool use does not work reliably at this size. Documented as a known issue rather than dressed up." }] },
+    { "band": "full", "dimension": "long-context", "score": 1,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "MRCR v2 @128K (8 needle)", "rawValue": 19.1, "url": "https://ai.google.dev/gemma/docs/core/model_card_4", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Effectively no long-context retrieval." }] },
+    { "band": "mid", "dimension": "math", "score": 2,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_0", "method": "aggregated", "quantNote": "Editorial derivation: QAT Q4_0 (3.35GB) is the intended build; sub-3B-effective models lose more per bit than large ones." }] },
+    { "band": "mid", "dimension": "coding", "score": 2,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_0", "method": "aggregated", "quantNote": "Editorial derivation: carried down one point from the full band." }] },
+    { "band": "mid", "dimension": "tool-calling", "score": 1,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_0", "method": "aggregated", "quantNote": "Editorial derivation: do not build a tool-using agent on this." }] }
+  ],
+  "quantOverrides": []
+}

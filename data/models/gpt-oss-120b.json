@@ -1,0 +1,39 @@
+{
+  "id": "gpt-oss-120b",
+  "name": "gpt-oss-120b",
+  "family": "gpt-oss",
+  "vendor": "OpenAI",
+  "architecture": "moe",
+  "paramsB": 117,
+  "activeParamsB": 5.1,
+  "layers": 36,
+  "vocabSize": 201088,
+  "width": 11520,
+  "attentionHeads": 64,
+  "kvHeads": 8,
+  "headDim": 64,
+  "attentionPattern": "SFSFSFSFSFSFSFSFSFSFSFSFSFSFSFSFSFSF",
+  "expertsPerToken": 4,
+  "vision": false,
+  "contextLength": 131072,
+  "license": {
+    "name": "Apache-2.0",
+    "url": "https://huggingface.co/openai/gpt-oss-120b"
+  },
+  "releaseDate": "2025-08-05",
+  "ggufUrl": "https://huggingface.co/ggml-org/gpt-oss-120b-GGUF",
+  "status": "active",
+  "summary": "The big sibling of gpt-oss-20b, and the same bargain at four times the size: shipped natively in MXFP4, so there is no quant ladder to choose from — one 63GB file is the model. Reasoning and tool use are excellent; world knowledge is not. It was built to look things up.",
+  "kvBytesPerToken": 36864,
+  "kvWindowedBytesPerToken": 36864,
+  "slidingWindow": 128,
+  "kvSourceUrl": "https://huggingface.co/openai/gpt-oss-120b/blob/main/config.json",
+  "bands": {
+    "mid": {
+      "weightsGb": 63.4,
+      "exampleQuants": [
+        "mxfp4"
+      ]
+    }
+  }
+}

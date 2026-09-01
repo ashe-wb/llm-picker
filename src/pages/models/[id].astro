@@ -1,0 +1,159 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ScoreBar from '../../components/ScoreBar.astro';
+import WeaknessCard from '../../components/WeaknessCard.astro';
+import { loadSiteData } from '../../lib/data';
+import { BANDS, BAND_DESCRIPTIONS, BAND_LABELS, type Band } from '../../lib/schemas';
+import { checkedLabel } from '../../lib/aggregate';
+import { formatMemory, kvGb } from '../../lib/fit';
+import ArchitectureDiagram from '../../components/ArchitectureDiagram.astro';
+import BlockDiagram from '../../components/BlockDiagram.astro';
+import { termForMetric, termForQuant } from '../../lib/glossary';
+
+export function getStaticPaths() {
+  const { models } = loadSiteData();
+  return models.map((m) => ({ params: { id: m.id } }));
+}
+
+const { id } = Astro.params;
+const data = loadSiteData();
+const model = data.models.find((m) => m.id === id)!;
+const scores = data.scores.get(model.id);
+const weaknesses = data.weaknesses.get(model.id);
+const { glossary } = data;
+const quantHref = (q: string) => {
+  const t = termForQuant(glossary, q);
+  return t ? `/glossary#${t.id}` : undefined;
+};
+const metricHref = (m: string) => {
+  const t = termForMetric(glossary, m);
+  return t ? `/glossary#${t.id}` : undefined;
+};
+const kvAt = (ctx: number) => {
+  const g = kvGb(model, Math.min(ctx, model.contextLength));
+  return g === null ? '?' : formatMemory(g);
+};
+const dimLabel = (d: string) => data.dimensions.find((x) => x.id === d)?.label ?? d;
+
+const presentBands = BANDS.filter((b): b is Band => Boolean(model.bands[b]));
+// The licence carries a link where the data has one, which is all 41 of them.
+// A reader who needs a model's actual terms -- Gemma's and Llama's carry real
+// restrictions -- should not have to go and find them.
+const spec: [string, string, string?][] = [
+  ['Vendor', model.vendor],
+  ['Architecture', model.architecture === 'moe' ? `MoE · ${model.paramsB}B total / ~${model.activeParamsB}B active` : `Dense · ${model.paramsB}B`],
+  ['Context', model.contextLength.toLocaleString() + ' tokens'],
+  ['License', model.license.name, model.license.url],
+  ['Released', model.releaseDate],
+  ['Vision', model.vision ? 'Yes' : 'No'],
+];
+---
+
+<Layout title={model.name} description={model.summary}>
+  <article class="space-y-10">
+    <header>
+      <p class="dslabel mb-2">Model datasheet · {model.family}</p>
+      <div class="flex flex-wrap items-center gap-3">
+        <h1 class="font-mono text-3xl font-bold tracking-tight">{model.name}</h1>
+        {model.status === 'deprecated' && <span class="bg-serious px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-paper">Superseded</span>}
+      </div>
+      <p class="mt-3 max-w-2xl text-faded">{model.summary}</p>
+      <dl class="mt-5 grid grid-cols-2 border border-edge bg-panel sm:grid-cols-3">
+        {spec.map(([k, v, href]) => (
+          <div class="border-b border-r border-rule p-3 last:border-r-0">
+            <dt class="dslabel">{k}</dt>
+            <dd class="mt-0.5 font-mono text-sm">
+              {href ? <a href={href} class="underline decoration-rule underline-offset-2 hover:decoration-live" rel="noopener">{v}</a> : v}
+            </dd>
+          </div>
+        ))}
+      </dl>
+      <p class="mt-2 flex flex-wrap gap-4 font-mono text-xs">
+        {model.ggufUrl && (
+          <a href={model.ggufUrl} class="underline decoration-rule underline-offset-4 hover:decoration-serious">→ GGUF (llama.cpp / LM Studio / Ollama)</a>
+        )}
+        {model.mlxUrl && (
+          <a href={model.mlxUrl} class="underline decoration-rule underline-offset-4 hover:decoration-serious">→ MLX (Apple Silicon)</a>
+        )}
+      </p>
+    </header>
+
+    <section class="space-y-6">
+      <ArchitectureDiagram model={model} />
+      <div class="mt-3"><BlockDiagram model={model} /></div>
+
+      <h2 class="dslabel border-b border-rule pb-1">§1 Characteristics by quantization band</h2>
+      {presentBands.map((band) => {
+        const info = model.bands[band]!;
+        const entries = scores?.entries.filter((e) => e.band === band) ?? [];
+        return (
+          <section class="border border-edge bg-panel">
+            <div class="flex flex-wrap items-baseline gap-3 border-b border-edge px-4 py-2">
+              <h3 class="font-mono text-sm font-bold tracking-[0.08em]">{BAND_LABELS[band]} <span class="font-normal text-faded">— {BAND_DESCRIPTIONS[band]}</span></h3>
+              <span class="dslabel">
+                {formatMemory(info.weightsGb)} weights · e.g.
+                {info.exampleQuants.map((q, i) => (
+                  <>
+                    {i > 0 && ', '}
+                    <a href={quantHref(q)} class="underline decoration-dotted underline-offset-2 hover:text-serious">{q}</a>
+                  </>
+                ))}
+              </span>
+              <span class="dslabel normal-case tracking-normal">
+                + KV: {kvAt(8192)} at 8K · {kvAt(32768)} at 32K · {kvAt(131072)} at 128K
+              </span>
+            </div>
+            <div class="space-y-2.5 px-4 py-3">
+              {entries.length === 0 && <p class="font-mono text-xs uppercase tracking-[0.12em] text-faded">— Not yet rated · contributions welcome —</p>}
+              {entries.map((e) => (
+                <div>
+                  <ScoreBar label={dimLabel(e.dimension)} score={e.score} />
+                  <details class="mt-0.5 pl-[10.75rem] font-mono text-[11px] text-faded">
+                    <summary class="cursor-pointer uppercase tracking-[0.1em]">{checkedLabel(e.provenance)}</summary>
+                    <ul class="mt-1 list-disc space-y-1 pl-4">
+                      {e.provenance.map((p) => (
+                        <li>
+                          {p.url ? <a href={p.url} class="underline underline-offset-2">{p.sourceId}</a> : p.sourceId} — {
+                            metricHref(p.metric)
+                              ? <a href={metricHref(p.metric)} class="underline decoration-dotted underline-offset-2 hover:text-serious">{p.metric}</a>
+                              : p.metric
+                          }
+                          {p.rawValue !== undefined && <> = {p.rawValue}</>}
+                          {p.quant && <> @ {p.quant}</>} · {p.method} · {p.retrieved}
+                          {p.quantNote && <p class="text-faded/80">{p.quantNote}</p>}
+                          {p.notes && <p class="text-faded/80">{p.notes}</p>}
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+      })}
+    </section>
+
+    {scores && scores.quantOverrides.length > 0 && (
+      <section class="space-y-3">
+        <h2 class="dslabel border-b border-rule pb-1">§2 Per-quant deviations</h2>
+        {scores.quantOverrides.map((o) => (
+          <div class="border-l-2 border-serious bg-panel px-4 py-3 text-sm">
+            <p class="font-mono"><strong>{o.quant}</strong> · {dimLabel(o.dimension)} drops to <strong>{o.score}/10</strong></p>
+            <p class="mt-1 text-faded">{o.note}</p>
+          </div>
+        ))}
+      </section>
+    )}
+
+    <section class="space-y-3">
+      <h2 class="dslabel border-b border-rule pb-1">§{scores && scores.quantOverrides.length > 0 ? 3 : 2} Known issues &amp; what fixes them</h2>
+      {(weaknesses?.entries ?? []).map((entry, i) => (
+        <WeaknessCard entry={entry} index={i} mitigations={data.mitigations} />
+      ))}
+      {(!weaknesses || weaknesses.entries.length === 0) && (
+        <p class="font-mono text-xs uppercase tracking-[0.12em] text-faded">— No documented issues yet · which means unreviewed, not flawless —</p>
+      )}
+    </section>
+  </article>
+</Layout>

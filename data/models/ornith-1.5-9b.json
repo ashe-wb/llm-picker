@@ -1,0 +1,48 @@
+{
+  "id": "ornith-1.5-9b",
+  "name": "Ornith-1.5 9B",
+  "family": "Ornith 1.5",
+  "vendor": "DeepReinforce",
+  "architecture": "dense",
+  "paramsB": 9,
+  "layers": 32,
+  "vocabSize": 248320,
+  "width": 12288,
+  "attentionHeads": 16,
+  "kvHeads": 4,
+  "headDim": 256,
+  "attentionPattern": "...F...F...F...F...F...F...F...F",
+  "vision": false,
+  "contextLength": 262144,
+  "license": {
+    "name": "MIT",
+    "url": "https://huggingface.co/ornith-ai/Ornith-1.5-9B"
+  },
+  "releaseDate": "2026-08-19",
+  "ggufUrl": "https://huggingface.co/ornith-ai/Ornith-1.5-9B-GGUF",
+  "status": "active",
+  "summary": "70.6 on SWE-bench Verified from a 9B dense model that fits a 16GB machine at 4-bit — a number that would have belonged to a 30B a year ago. Text only, MIT, and only its maker has measured it so far.",
+  "kvBytesPerToken": 32768,
+  "kvSourceUrl": "https://huggingface.co/ornith-ai/Ornith-1.5-9B/blob/main/config.json",
+  "bands": {
+    "mid": {
+      "weightsGb": 5.8,
+      "exampleQuants": [
+        "Q4_K_M",
+        "mlx-4bit"
+      ]
+    },
+    "high": {
+      "weightsGb": 7.6,
+      "exampleQuants": [
+        "Q6_K"
+      ]
+    },
+    "full": {
+      "weightsGb": 18.4,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  }
+}

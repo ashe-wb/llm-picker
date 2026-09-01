@@ -1,0 +1,57 @@
+{
+  "id": "ornith-1.5-35b-a3b",
+  "name": "Ornith-1.5 35B-A3B",
+  "family": "Ornith 1.5",
+  "vendor": "DeepReinforce",
+  "architecture": "moe",
+  "paramsB": 35,
+  "activeParamsB": 3,
+  "layers": 40,
+  "vocabSize": 248320,
+  "width": 4096,
+  "attentionHeads": 16,
+  "kvHeads": 2,
+  "headDim": 256,
+  "attentionPattern": "...F...F...F...F...F...F...F...F...F...F",
+  "expertsPerToken": 8,
+  "kvBytesPerToken": 20480,
+  "kvSourceUrl": "https://huggingface.co/ornith-ai/Ornith-1.5-35B-A3B/blob/main/config.json",
+  "vision": true,
+  "contextLength": 262144,
+  "license": {
+    "name": "MIT",
+    "url": "https://huggingface.co/ornith-ai/Ornith-1.5-35B-A3B"
+  },
+  "releaseDate": "2026-08-19",
+  "ggufUrl": "https://huggingface.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF",
+  "status": "active",
+  "summary": "The highest SWE-bench Verified score in this catalog — 79.0, from 3B active parameters, under MIT. Trained by having the model invent its own tasks and scaffolds rather than learning from a fixed human-written set. Eleven days old, and every number is DeepReinforce's own.",
+  "bands": {
+    "low": {
+      "weightsGb": 16.7,
+      "exampleQuants": [
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 21.9,
+      "exampleQuants": [
+        "Q4_K_M",
+        "mlx-4bit"
+      ]
+    },
+    "high": {
+      "weightsGb": 30.5,
+      "exampleQuants": [
+        "Q6_K"
+      ]
+    },
+    "full": {
+      "weightsGb": 71.1,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  },
+  "mlxUrl": "https://huggingface.co/ornith-ai/Ornith-1.5-35B-A3B-MLX"
+}

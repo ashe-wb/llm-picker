@@ -1,0 +1,60 @@
+{
+  "id": "gemma-4-31b",
+  "name": "Gemma 4 31B",
+  "family": "Gemma 4",
+  "vendor": "Google",
+  "architecture": "dense",
+  "paramsB": 30.7,
+  "layers": 60,
+  "vocabSize": 262144,
+  "width": 21504,
+  "attentionHeads": 32,
+  "kvHeads": 16,
+  "headDim": 256,
+  "globalKvHeads": 4,
+  "globalHeadDim": 512,
+  "attentionPattern": "SSSSSFSSSSSFSSSSSFSSSSSFSSSSSFSSSSSFSSSSSFSSSSSFSSSSSFSSSSSF",
+  "kvBytesPerToken": 81920,
+  "kvWindowedBytesPerToken": 819200,
+  "slidingWindow": 1024,
+  "kvSourceUrl": "https://huggingface.co/google/gemma-4-31b-it/blob/main/config.json",
+  "vision": true,
+  "contextLength": 262144,
+  "license": {
+    "name": "Apache-2.0",
+    "url": "https://huggingface.co/google/gemma-4-31b-it"
+  },
+  "releaseDate": "2026-07-02",
+  "ggufUrl": "https://huggingface.co/google/gemma-4-31B-it-qat-q4_0-gguf",
+  "status": "active",
+  "summary": "The Gemma 4 family's dense flagship, and the best long-context model in this catalog by a wide margin — 66.4% MRCR at 128K where its own 26B sibling manages 44.1%. Official QAT Q4_0 is 17.7GB, so the whole thing fits a 32GB machine.",
+  "bands": {
+    "low": {
+      "weightsGb": 15,
+      "exampleQuants": [
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 18,
+      "exampleQuants": [
+        "Q4_0",
+        "Q4_K_M",
+        "mlx-4bit"
+      ]
+    },
+    "high": {
+      "weightsGb": 25,
+      "exampleQuants": [
+        "Q6_K"
+      ]
+    },
+    "full": {
+      "weightsGb": 61,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  },
+  "mlxUrl": "https://huggingface.co/mlx-community/gemma-4-31B-it-qat-4bit"
+}

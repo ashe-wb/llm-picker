@@ -1,0 +1,58 @@
+{
+  "id": "nemotron-3-nano-30b-a3b",
+  "name": "Nemotron 3 Nano 30B-A3B",
+  "family": "Nemotron 3",
+  "vendor": "NVIDIA",
+  "architecture": "moe",
+  "paramsB": 31.6,
+  "activeParamsB": 3.6,
+  "layers": 52,
+  "vocabSize": 131072,
+  "width": 11136,
+  "attentionHeads": 32,
+  "kvHeads": 2,
+  "headDim": 128,
+  "attentionPattern": ".....F......F......F......F......F........F.........",
+  "expertsPerToken": 6,
+  "vision": false,
+  "contextLength": 262144,
+  "license": {
+    "name": "NVIDIA Nemotron Open Model License",
+    "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16"
+  },
+  "releaseDate": "2025-12-15",
+  "ggufUrl": "https://huggingface.co/bartowski/nvidia_Nemotron-3-Nano-30B-A3B-GGUF",
+  "status": "active",
+  "summary": "The long-context specialist of this catalog by a distance: 86.3% on RULER at one million tokens, where most models here are unrated and the best measured rival manages 66% at 128K. A hybrid Mamba-Transformer MoE — only 6 of its 52 layers hold a KV cache, which is why the window is affordable rather than nominal.",
+  "kvBytesPerToken": 6144,
+  "kvSourceUrl": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16/blob/main/config.json",
+  "bands": {
+    "low": {
+      "weightsGb": 19,
+      "exampleQuants": [
+        "Q3_K_M"
+      ]
+    },
+    "mid": {
+      "weightsGb": 24.7,
+      "exampleQuants": [
+        "Q4_K_M",
+        "mlx-4bit"
+      ]
+    },
+    "high": {
+      "weightsGb": 33.4,
+      "exampleQuants": [
+        "Q6_K",
+        "Q8_0"
+      ]
+    },
+    "full": {
+      "weightsGb": 63.2,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  },
+  "mlxUrl": "https://huggingface.co/mlx-community/NVIDIA-Nemotron-3-Nano-30B-A3B-4bit"
+}

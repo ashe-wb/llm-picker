@@ -1,0 +1,79 @@
+{
+  "modelId": "nemotron-3-super-120b-a12b",
+  "entries": [
+    {
+      "id": "nemotron-3-super-120b-a12b/low/tool-calling-degrades",
+      "bands": [
+        "low"
+      ],
+      "dimensions": [
+        "tool-calling",
+        "coding"
+      ],
+      "severity": "moderate",
+      "summary": "At 3-bit the agentic behaviour is the first thing to go. Terminal Bench Core 2.0 is already the weakest number on the card at bf16 (31.00), and structured tool output has the least headroom to lose — malformed arguments and dropped call sequences appear here before prose or reasoning visibly suffer.",
+      "mitigations": [
+        {
+          "mitigationId": "higher-quant",
+          "note": "Run the 87GB 4-bit build if the machine can hold it; that is the band this model is meant for.",
+          "effectiveness": "strong"
+        },
+        {
+          "mitigationId": "mcp-tools",
+          "note": "Constrained/grammar-based tool schemas recover much of the malformed-argument loss.",
+          "effectiveness": "partial"
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16",
+          "title": "Nemotron 3 Super model card: Terminal Bench Core 2.0 31.00 at bf16",
+          "sourceType": "vendor",
+          "accessed": "2026-08-31"
+        },
+        {
+          "url": "https://huggingface.co/bartowski/nvidia_Nemotron-3-Super-120B-A12B-GGUF",
+          "title": "bartowski GGUF quant ladder for Nemotron 3 Super",
+          "sourceType": "other",
+          "accessed": "2026-08-31"
+        }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "nemotron-3-super-120b-a12b/all/license-not-open-source",
+      "bands": [
+        "low",
+        "mid",
+        "high",
+        "full"
+      ],
+      "dimensions": [
+        "instruction-following"
+      ],
+      "severity": "mild",
+      "summary": "Ships under the NVIDIA Nemotron Open Model License, not Apache or MIT. Weights, datasets and recipes are published and commercial use is permitted, but it is a bespoke licence with its own terms — read it before building a product on this rather than assuming the permissions you get from the Qwen or gpt-oss models alongside it here.",
+      "mitigations": [
+        {
+          "mitigationId": "none",
+          "note": "A licensing constraint, not a technical one. Nothing to work around — just read the terms."
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-nemotron-open-model-license/",
+          "title": "NVIDIA Nemotron Open Model License",
+          "sourceType": "vendor",
+          "accessed": "2026-08-31"
+        },
+        {
+          "url": "https://unsloth.ai/docs/models/nemotron-3/nemotron-3-super",
+          "title": "Unsloth run guide for Nemotron 3 Super",
+          "sourceType": "blog",
+          "accessed": "2026-08-31"
+        }
+      ],
+      "confidence": "community-consensus"
+    }
+  ]
+}

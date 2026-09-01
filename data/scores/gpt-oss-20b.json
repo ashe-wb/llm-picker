@@ -1,0 +1,16 @@
+{
+  "modelId": "gpt-oss-20b",
+  "entries": [
+    { "band": "mid", "dimension": "math", "score": 7,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "AIME 2024 (high reasoning, no tools)", "rawValue": 42.1, "url": "https://arxiv.org/html/2508.10925", "retrieved": "2026-08-30", "quant": "mxfp4", "method": "vendor-reported", "notes": "61.2 WITH tools — the tool-use gain is the design intent. Measured at native MXFP4, so this anchors the mid band directly." }] },
+    { "band": "mid", "dimension": "coding", "score": 7,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "SWE-bench Verified", "rawValue": 60.7, "url": "https://arxiv.org/html/2508.10925", "retrieved": "2026-08-30", "quant": "mxfp4", "method": "vendor-reported", "notes": "Codeforces Elo 2230. Absent from Aider polyglot (the 120b appears; 20b does not)." }] },
+    { "band": "mid", "dimension": "tool-calling", "score": 7,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "Tau-Bench Retail", "rawValue": 54.8, "url": "https://arxiv.org/html/2508.10925", "retrieved": "2026-08-30", "quant": "mxfp4", "method": "vendor-reported", "notes": "Tool use is the model's organizing principle — browsing, python, and functions are first-class in its harmony format." }] },
+    { "band": "mid", "dimension": "factuality", "score": 2,
+      "provenance": [
+        { "sourceId": "vendor-model-card", "metric": "SimpleQA", "rawValue": 6.7, "url": "https://arxiv.org/html/2508.10925", "retrieved": "2026-08-30", "quant": "mxfp4", "method": "vendor-reported", "notes": "PersonQA hallucination rate: 53.2% — OpenAI's own numbers. Absent from Vectara HHEM (only the 120b is listed)." }
+      ] }
+  ],
+  "quantOverrides": []
+}

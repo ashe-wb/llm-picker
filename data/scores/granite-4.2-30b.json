@@ -1,0 +1,20 @@
+{
+  "modelId": "granite-4.2-30b",
+  "entries": [
+    { "band": "full", "dimension": "coding", "score": 6,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "SWE-bench Verified", "rawValue": 57.0, "url": "https://huggingface.co/blog/ibm-granite/granite-4-2", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Well behind Qwen3.6 27B (77.2) at a comparable footprint — Granite's pitch is governance and tool reliability, not raw coding. Vendor-reported, five days after release, no independent replication." }] },
+    { "band": "full", "dimension": "tool-calling", "score": 7,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "BFCL v3", "rawValue": 73.68, "url": "https://huggingface.co/blog/ibm-granite/granite-4-2", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Leads the Granite line on BFCL v3. IBM trained the 8B and 30B to act with tools inside sandboxed environments rather than on transcripts — treat as a vendor claim until the Berkeley leaderboard lists it independently." }] },
+    { "band": "full", "dimension": "factuality", "score": 6,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "MMLU", "rawValue": 80.2, "url": "https://huggingface.co/blog/ibm-granite/granite-4-2", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Pre-trained on ~15T tokens over five phases. Absent from Vectara HHEM as of 2026-08-30, so this is a knowledge proxy, not a hallucination measurement." }] },
+    { "band": "mid", "dimension": "coding", "score": 5,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: one point down from full. Q4_K_M is 18.03GB — the band that fits a 32GB machine." }] },
+    { "band": "mid", "dimension": "tool-calling", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: one point down; structured output degrades before prose does." }] },
+    { "band": "high", "dimension": "coding", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q6_K", "method": "aggregated", "quantNote": "Editorial derivation: carried from full. Note the open llama.cpp report of Q6/Q8 Granite 4 failing at very large contexts." }] },
+    { "band": "high", "dimension": "tool-calling", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q6_K", "method": "aggregated", "quantNote": "Editorial derivation: carried from the full band." }] }
+  ],
+  "quantOverrides": []
+}

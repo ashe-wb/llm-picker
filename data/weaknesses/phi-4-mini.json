@@ -1,0 +1,20 @@
+{
+  "modelId": "phi-4-mini",
+  "entries": [
+    {
+      "id": "phi-4-mini/all/hallucination",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["factuality"],
+      "severity": "severe",
+      "summary": "Hallucinates at 23.5% even when summarizing text it was handed (Vectara HHEM) — roughly five times the rate of same-size peers. Its fluent confidence makes this worse.",
+      "mitigations": [
+        { "mitigationId": "rag", "note": "Grounding helps but does not fix it — verify anything factual it produces.", "effectiveness": "partial" },
+        { "mitigationId": "none", "note": "For factual Q&A, use Gemma 3 4B or Qwen3-4B instead; keep Phi-4-mini for math and code." }
+      ],
+      "citations": [
+        { "url": "https://github.com/vectara/hallucination-leaderboard", "title": "Vectara HHEM leaderboard (phi-4-mini: 23.5%)", "sourceType": "leaderboard", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    }
+  ]
+}

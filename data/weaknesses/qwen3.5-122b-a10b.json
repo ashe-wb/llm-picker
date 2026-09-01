@@ -1,0 +1,80 @@
+{
+  "modelId": "qwen3.5-122b-a10b",
+  "entries": [
+    {
+      "id": "qwen3.5-122b-a10b/low/tool-calling-degrades",
+      "bands": [
+        "low"
+      ],
+      "dimensions": [
+        "tool-calling",
+        "coding"
+      ],
+      "severity": "moderate",
+      "summary": "3-bit is where the agentic behaviour goes. With 10B active parameters spread over 256 experts, routing decisions are made on a small slice of the model, and 3-bit quantization blurs exactly that slice — malformed tool arguments and dropped call sequences show up well before the prose reads worse.",
+      "mitigations": [
+        {
+          "mitigationId": "higher-quant",
+          "note": "The 76.5GB 4-bit build is the one to run; it fits a 96GB machine with context to spare, which is the whole argument for this model over the 397B.",
+          "effectiveness": "strong"
+        },
+        {
+          "mitigationId": "mcp-tools",
+          "note": "Grammar-constrained tool schemas recover much of the malformed-argument loss.",
+          "effectiveness": "partial"
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://huggingface.co/unsloth/Qwen3.5-122B-A10B-GGUF",
+          "title": "unsloth Qwen3.5-122B-A10B-GGUF: UD-IQ2_M 39.1GB, Q3_K_M 56.4GB, Q4_K_M 76.5GB",
+          "sourceType": "other",
+          "accessed": "2026-08-31"
+        },
+        {
+          "url": "https://unsloth.ai/docs/models/qwen3.5",
+          "title": "Unsloth Qwen3.5 run guide",
+          "sourceType": "blog",
+          "accessed": "2026-08-31"
+        }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "qwen3.5-122b-a10b/all/unreplicated-benchmarks",
+      "bands": [
+        "low",
+        "mid",
+        "high",
+        "full"
+      ],
+      "dimensions": [
+        "coding",
+        "math"
+      ],
+      "severity": "moderate",
+      "summary": "Every score here is Alibaba's own, published on release day and not independently replicated in this dataset. The claim that a 122B model lands within a few points of a 397B one is the interesting part and the part most in need of outside confirmation. Long-context and factuality cells are blank rather than estimated — no RULER or hallucination result exists for it.",
+      "mitigations": [
+        {
+          "mitigationId": "none",
+          "note": "A caveat on the evidence, not on the model."
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://huggingface.co/Qwen/Qwen3.5-122B-A10B",
+          "title": "Qwen3.5-122B-A10B model card: all figures vendor-reported",
+          "sourceType": "vendor",
+          "accessed": "2026-08-31"
+        },
+        {
+          "url": "https://huggingface.co/unsloth/Qwen3.5-122B-A10B-GGUF",
+          "title": "unsloth GGUF distribution; no independent benchmarks published",
+          "sourceType": "other",
+          "accessed": "2026-08-31"
+        }
+      ],
+      "confidence": "community-consensus"
+    }
+  ]
+}

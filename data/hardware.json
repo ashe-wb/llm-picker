@@ -1,0 +1,2292 @@
+{
+  "platforms": [
+    {
+      "id": "unified",
+      "label": "Unified memory (Apple Silicon)",
+      "pickerLabel": "Apple Silicon — graphics built into the chip",
+      "blurb": "macOS lets the GPU wire down about 75% of unified memory, and llama.cpp treats that as the limit. The CPU shares that same memory rather than adding a second pool, so splitting a model between the two — which is how a machine with a graphics card runs something oversized — gains almost nothing here and costs speed. Raising the cap is the lever on these machines.",
+      "prefillClass": "moderate",
+      "ceiling": {
+        "kind": "fraction-of-ram",
+        "value": 0.75,
+        "capLabel": "the macOS GPU cap",
+        "overridable": true,
+        "note": "macOS exposes recommendedMaxWorkingSetSize at roughly 75% of unified memory and llama.cpp treats it as a hard ceiling. Measured at 26,800,603,136 bytes (24.96 GiB) on a 32GB M2 Max, which is 78% rather than exactly 75. The 75% used here is an ASSUMPTION applied to every Apple machine, and the real figure varies by model and capacity — reported anywhere from two thirds to about three quarters. It does not have to be assumed: Metal answers the question directly, and MLX exposes the answer as mx.device_info()['max_recommended_working_set_size']. That is the number to plan against on any specific machine, and it beats every percentage on this page including ours.",
+        "citation": "https://github.com/ivanopcode/devnote-override-macos-metal-vram-cap",
+        "raise": {
+          "publishedReserveGb": {
+            "64": 8,
+            "96": 10,
+            "128": 14,
+            "192": 18,
+            "256": 24
+          },
+          "note": "How far this site OFFERS the cap raised, which is not the same as how far it is safe to raise it — nobody can tell you that. Apple documents iogpu.wired_limit_mb nowhere, so there is no official guidance and this project is not an authority on what your machine survives. The offer stops at RAM minus the OS reserve, the same figure the budget itself uses. That is deliberate: raising the limit grants a PERMISSION, it does not free memory. macOS and your other apps still draw on the same pool and llama.cpp has no view of them, so a limit set above what the system needs is a number the machine will not honour in practice. An earlier version offered more than the budget would ever spend, from a second uncited reserve; that arithmetic never bound at any capacity and has been removed. publishedReserveGb is what a cited source recommends holding back, kept for comparison — the offer here is currently more conservative than it at every capacity. Whatever you set, it is a runtime sysctl: it reverts on reboot, so the worst case is restarting rather than a broken machine.",
+          "citation": "https://contracollective.com/blog/mac-unified-memory-wired-limit-gpu-large-local-llm-2026"
+        }
+      },
+      "reserve": {
+        "minGb": 2,
+        "fractionOfRam": 0.2,
+        "note": "Left for macOS and your other apps. Proportional because a fixed number is wrong at both ends of the range: macOS idles near 3-4GB on an 8GB machine and comfortably uses 8-10GB on a 32GB one with a browser open. Independently corroborated: oMLX, a production Apple Silicon inference server, holds back 6 GiB by default on the same class of machine where this reserve holds back 6.4GB. Two implementations arriving at the same figure from different directions is the closest thing to evidence this number has."
+      },
+      "advice": {
+        "id": "raise-wired-limit",
+        "label": "Raise the GPU memory limit",
+        "trigger": "ceiling-only",
+        "newbieExplainer": "By default macOS lets the GPU claim about 75% of your memory, and llama.cpp will not load a model larger than that even when you have RAM to spare. That 75% is this site's assumption, not your machine's answer — Metal will tell you the real number, and two lines of Python get it: mx.device_info()['max_recommended_working_set_size']. You can also raise the cap. How far is genuinely unsettled: Apple documents the setting nowhere, so nobody — this site included — can tell you what your machine will survive. Raise it in steps and leave the system several gigabytes. Note the failure mode is not a clean error: a graphics card that runs out of memory stops the program and leaves the machine working, whereas an over-committed Mac pushes the pressure into the memory compressor and then into swap, so the symptom is a machine that goes slow rather than a model that refuses to load. The good news is the shape of it: this is a runtime setting that reverts when you reboot, so treat it as a session. Raise it, run the model, put it back. The worst case is a restart.",
+        "command": "sudo sysctl iogpu.wired_limit_mb=<megabytes>",
+        "caveat": "Reverts on reboot, so nothing here is permanent unless you make it so with a login script — which is worth avoiding, since it would give up the headroom on every boot including the ones where you are not running a model. The cap is a permission, not spare memory: set it past what the system needs and the machine swaps and stutters. And your runtime may not use it. Serving engines apply their own memory ceiling, often lower: oMLX takes min(RAM minus its own reserve, the sysctl, Metal's hint), so on a 32GB machine its 6 GiB reserve binds at 26GB and raising the sysctl above that changes nothing at all. If a raise appears to do nothing, check what your runtime thinks its ceiling is before raising it further.",
+        "citation": "https://multigrid.ai/learn/mlx-memory-management"
+      }
+    },
+    {
+      "id": "unified-amd",
+      "label": "Unified memory — AMD (Strix Halo)",
+      "pickerLabel": "AMD Strix Halo — graphics built into the chip",
+      "blurb": "Ryzen AI Max+ APUs share one memory pool, but the GPU's slice is fixed in UEFI at boot rather than allocated on demand.",
+      "prefillClass": "slow",
+      "ceiling": {
+        "kind": "fraction-of-ram",
+        "value": 0.75,
+        "capLabel": "the UEFI VRAM split",
+        "overridable": true,
+        "note": "Windows allows up to 96GB of a 128GB machine to be allocated as VRAM — exactly three quarters. Linux with amdgpu reaches roughly 110-120GB. The split is set in UEFI at boot, not at runtime, so it is a reboot away rather than a command away.",
+        "citation": "https://yuv.ai/blog/nvidia-dgx-spark-vs-amd-strix-halo",
+        "raise": {
+          "note": "Strix Halo's split is set in UEFI at boot, not by a running command, so this is a reboot away rather than a keystroke away — and unlike the macOS setting, a bad value does not fix itself when you restart. The offer stops at RAM minus the OS reserve, the same figure the budget uses. What IS sourced for this hardware: Windows hands the GPU up to 96GB of a 128GB machine, and Linux with amdgpu reaches roughly 110-120GB. The published figure recorded here is the conservative end of the Linux range, and only for 128GB, because that is the only capacity the source names.",
+          "publishedReserveGb": {
+            "128": 18
+          },
+          "citation": "https://yuv.ai/blog/nvidia-dgx-spark-vs-amd-strix-halo"
+        }
+      },
+      "reserve": {
+        "minGb": 4,
+        "fractionOfRam": 0.1,
+        "note": "Lower than a general-purpose desktop: these are bought to run models, so less is held back for everything else."
+      },
+      "advice": {
+        "id": "raise-uma-allocation",
+        "label": "Raise the GPU memory allocation",
+        "trigger": "ceiling-only",
+        "newbieExplainer": "On Strix Halo the graphics memory is carved out of system RAM in UEFI, and the default share is smaller than the machine can give. Raise the UMA Frame Buffer / VRAM setting in firmware and reboot. Running Linux lifts the ceiling further still — amdgpu will hand the GPU roughly 110-120GB of a 128GB machine where Windows stops at 96GB.",
+        "caveat": "Set in firmware at boot, so it needs a reboot to change and another to undo, and whatever you allocate is unavailable to the rest of the system. Unlike the macOS setting, a bad value here does not fix itself when you restart.",
+        "citation": "https://yuv.ai/blog/nvidia-dgx-spark-vs-amd-strix-halo"
+      }
+    },
+    {
+      "id": "unified-nvidia",
+      "label": "Unified memory — NVIDIA (DGX Spark)",
+      "pickerLabel": "NVIDIA DGX Spark — graphics built into the chip",
+      "blurb": "GB10 Grace Blackwell shares one coherent pool between CPU and GPU with no fixed split — the model, the KV cache, the OS and the display all draw from the same 128GB.",
+      "prefillClass": "fast",
+      "ceiling": {
+        "kind": "ram-only",
+        "overridable": false,
+        "note": "No GPU-specific cap to raise: allocation is dynamic. What limits you is simply what the rest of the system is using.",
+        "citation": "https://d-central.tech/dgx-spark-model-fit-guide/"
+      },
+      "reserve": {
+        "minGb": 4,
+        "fractionOfRam": 0.1,
+        "note": "A dedicated AI appliance, so less is reserved than on a general-purpose desktop."
+      }
+    },
+    {
+      "id": "discrete",
+      "label": "Discrete GPU (NVIDIA / AMD)",
+      "pickerLabel": "A separate graphics card (NVIDIA / AMD / Intel) + your CPU",
+      "blurb": "The model runs fastest entirely inside the card's own memory. Anything larger still runs: the card takes what it holds and your CPU runs the remaining layers out of system RAM, at the speed of that memory rather than the card's.",
+      "prefillClass": "fast",
+      "ceiling": {
+        "kind": "vram-minus",
+        "value": 1,
+        "capLabel": "reserved for the display",
+        "overridable": false,
+        "note": "About 1GB of VRAM is already spoken for by the desktop and display buffers."
+      },
+      "reserve": {
+        "minGb": 2,
+        "fractionOfRam": 0.2,
+        "note": "Applies only to the system RAM your CPU runs offloaded layers from, not to the card's memory."
+      },
+      "offload": {
+        "allowed": true,
+        "note": "Layers the card cannot hold stay in system RAM and are run there by the CPU — they are not streamed to the card. Both processors work on every token, and the CPU's share, being much the slower of the two, sets the pace."
+      }
+    },
+    {
+      "id": "cpu",
+      "label": "CPU only (no GPU acceleration)",
+      "pickerLabel": "No graphics card — your CPU does all of it",
+      "blurb": "Everything runs on the processor. It works and it is slow — expect a few tokens per second on anything above 8B.",
+      "prefillClass": "slow",
+      "ceiling": {
+        "kind": "ram-only",
+        "overridable": false,
+        "note": "No graphics cap applies; system RAM minus the reserve is the whole budget, and the speed of that RAM is the whole of the speed."
+      },
+      "reserve": {
+        "minGb": 2,
+        "fractionOfRam": 0.2,
+        "note": "Left for the OS and other applications."
+      }
+    }
+  ],
+  "thresholds": {
+    "tightAtFractionOfBudget": 0.85,
+    "tightBelowHeadroomGb": 1,
+    "tightBelowHeadroomFraction": 0.08,
+    "note": "A fit is tight when it passes either test. Percentage alone is too loose on a 128GB machine and too strict on an 8GB one, so the absolute floor scales with the machine. Splitting a model between the card and the CPU is only offered while at least this share still sits on the card: below roughly half, the CPU is running most of the model and the card has stopped being the reason the machine is quick. Held at a half deliberately — it is a conservative line, not a physical one, and moving it should be argued from measurements.",
+    "offloadMinResidentFraction": 0.5
+  },
+  "ramOptions": [
+    8,
+    12,
+    16,
+    18,
+    24,
+    32,
+    36,
+    48,
+    64,
+    96,
+    128,
+    192,
+    256,
+    512
+  ],
+  "vramOptions": [
+    3.5,
+    4,
+    6,
+    8,
+    10,
+    11,
+    12,
+    16,
+    20,
+    22,
+    24,
+    32,
+    40,
+    48,
+    64,
+    80,
+    96,
+    128,
+    160,
+    192,
+    256,
+    288
+  ],
+  "presets": [
+    {
+      "id": "strix-32",
+      "label": "Ryzen AI Max+ 395 32GB",
+      "group": "AI desktops",
+      "platform": "unified-amd",
+      "ramGb": 32,
+      "memoryBandwidthGbs": 256
+    },
+    {
+      "id": "strix-64",
+      "label": "Ryzen AI Max+ 395 64GB",
+      "group": "AI desktops",
+      "platform": "unified-amd",
+      "ramGb": 64,
+      "memoryBandwidthGbs": 256
+    },
+    {
+      "id": "strix-128",
+      "label": "Ryzen AI Max+ 395 128GB",
+      "group": "AI desktops",
+      "platform": "unified-amd",
+      "ramGb": 128,
+      "memoryBandwidthGbs": 256
+    },
+    {
+      "id": "dgx-spark",
+      "label": "NVIDIA DGX Spark 128GB",
+      "group": "AI desktops",
+      "platform": "unified-nvidia",
+      "ramGb": 128,
+      "memoryBandwidthGbs": 273
+    },
+    {
+      "id": "rx-6500xt-8",
+      "label": "RX 6500 XT 8GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 144,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "RDNA 2, so prompt processing is capped by the silicon: these cards have no matrix cores at all — llama.cpp enables WMMA only on RDNA 3 and newer. Generation is bandwidth-bound and barely affected. ROCm has never supported this GPU target in any release — not with an override either. Vulkan is the path, and it is a good one. Also a 64-bit bus on a PCIe x4 link — 144GB/s is the lowest here, and the narrow link makes any spill to system RAM worse than usual. A warning rather than an option. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rx-7400",
+      "label": "RX 7400 8GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 173,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "OEM-only, and at 173GB/s the slowest 8GB card on this list by some way. It will hold a small model and read it at about a fifth the rate of a 7900 XTX. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "w7500",
+      "label": "Radeon PRO W7500 8GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 173,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "AMD's own sources disagree on this card: the datasheet says 10.8 Gbps for 172.8 GB/s, the product page says 256, and third-party listings run to 288. The datasheet figure is the one recorded here — it is arithmetically self-consistent on a 128-bit bus, and it matches the RX 7400 on this same list, which is the same Navi 33 die in the same 70W class. Treat 173 as the low end of a 172.8-176 range rather than a precise number. At that speed it is among the slowest cards here; it is a 70W single-slot workstation part, bought for fitting in a small case rather than for throughput. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://www.amd.com/content/dam/amd/en/documents/products/graphics/workstation/radeon-pro-w7500-datasheet.pdf"
+    },
+    {
+      "id": "rx-6600",
+      "label": "RX 6600 8GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 224,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "RDNA 2, so prompt processing is capped by the silicon: these cards have no matrix cores at all — llama.cpp enables WMMA only on RDNA 3 and newer. Generation is bandwidth-bound and barely affected. ROCm has never supported this GPU target in any release — not with an override either. Vulkan is the path, and it is a good one. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rx-6600xt",
+      "label": "RX 6600 XT 8GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 256,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "RDNA 2, so prompt processing is capped by the silicon: these cards have no matrix cores at all — llama.cpp enables WMMA only on RDNA 3 and newer. Generation is bandwidth-bound and barely affected. ROCm has never supported this GPU target in any release — not with an override either. Vulkan is the path, and it is a good one. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rx-6650xt",
+      "label": "RX 6650 XT 8GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 280,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "RDNA 2, so prompt processing is capped by the silicon: these cards have no matrix cores at all — llama.cpp enables WMMA only on RDNA 3 and newer. Generation is bandwidth-bound and barely affected. ROCm has never supported this GPU target in any release — not with an override either. Vulkan is the path, and it is a good one. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rx-9060",
+      "label": "RX 9060 8GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 288,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "OEM-only, so it turns up in prebuilt systems rather than on shelves. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rx-9050",
+      "label": "RX 9050 8GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 288,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "Launched July 2026 into APAC, Japan and Latin America only. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rx-7650gre",
+      "label": "RX 7650 GRE 8GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 288,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "China-market card. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rx-7600",
+      "label": "RX 7600 8GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 288,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "Same silicon and same 288GB/s as the 7600 XT 16GB; capacity is the only difference, and it is the one that decides what runs. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "w7600",
+      "label": "Radeon PRO W7600 8GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 288,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rx-9060xt-8",
+      "label": "RX 9060 XT 8GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 320,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "Two cards under one name, and unusually they run at the same speed: both the 8GB and the 16GB are Navi 44 on a 128-bit bus at 20Gbps, so both read at 320 GB/s. The only difference is capacity — which for running a model is the difference that decides everything, since it sets what fits at all rather than how fast it goes. The 8GB card is the one to be careful with: at this size the KV cache at long context competes with the weights for room. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own curated scoreboards Vulkan is ahead on token generation for every AMD chip measured — 191 against 167 tok/s on a 7900 XTX, 137 against 101 on a 9070 XT. llama.cpp's HIP maintainer says outright that the HIP backend is not expected to beat Vulkan. Prompt processing is genuinely split between the two, so the right backend depends on which half of the work you care about.",
+      "noteUrl": "https://www.tomshardware.com/pc-components/gpus/amd-radeon-rx-9060-xt-16gb-review"
+    },
+    {
+      "id": "rx-6700",
+      "label": "RX 6700 10GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 10,
+      "memoryBandwidthGbs": 320,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "RDNA 2, so prompt processing is capped by the silicon: these cards have no matrix cores at all — llama.cpp enables WMMA only on RDNA 3 and newer. Generation is bandwidth-bound and barely affected. ROCm has never supported this GPU target in any release — not with an override either. Vulkan is the path, and it is a good one. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rx-6750gre-10",
+      "label": "RX 6750 GRE 10GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 10,
+      "memoryBandwidthGbs": 320,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "RDNA 2, so prompt processing is capped by the silicon: these cards have no matrix cores at all — llama.cpp enables WMMA only on RDNA 3 and newer. Generation is bandwidth-bound and barely affected. ROCm has never supported this GPU target in any release — not with an override either. Vulkan is the path, and it is a good one. The 12GB card of the same name is a different GPU on a wider bus, not simply more memory. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rx-6700xt",
+      "label": "RX 6700 XT 12GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 12,
+      "memoryBandwidthGbs": 384,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "RDNA 2, so prompt processing is capped by the silicon: these cards have no matrix cores at all — llama.cpp enables WMMA only on RDNA 3 and newer. Generation is bandwidth-bound and barely affected. ROCm has never supported this GPU target in any release — not with an override either. Vulkan is the path, and it is a good one. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rx-6750gre-12",
+      "label": "RX 6750 GRE 12GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 12,
+      "memoryBandwidthGbs": 384,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "RDNA 2, so prompt processing is capped by the silicon: these cards have no matrix cores at all — llama.cpp enables WMMA only on RDNA 3 and newer. Generation is bandwidth-bound and barely affected. ROCm has never supported this GPU target in any release — not with an override either. Vulkan is the path, and it is a good one. Sold under one name at two sizes that are different GPUs: the 10GB is a 160-bit part at 320GB/s, this is 192-bit at 384. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rx-9070-gre",
+      "label": "RX 9070 GRE 12GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 12,
+      "memoryBandwidthGbs": 432,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rx-7700xt",
+      "label": "RX 7700 XT 12GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 12,
+      "memoryBandwidthGbs": 432,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "Confusingly slower and smaller than the plain RX 7700, which is 16GB at 624GB/s. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rx-6750xt",
+      "label": "RX 6750 XT 12GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 12,
+      "memoryBandwidthGbs": 432,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "RDNA 2, so prompt processing is capped by the silicon: these cards have no matrix cores at all — llama.cpp enables WMMA only on RDNA 3 and newer. Generation is bandwidth-bound and barely affected. ROCm has never supported this GPU target in any release — not with an override either. Vulkan is the path, and it is a good one. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rx-7600xt-16",
+      "label": "RX 7600 XT 16GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 16,
+      "memoryBandwidthGbs": 288,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "The cheap way to 16GB. Same 128-bit bus and 288GB/s as the 8GB RX 7600 — twice the capacity at identical speed, so it holds far more model and reads it no faster. That trade is usually worth taking: a model that fits beats a model that is split with the CPU. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rx-9060xt-16",
+      "label": "RX 9060 XT 16GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 16,
+      "memoryBandwidthGbs": 320,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "Two cards under one name, and unusually they run at the same speed: both the 8GB and the 16GB are Navi 44 on a 128-bit bus at 20Gbps, so both read at 320 GB/s. The only difference is capacity — which for running a model is the difference that decides everything, since it sets what fits at all rather than how fast it goes. The 8GB card is the one to be careful with: at this size the KV cache at long context competes with the weights for room. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own curated scoreboards Vulkan is ahead on token generation for every AMD chip measured — 191 against 167 tok/s on a 7900 XTX, 137 against 101 on a 9070 XT. llama.cpp's HIP maintainer says outright that the HIP backend is not expected to beat Vulkan. Prompt processing is genuinely split between the two, so the right backend depends on which half of the work you care about.",
+      "noteUrl": "https://www.tomshardware.com/pc-components/gpus/amd-radeon-rx-9060-xt-16gb-review"
+    },
+    {
+      "id": "rx-6800xt",
+      "label": "RX 6800 XT 16GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 16,
+      "memoryBandwidthGbs": 512,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "RDNA 2, and that decides its prompt processing. These cards have no matrix cores at all — llama.cpp's amd_wmma_available() is true only for RDNA 3 and newer, and RDNA 2 falls back to dp4a; Mesa's RADV likewise exposes cooperative matrix only on GFX11 and up. So the ceiling on reading a long prompt is set by the silicon, not by a driver that might improve. It is the honest reason a cheap 6800 XT is not simply a cheap 7800 XT. Generating tokens, which is bandwidth-bound rather than compute-bound, is much less affected — this card's 512GB/s is real. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own curated scoreboards Vulkan is ahead on token generation for every AMD chip measured — 191 against 167 tok/s on a 7900 XTX, 137 against 101 on a 9070 XT. llama.cpp's HIP maintainer says outright that the HIP backend is not expected to beat Vulkan. Prompt processing is genuinely split between the two, so the right backend depends on which half of the work you care about.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rx-6900xt",
+      "label": "RX 6900 XT 16GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 16,
+      "memoryBandwidthGbs": 512,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "RDNA 2, and that decides its prompt processing. These cards have no matrix cores at all — llama.cpp's amd_wmma_available() is true only for RDNA 3 and newer, and RDNA 2 falls back to dp4a; Mesa's RADV likewise exposes cooperative matrix only on GFX11 and up. So the ceiling on reading a long prompt is set by the silicon, not by a driver that might improve. It is the honest reason a cheap 6800 XT is not simply a cheap 7800 XT. Generating tokens, which is bandwidth-bound rather than compute-bound, is much less affected — this card's 512GB/s is real. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own curated scoreboards Vulkan is ahead on token generation for every AMD chip measured — 191 against 167 tok/s on a 7900 XTX, 137 against 101 on a 9070 XT. llama.cpp's HIP maintainer says outright that the HIP backend is not expected to beat Vulkan. Prompt processing is genuinely split between the two, so the right backend depends on which half of the work you care about.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rx-6800",
+      "label": "RX 6800 16GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 16,
+      "memoryBandwidthGbs": 512,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "RDNA 2, so prompt processing is capped by the silicon: these cards have no matrix cores at all — llama.cpp enables WMMA only on RDNA 3 and newer. Generation is bandwidth-bound and barely affected. ROCm has never listed this card, only the PRO W6800 on the same gfx1030 target, so HIP works via HSA_OVERRIDE_GFX_VERSION=10.3.0 on Linux rather than officially. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rx-7900gre",
+      "label": "RX 7900 GRE 16GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 16,
+      "memoryBandwidthGbs": 576,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own curated scoreboards Vulkan is ahead on token generation for every AMD chip measured — 191 against 167 tok/s on a 7900 XTX, 137 against 101 on a 9070 XT. llama.cpp's HIP maintainer says outright that the HIP backend is not expected to beat Vulkan. Prompt processing is genuinely split between the two, so the right backend depends on which half of the work you care about.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rx-6950xt",
+      "label": "RX 6950 XT 16GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 16,
+      "memoryBandwidthGbs": 576,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "RDNA 2, so prompt processing is capped by the silicon: these cards have no matrix cores at all — llama.cpp enables WMMA only on RDNA 3 and newer. Generation is bandwidth-bound and barely affected. ROCm has never listed this card, only the PRO W6800 on the same gfx1030 target, so HIP works via HSA_OVERRIDE_GFX_VERSION=10.3.0 on Linux rather than officially. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "w7700",
+      "label": "Radeon PRO W7700 16GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 16,
+      "memoryBandwidthGbs": 576,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rx-7800xt",
+      "label": "RX 7800 XT 16GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 16,
+      "memoryBandwidthGbs": 624,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own curated scoreboards Vulkan is ahead on token generation for every AMD chip measured — 191 against 167 tok/s on a 7900 XTX, 137 against 101 on a 9070 XT. llama.cpp's HIP maintainer says outright that the HIP backend is not expected to beat Vulkan. Prompt processing is genuinely split between the two, so the right backend depends on which half of the work you care about.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rx-7700",
+      "label": "RX 7700 16GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 16,
+      "memoryBandwidthGbs": 624,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "Not a cut-down 7700 XT despite the name — it is the better card here by a distance. 16GB on a 256-bit bus at 624GB/s, matching the 7800 XT, where the 7700 XT is 12GB at 432. For running models the non-XT wins on both axes that matter. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rx-9070xt",
+      "label": "RX 9070 XT 16GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 16,
+      "memoryBandwidthGbs": 640,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own curated scoreboards Vulkan is ahead on token generation for every AMD chip measured — 191 against 167 tok/s on a 7900 XTX, 137 against 101 on a 9070 XT. llama.cpp's HIP maintainer says outright that the HIP backend is not expected to beat Vulkan. Prompt processing is genuinely split between the two, so the right backend depends on which half of the work you care about.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rx-9070",
+      "label": "RX 9070 16GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 16,
+      "memoryBandwidthGbs": 640,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own curated scoreboards Vulkan is ahead on token generation for every AMD chip measured — 191 against 167 tok/s on a 7900 XTX, 137 against 101 on a 9070 XT. llama.cpp's HIP maintainer says outright that the HIP backend is not expected to beat Vulkan. Prompt processing is genuinely split between the two, so the right backend depends on which half of the work you care about.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rx-7900xt",
+      "label": "RX 7900 XT 20GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 20,
+      "memoryBandwidthGbs": 800,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own curated scoreboards Vulkan is ahead on token generation for every AMD chip measured — 191 against 167 tok/s on a 7900 XTX, 137 against 101 on a 9070 XT. llama.cpp's HIP maintainer says outright that the HIP backend is not expected to beat Vulkan. Prompt processing is genuinely split between the two, so the right backend depends on which half of the work you care about.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rx-7900xtx",
+      "label": "RX 7900 XTX 24GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 24,
+      "memoryBandwidthGbs": 960,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own curated scoreboards Vulkan is ahead on token generation for every AMD chip measured — 191 against 167 tok/s on a 7900 XTX, 137 against 101 on a 9070 XT. llama.cpp's HIP maintainer says outright that the HIP backend is not expected to beat Vulkan. Prompt processing is genuinely split between the two, so the right backend depends on which half of the work you care about.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "w6800",
+      "label": "Radeon PRO W6800 32GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 32,
+      "memoryBandwidthGbs": 512,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "RDNA 2, so prompt processing is capped by the silicon: these cards have no matrix cores at all — llama.cpp enables WMMA only on RDNA 3 and newer. Generation is bandwidth-bound and barely affected. It is, though, the one RDNA 2 card ROCm has always officially supported. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "w7800-32",
+      "label": "Radeon PRO W7800 32GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 32,
+      "memoryBandwidthGbs": 576,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "Cut to a 256-bit bus, so it is both smaller and a third slower than the 48GB W7800. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "r9700",
+      "label": "Radeon AI PRO R9700 32GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 32,
+      "memoryBandwidthGbs": 640,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own curated scoreboards Vulkan is ahead on token generation for every AMD chip measured — 191 against 167 tok/s on a 7900 XTX, 137 against 101 on a 9070 XT. llama.cpp's HIP maintainer says outright that the HIP backend is not expected to beat Vulkan. Prompt processing is genuinely split between the two, so the right backend depends on which half of the work you care about.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "r9700s",
+      "label": "Radeon AI PRO R9700S 32GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 32,
+      "memoryBandwidthGbs": 640,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "Passively cooled server variant of the R9700 — memory-identical at 32GB and 640GB/s. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "r9600",
+      "label": "Radeon AI PRO R9600 32GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 32,
+      "memoryBandwidthGbs": 640,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "Memory-identical to the R9700 — 32GB at 640GB/s — with half the compute at 150W against 300W. Since generation is bandwidth-bound rather than compute-bound, this is the interesting one of the four for running models rather than training them. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "r9600d",
+      "label": "Radeon AI PRO R9600D 32GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 32,
+      "memoryBandwidthGbs": 640,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "Passively cooled server variant of the R9600 — memory-identical at 32GB and 640GB/s. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "w7900",
+      "label": "Radeon PRO W7900 48GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 48,
+      "memoryBandwidthGbs": 864,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own curated scoreboards Vulkan is ahead on token generation for every AMD chip measured — 191 against 167 tok/s on a 7900 XTX, 137 against 101 on a 9070 XT. llama.cpp's HIP maintainer says outright that the HIP backend is not expected to beat Vulkan. Prompt processing is genuinely split between the two, so the right backend depends on which half of the work you care about.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "w7800-48",
+      "label": "Radeon PRO W7800 48GB",
+      "group": "AMD",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 48,
+      "memoryBandwidthGbs": 864,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "The 48GB and 32GB W7800 are different cards, not one card at two sizes: this is the full 384-bit bus at 864GB/s, the 32GB is cut to 256-bit at 576. On AMD, prefer llama.cpp's Vulkan backend (RADV) over ROCm for generation: across llama.cpp's own scoreboards Vulkan leads token generation on every AMD chip measured. Prompt processing is split between the two.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/10879"
+    },
+    {
+      "id": "rtx-4070-8",
+      "label": "RTX 4070 8GB",
+      "group": "NVIDIA laptop",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 256,
+      "systemMemoryId": "ddr5-dual",
+      "note": "A different chip from the desktop card it shares a name with: 8GB on a 128-bit bus against the desktop 4070's 12GB, and 256 GB/s against 504. Picking the wrong one overstates both what fits and how fast it runs. The whole mobile line works this way — laptop 4080, 4090 and 5070 are cut-down parts wearing desktop names.",
+      "noteUrl": "https://www.xda-developers.com/mobile-rtx-4070-vs-desktop-4070/"
+    },
+    {
+      "id": "gtx-970",
+      "label": "GTX 970 3.5GB",
+      "group": "NVIDIA",
+      "subgroup": "GeForce GTX 900",
+      "platform": "discrete",
+      "ramGb": 16,
+      "vramGb": 3.5,
+      "memoryBandwidthGbs": 224,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "Listed at 3.5GB, not the 4GB on the box. The last 512MB sits on a separate, far slower memory partition; a runtime that fills it does not fail, it stalls. 3.5GB is the figure that predicts what actually runs. At this capacity most of the catalogue will not fit on the card at all, and what does not fit runs on your CPU out of system RAM. Maxwell has no FP16 arithmetic at all and no tensor cores, so run a quantized build and expect prompt processing to be slow — the same caveat this list carries on the Tesla M40, which is the same generation. Anything recommended at full precision here should be ignored."
+    },
+    {
+      "id": "gtx-980",
+      "label": "GTX 980 4GB",
+      "group": "NVIDIA",
+      "subgroup": "GeForce GTX 900",
+      "platform": "discrete",
+      "ramGb": 16,
+      "vramGb": 4,
+      "memoryBandwidthGbs": 224,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "Maxwell has no FP16 arithmetic at all and no tensor cores, so run a quantized build and expect prompt processing to be slow — the same caveat this list carries on the Tesla M40, which is the same generation. Anything recommended at full precision here should be ignored. At this capacity most of the catalogue will not fit on the card at all, and what does not fit runs on your CPU out of system RAM."
+    },
+    {
+      "id": "gtx-980ti",
+      "label": "GTX 980 Ti 6GB",
+      "group": "NVIDIA",
+      "subgroup": "GeForce GTX 900",
+      "platform": "discrete",
+      "ramGb": 16,
+      "vramGb": 6,
+      "memoryBandwidthGbs": 336,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "Maxwell has no FP16 arithmetic at all and no tensor cores, so run a quantized build and expect prompt processing to be slow — the same caveat this list carries on the Tesla M40, which is the same generation. Anything recommended at full precision here should be ignored."
+    },
+    {
+      "id": "gtx-1060-6",
+      "label": "GTX 1060 6GB",
+      "group": "NVIDIA",
+      "subgroup": "GeForce GTX 10",
+      "platform": "discrete",
+      "ramGb": 16,
+      "vramGb": 6,
+      "memoryBandwidthGbs": 192,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "Pascal predates tensor cores entirely, so prompt processing is much slower than the memory figure suggests — reading a long prompt is compute-bound work this card does without the hardware later ones use for it. FP16 also runs at a fraction of FP32 rate on consumer Pascal, as on the Tesla P40 further down this list, so ignore any full-precision recommendation and run a quantized build; llama.cpp's integer kernels sidestep it. Generation itself is bandwidth-bound and the speed here is real — it is the memory size that decides what you can run."
+    },
+    {
+      "id": "gtx-1070",
+      "label": "GTX 1070 8GB",
+      "group": "NVIDIA",
+      "subgroup": "GeForce GTX 10",
+      "platform": "discrete",
+      "ramGb": 16,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 256,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "Pascal predates tensor cores entirely, so prompt processing is much slower than the memory figure suggests — reading a long prompt is compute-bound work this card does without the hardware later ones use for it. FP16 also runs at a fraction of FP32 rate on consumer Pascal, as on the Tesla P40 further down this list, so ignore any full-precision recommendation and run a quantized build; llama.cpp's integer kernels sidestep it. Generation itself is bandwidth-bound and the speed here is real — it is the memory size that decides what you can run.",
+      "noteUrl": "https://international.download.nvidia.com/geforce-com/international/pdfs/GeForce_GTX_1080_Whitepaper_FINAL.pdf"
+    },
+    {
+      "id": "gtx-1070ti",
+      "label": "GTX 1070 Ti 8GB",
+      "group": "NVIDIA",
+      "subgroup": "GeForce GTX 10",
+      "platform": "discrete",
+      "ramGb": 16,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 256,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "Pascal predates tensor cores entirely, so prompt processing is much slower than the memory figure suggests — reading a long prompt is compute-bound work this card does without the hardware later ones use for it. FP16 also runs at a fraction of FP32 rate on consumer Pascal, as on the Tesla P40 further down this list, so ignore any full-precision recommendation and run a quantized build; llama.cpp's integer kernels sidestep it. Generation itself is bandwidth-bound and the speed here is real — it is the memory size that decides what you can run.",
+      "noteUrl": "https://international.download.nvidia.com/geforce-com/international/pdfs/GeForce_GTX_1080_Whitepaper_FINAL.pdf"
+    },
+    {
+      "id": "gtx-1080",
+      "label": "GTX 1080 8GB",
+      "group": "NVIDIA",
+      "platform": "discrete",
+      "ramGb": 16,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 320,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "Pascal predates tensor cores entirely, so prompt processing is much slower than the memory figure suggests — reading a long prompt is compute-bound work this card does without the hardware later ones use for it. FP16 also runs at a fraction of FP32 rate on consumer Pascal, as on the Tesla P40 further down this list, so ignore any full-precision recommendation and run a quantized build; llama.cpp's integer kernels sidestep it. Generation itself is bandwidth-bound and the 320 GB/s here is real — it is the 8GB that decides what you can run.",
+      "noteUrl": "https://international.download.nvidia.com/geforce-com/international/pdfs/GeForce_GTX_1080_Whitepaper_FINAL.pdf",
+      "subgroup": "GeForce GTX 10"
+    },
+    {
+      "id": "gtx-1080-x2",
+      "label": "2x GTX 1080 (16GB)",
+      "group": "NVIDIA",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 16,
+      "memoryBandwidthGbs": 320,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "Two cards, not one 16GB pool. llama.cpp splits a model across them by layer and runs those layers in sequence, so the pair holds twice what one card does but generates at roughly one card's speed — capacity doubles, tokens per second does not. SLI does not change this: it is a graphics feature, and llama.cpp does not use it, so the two talk over PCIe. The figure here is one card's bandwidth for that reason, and Pascal's slow prompt processing applies to both.",
+      "subgroup": "GeForce GTX 10"
+    },
+    {
+      "id": "gtx-1080ti",
+      "label": "GTX 1080 Ti 11GB",
+      "group": "NVIDIA",
+      "subgroup": "GeForce GTX 10",
+      "platform": "discrete",
+      "ramGb": 16,
+      "vramGb": 11,
+      "memoryBandwidthGbs": 484,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "The most memory on any GeForce card of its era, and more than several current ones on this list. Pascal predates tensor cores entirely, so prompt processing is much slower than the memory figure suggests — reading a long prompt is compute-bound work this card does without the hardware later ones use for it. FP16 also runs at a fraction of FP32 rate on consumer Pascal, as on the Tesla P40 further down this list, so ignore any full-precision recommendation and run a quantized build; llama.cpp's integer kernels sidestep it. Generation itself is bandwidth-bound and the speed here is real — it is the memory size that decides what you can run.",
+      "noteUrl": "https://images.nvidia.com/aem-dam/en-zz/Solutions/design-visualization/technologies/turing-architecture/NVIDIA-Turing-Architecture-Whitepaper.pdf"
+    },
+    {
+      "id": "gtx-1080ti-x2",
+      "label": "2x GTX 1080 Ti (22GB)",
+      "group": "NVIDIA",
+      "subgroup": "GeForce GTX 10",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 22,
+      "memoryBandwidthGbs": 484,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "Two cards, not one pool. llama.cpp splits a model across them by layer and runs those layers in sequence, so the pair holds twice what one card does but generates at roughly one card's speed — capacity doubles, tokens per second does not. The figure here is one card's bandwidth for that reason. Pascal's slow prompt processing applies to both.",
+      "noteUrl": "https://images.nvidia.com/aem-dam/en-zz/Solutions/design-visualization/technologies/turing-architecture/NVIDIA-Turing-Architecture-Whitepaper.pdf"
+    },
+    {
+      "id": "titan-x-pascal",
+      "label": "TITAN X (Pascal) 12GB",
+      "group": "NVIDIA",
+      "subgroup": "Titan (Pascal)",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 12,
+      "memoryBandwidthGbs": 480,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "Pascal predates tensor cores entirely, so prompt processing is much slower than the memory figure suggests — reading a long prompt is compute-bound work this card does without the hardware later ones use for it. FP16 also runs at a fraction of FP32 rate on consumer Pascal, as on the Tesla P40 further down this list, so ignore any full-precision recommendation and run a quantized build; llama.cpp's integer kernels sidestep it. Generation itself is bandwidth-bound and the speed here is real — it is the memory size that decides what you can run."
+    },
+    {
+      "id": "titan-xp",
+      "label": "TITAN Xp 12GB",
+      "group": "NVIDIA",
+      "subgroup": "Titan (Pascal)",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 12,
+      "memoryBandwidthGbs": 548,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "Pascal predates tensor cores entirely, so prompt processing is much slower than the memory figure suggests — reading a long prompt is compute-bound work this card does without the hardware later ones use for it. FP16 also runs at a fraction of FP32 rate on consumer Pascal, as on the Tesla P40 further down this list, so ignore any full-precision recommendation and run a quantized build; llama.cpp's integer kernels sidestep it. Generation itself is bandwidth-bound and the speed here is real — it is the memory size that decides what you can run."
+    },
+    {
+      "id": "gtx-1650",
+      "label": "GTX 1650 4GB",
+      "group": "NVIDIA",
+      "subgroup": "GeForce GTX 16",
+      "platform": "discrete",
+      "ramGb": 16,
+      "vramGb": 4,
+      "memoryBandwidthGbs": 128,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "The GTX 16 series is Turing with the tensor cores removed — that is the whole difference from an RTX 20 card. Generation runs at the bandwidth shown, but prompt processing has no hardware acceleration behind it and is slow in proportion. At this capacity most of the catalogue will not fit on the card at all, and what does not fit runs on your CPU out of system RAM."
+    },
+    {
+      "id": "gtx-1650-super",
+      "label": "GTX 1650 Super 4GB",
+      "group": "NVIDIA",
+      "subgroup": "GeForce GTX 16",
+      "platform": "discrete",
+      "ramGb": 16,
+      "vramGb": 4,
+      "memoryBandwidthGbs": 192,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "The GTX 16 series is Turing with the tensor cores removed — that is the whole difference from an RTX 20 card. Generation runs at the bandwidth shown, but prompt processing has no hardware acceleration behind it and is slow in proportion. At this capacity most of the catalogue will not fit on the card at all, and what does not fit runs on your CPU out of system RAM."
+    },
+    {
+      "id": "gtx-1660",
+      "label": "GTX 1660 6GB",
+      "group": "NVIDIA",
+      "subgroup": "GeForce GTX 16",
+      "platform": "discrete",
+      "ramGb": 16,
+      "vramGb": 6,
+      "memoryBandwidthGbs": 192,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "The GTX 16 series is Turing with the tensor cores removed — that is the whole difference from an RTX 20 card. Generation runs at the bandwidth shown, but prompt processing has no hardware acceleration behind it and is slow in proportion."
+    },
+    {
+      "id": "gtx-1660-super",
+      "label": "GTX 1660 Super 6GB",
+      "group": "NVIDIA",
+      "subgroup": "GeForce GTX 16",
+      "platform": "discrete",
+      "ramGb": 16,
+      "vramGb": 6,
+      "memoryBandwidthGbs": 336,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "The GTX 16 series is Turing with the tensor cores removed — that is the whole difference from an RTX 20 card. Generation runs at the bandwidth shown, but prompt processing has no hardware acceleration behind it and is slow in proportion."
+    },
+    {
+      "id": "gtx-1660ti",
+      "label": "GTX 1660 Ti 6GB",
+      "group": "NVIDIA",
+      "subgroup": "GeForce GTX 16",
+      "platform": "discrete",
+      "ramGb": 16,
+      "vramGb": 6,
+      "memoryBandwidthGbs": 288,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "The GTX 16 series is Turing with the tensor cores removed — that is the whole difference from an RTX 20 card. Generation runs at the bandwidth shown, but prompt processing has no hardware acceleration behind it and is slow in proportion."
+    },
+    {
+      "id": "rtx-2060",
+      "label": "RTX 2060 6GB",
+      "group": "NVIDIA",
+      "subgroup": "GeForce RTX 20",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 6,
+      "memoryBandwidthGbs": 336,
+      "systemMemoryId": "ddr4-dual"
+    },
+    {
+      "id": "rtx-2060-super",
+      "label": "RTX 2060 Super 8GB",
+      "group": "NVIDIA",
+      "subgroup": "GeForce RTX 20",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 448,
+      "systemMemoryId": "ddr4-dual"
+    },
+    {
+      "id": "rtx-2070",
+      "label": "RTX 2070 8GB",
+      "group": "NVIDIA",
+      "subgroup": "GeForce RTX 20",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 448,
+      "systemMemoryId": "ddr4-dual"
+    },
+    {
+      "id": "rtx-2070-super",
+      "label": "RTX 2070 Super 8GB",
+      "group": "NVIDIA",
+      "subgroup": "GeForce RTX 20",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 448,
+      "systemMemoryId": "ddr4-dual"
+    },
+    {
+      "id": "rtx-2080",
+      "label": "RTX 2080 8GB",
+      "group": "NVIDIA",
+      "subgroup": "GeForce RTX 20",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 448,
+      "systemMemoryId": "ddr4-dual"
+    },
+    {
+      "id": "rtx-2080-super",
+      "label": "RTX 2080 Super 8GB",
+      "group": "NVIDIA",
+      "subgroup": "GeForce RTX 20",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 496,
+      "systemMemoryId": "ddr4-dual"
+    },
+    {
+      "id": "rtx-2080ti",
+      "label": "RTX 2080 Ti 11GB",
+      "group": "NVIDIA",
+      "subgroup": "GeForce RTX 20",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 11,
+      "memoryBandwidthGbs": 616,
+      "systemMemoryId": "ddr4-dual",
+      "note": "Turing's flagship, and the cheapest 11GB card with tensor cores — unlike the GTX generations above it, prompt processing here is not the bottleneck.",
+      "noteUrl": "https://images.nvidia.com/aem-dam/en-zz/Solutions/design-visualization/technologies/turing-architecture/NVIDIA-Turing-Architecture-Whitepaper.pdf"
+    },
+    {
+      "id": "rtx-2080ti-x2",
+      "label": "2x RTX 2080 Ti (22GB)",
+      "group": "NVIDIA",
+      "subgroup": "GeForce RTX 20",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 22,
+      "memoryBandwidthGbs": 616,
+      "systemMemoryId": "ddr4-dual",
+      "note": "Two cards, not one pool. llama.cpp splits a model across them by layer and runs those layers in sequence, so the pair holds twice what one card does but generates at roughly one card's speed — capacity doubles, tokens per second does not. The figure here is one card's bandwidth for that reason.",
+      "noteUrl": "https://images.nvidia.com/aem-dam/en-zz/Solutions/design-visualization/technologies/turing-architecture/NVIDIA-Turing-Architecture-Whitepaper.pdf"
+    },
+    {
+      "id": "rtx-3060",
+      "label": "RTX 3060 12GB",
+      "group": "NVIDIA",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 12,
+      "memoryBandwidthGbs": 360,
+      "systemMemoryId": "ddr4-dual",
+      "subgroup": "GeForce RTX 30"
+    },
+    {
+      "id": "rtx-3060-x2",
+      "label": "2x RTX 3060 (24GB)",
+      "group": "NVIDIA",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 24,
+      "memoryBandwidthGbs": 360,
+      "systemMemoryId": "ddr4-dual",
+      "note": "Two cards, not one 24GB pool. llama.cpp splits a model across them by layer and runs those layers in sequence, so the pair holds twice what one card does but generates at roughly one card's speed — capacity doubles, tokens per second does not. These have no NVLink, so the two talk over PCIe, which costs more on a split model than the memory total suggests. The figure here is one card's bandwidth for that reason.",
+      "subgroup": "GeForce RTX 30"
+    },
+    {
+      "id": "rtx-4070",
+      "label": "RTX 4070 12GB",
+      "group": "NVIDIA",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 12,
+      "memoryBandwidthGbs": 504,
+      "systemMemoryId": "ddr5-dual",
+      "subgroup": "GeForce RTX 40"
+    },
+    {
+      "id": "rtx-4070-x2",
+      "label": "2x RTX 4070 (24GB)",
+      "group": "NVIDIA",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 24,
+      "memoryBandwidthGbs": 504,
+      "systemMemoryId": "ddr5-dual",
+      "note": "Two cards, not one 24GB pool. llama.cpp splits a model across them by layer and runs those layers in sequence, so the pair holds twice what one card does but generates at roughly one card's speed — capacity doubles, tokens per second does not. These have no NVLink, so the two talk over PCIe, which costs more on a split model than the memory total suggests. The figure here is one card's bandwidth for that reason.",
+      "subgroup": "GeForce RTX 40"
+    },
+    {
+      "id": "rtx-4060ti-16",
+      "label": "RTX 4060 Ti 16GB",
+      "group": "NVIDIA",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 16,
+      "memoryBandwidthGbs": 288,
+      "systemMemoryId": "ddr5-dual",
+      "subgroup": "GeForce RTX 40"
+    },
+    {
+      "id": "rtx-4060ti-16-x2",
+      "label": "2x RTX 4060 Ti (32GB)",
+      "group": "NVIDIA",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 32,
+      "memoryBandwidthGbs": 288,
+      "systemMemoryId": "ddr5-dual",
+      "note": "Two cards, not one 32GB pool. llama.cpp splits a model across them by layer and runs those layers in sequence, so the pair holds twice what one card does but generates at roughly one card's speed — capacity doubles, tokens per second does not. These have no NVLink, so the two talk over PCIe, which costs more on a split model than the memory total suggests. The figure here is one card's bandwidth for that reason.",
+      "subgroup": "GeForce RTX 40"
+    },
+    {
+      "id": "rtx-5060ti-16",
+      "label": "RTX 5060 Ti 16GB",
+      "group": "NVIDIA",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 16,
+      "memoryBandwidthGbs": 448,
+      "systemMemoryId": "ddr5-dual",
+      "subgroup": "GeForce RTX 50"
+    },
+    {
+      "id": "rtx-5060ti-16-x2",
+      "label": "2x RTX 5060 Ti (32GB)",
+      "group": "NVIDIA",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 32,
+      "memoryBandwidthGbs": 448,
+      "systemMemoryId": "ddr5-dual",
+      "note": "Two cards, not one 32GB pool. llama.cpp splits a model across them by layer and runs those layers in sequence, so the pair holds twice what one card does but generates at roughly one card's speed — capacity doubles, tokens per second does not. These have no NVLink, so the two talk over PCIe, which costs more on a split model than the memory total suggests. The figure here is one card's bandwidth for that reason.",
+      "noteUrl": "https://www.techspot.com/review/2979-nvidia-geforce-rtx-5060-ti-16gb/",
+      "subgroup": "GeForce RTX 50"
+    },
+    {
+      "id": "rtx-4080",
+      "label": "RTX 4080 16GB",
+      "group": "NVIDIA",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 16,
+      "memoryBandwidthGbs": 717,
+      "systemMemoryId": "ddr5-dual",
+      "subgroup": "GeForce RTX 40"
+    },
+    {
+      "id": "rtx-4080-x2",
+      "label": "2x RTX 4080 (32GB)",
+      "group": "NVIDIA",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 32,
+      "memoryBandwidthGbs": 717,
+      "systemMemoryId": "ddr5-dual",
+      "note": "Two cards, not one 32GB pool. llama.cpp splits a model across them by layer and runs those layers in sequence, so the pair holds twice what one card does but generates at roughly one card's speed — capacity doubles, tokens per second does not. These have no NVLink, so the two talk over PCIe, which costs more on a split model than the memory total suggests. The figure here is one card's bandwidth for that reason.",
+      "subgroup": "GeForce RTX 40"
+    },
+    {
+      "id": "rtx-5080",
+      "label": "RTX 5080 16GB",
+      "group": "NVIDIA",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 16,
+      "memoryBandwidthGbs": 960,
+      "systemMemoryId": "ddr5-dual",
+      "subgroup": "GeForce RTX 50"
+    },
+    {
+      "id": "rtx-5080-x2",
+      "label": "2x RTX 5080 (32GB)",
+      "group": "NVIDIA",
+      "platform": "discrete",
+      "ramGb": 128,
+      "vramGb": 32,
+      "memoryBandwidthGbs": 960,
+      "systemMemoryId": "ddr5-dual",
+      "note": "Two cards, not one 32GB pool. llama.cpp splits a model across them by layer and runs those layers in sequence, so the pair holds twice what one card does but generates at roughly one card's speed — capacity doubles, tokens per second does not. These have no NVLink, so the two talk over PCIe, which costs more on a split model than the memory total suggests. The figure here is one card's bandwidth for that reason.",
+      "subgroup": "GeForce RTX 50"
+    },
+    {
+      "id": "rtx-3090",
+      "label": "RTX 3090 24GB",
+      "group": "NVIDIA",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 24,
+      "memoryBandwidthGbs": 936,
+      "systemMemoryId": "ddr4-dual",
+      "subgroup": "GeForce RTX 30"
+    },
+    {
+      "id": "rtx-3090-x2",
+      "label": "2x RTX 3090 (48GB)",
+      "group": "NVIDIA",
+      "platform": "discrete",
+      "ramGb": 128,
+      "vramGb": 48,
+      "memoryBandwidthGbs": 936,
+      "systemMemoryId": "ddr4-dual",
+      "note": "Two cards, not one 48GB pool. llama.cpp splits a model across them by layer and runs those layers in sequence, so the pair holds twice what one card does but generates at roughly one card's speed — capacity doubles, tokens per second does not. These do support NVLink, which is far quicker than PCIe between them and helps tensor-parallel runtimes like vLLM — llama.cpp's layer-by-layer split benefits little either way. The figure here is one card's bandwidth for that reason.",
+      "subgroup": "GeForce RTX 30"
+    },
+    {
+      "id": "rtx-3090-x4",
+      "label": "4x RTX 3090 96GB",
+      "group": "NVIDIA",
+      "platform": "discrete",
+      "ramGb": 256,
+      "vramGb": 96,
+      "memoryBandwidthGbs": 936,
+      "systemMemoryId": "ddr4-dual",
+      "note": "Four cards, not one 96GB pool. llama.cpp and vLLM both split a model across them, but this site sizes a single pool and does not model the link between the cards, so treat the number as an upper bound. Without NVLink the cards talk over PCIe, which costs more on a split model than the memory total suggests.",
+      "subgroup": "GeForce RTX 30"
+    },
+    {
+      "id": "rtx-4090",
+      "label": "RTX 4090 24GB",
+      "group": "NVIDIA",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 24,
+      "memoryBandwidthGbs": 1008,
+      "systemMemoryId": "ddr5-dual",
+      "subgroup": "GeForce RTX 40"
+    },
+    {
+      "id": "rtx-4090-x2",
+      "label": "2x RTX 4090 (48GB)",
+      "group": "NVIDIA",
+      "platform": "discrete",
+      "ramGb": 128,
+      "vramGb": 48,
+      "memoryBandwidthGbs": 1008,
+      "systemMemoryId": "ddr5-dual",
+      "note": "Two cards, not one 48GB pool. llama.cpp splits a model across them by layer and runs those layers in sequence, so the pair holds twice what one card does but generates at roughly one card's speed — capacity doubles, tokens per second does not. These have no NVLink, so the two talk over PCIe, which costs more on a split model than the memory total suggests. The figure here is one card's bandwidth for that reason.",
+      "subgroup": "GeForce RTX 40"
+    },
+    {
+      "id": "rtx-5090",
+      "label": "RTX 5090 32GB",
+      "group": "NVIDIA",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 32,
+      "memoryBandwidthGbs": 1792,
+      "systemMemoryId": "ddr5-dual",
+      "subgroup": "GeForce RTX 50"
+    },
+    {
+      "id": "rtx-5090-x2",
+      "label": "2x RTX 5090 (64GB)",
+      "group": "NVIDIA",
+      "platform": "discrete",
+      "ramGb": 128,
+      "vramGb": 64,
+      "memoryBandwidthGbs": 1792,
+      "systemMemoryId": "ddr5-dual",
+      "note": "Two cards, not one 64GB pool. llama.cpp splits a model across them by layer and runs those layers in sequence, so the pair holds twice what one card does but generates at roughly one card's speed — capacity doubles, tokens per second does not. These have no NVLink, so the two talk over PCIe, which costs more on a split model than the memory total suggests. The figure here is one card's bandwidth for that reason.",
+      "subgroup": "GeForce RTX 50"
+    },
+    {
+      "id": "rtx-a6000",
+      "label": "RTX A6000 48GB",
+      "group": "NVIDIA",
+      "platform": "discrete",
+      "ramGb": 128,
+      "vramGb": 48,
+      "memoryBandwidthGbs": 768,
+      "systemMemoryId": "ddr5-quad",
+      "subgroup": "RTX professional"
+    },
+    {
+      "id": "rtx-a6000-x2",
+      "label": "2x RTX A6000 (96GB)",
+      "group": "NVIDIA",
+      "platform": "discrete",
+      "ramGb": 256,
+      "vramGb": 96,
+      "memoryBandwidthGbs": 768,
+      "systemMemoryId": "ddr5-quad",
+      "note": "Two cards, not one 96GB pool. llama.cpp splits a model across them by layer and runs those layers in sequence, so the pair holds twice what one card does but generates at roughly one card's speed — capacity doubles, tokens per second does not. These do support NVLink, which is far quicker than PCIe between them and helps tensor-parallel runtimes like vLLM — llama.cpp's layer-by-layer split benefits little either way. The figure here is one card's bandwidth for that reason.",
+      "subgroup": "RTX professional"
+    },
+    {
+      "id": "rtx-6000-ada",
+      "label": "RTX 6000 Ada 48GB",
+      "group": "NVIDIA",
+      "platform": "discrete",
+      "ramGb": 128,
+      "vramGb": 48,
+      "memoryBandwidthGbs": 960,
+      "systemMemoryId": "ddr5-twelve",
+      "subgroup": "RTX professional"
+    },
+    {
+      "id": "rtx-6000-ada-x2",
+      "label": "2x RTX 6000 Ada (96GB)",
+      "group": "NVIDIA",
+      "platform": "discrete",
+      "ramGb": 256,
+      "vramGb": 96,
+      "memoryBandwidthGbs": 960,
+      "systemMemoryId": "ddr5-twelve",
+      "note": "Two cards, not one 96GB pool. llama.cpp splits a model across them by layer and runs those layers in sequence, so the pair holds twice what one card does but generates at roughly one card's speed — capacity doubles, tokens per second does not. These have no NVLink, so the two talk over PCIe, which costs more on a split model than the memory total suggests. The figure here is one card's bandwidth for that reason.",
+      "subgroup": "RTX professional"
+    },
+    {
+      "id": "tesla-p100",
+      "label": "Tesla P100 16GB",
+      "group": "NVIDIA datacenter",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 16,
+      "memoryBandwidthGbs": 732,
+      "systemMemoryId": "ddr4-dual"
+    },
+    {
+      "id": "tesla-t4",
+      "label": "Tesla T4 16GB",
+      "group": "NVIDIA datacenter",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 16,
+      "memoryBandwidthGbs": 320,
+      "systemMemoryId": "ddr4-dual"
+    },
+    {
+      "id": "tesla-v100",
+      "label": "Tesla V100 16GB",
+      "group": "NVIDIA datacenter",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 16,
+      "memoryBandwidthGbs": 900,
+      "systemMemoryId": "ddr4-dual"
+    },
+    {
+      "id": "tesla-m40",
+      "label": "Tesla M40 24GB",
+      "group": "NVIDIA datacenter",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 24,
+      "memoryBandwidthGbs": 288,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "Maxwell has no FP16 arithmetic at all, so ignore any full-precision recommendation here and run a quantized build instead."
+    },
+    {
+      "id": "tesla-p40",
+      "label": "Tesla P40 24GB",
+      "group": "NVIDIA datacenter",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 24,
+      "memoryBandwidthGbs": 347,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "slow",
+      "note": "FP16 is fused off to 1/64 rate on this card, so ignore any full-precision recommendation and run a quantized build — llama.cpp's integer kernels avoid the problem entirely.",
+      "noteUrl": "https://localaimaster.com/blog/tesla-p40-local-llm"
+    },
+    {
+      "id": "a10",
+      "label": "A10 24GB",
+      "group": "NVIDIA datacenter",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 24,
+      "memoryBandwidthGbs": 600,
+      "systemMemoryId": "ddr5-quad"
+    },
+    {
+      "id": "l4",
+      "label": "L4 24GB",
+      "group": "NVIDIA datacenter",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 24,
+      "memoryBandwidthGbs": 300,
+      "systemMemoryId": "ddr5-quad"
+    },
+    {
+      "id": "tesla-v100-32",
+      "label": "Tesla V100 32GB",
+      "group": "NVIDIA datacenter",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 32,
+      "memoryBandwidthGbs": 900,
+      "systemMemoryId": "ddr4-dual"
+    },
+    {
+      "id": "a100-40",
+      "label": "A100 40GB",
+      "group": "NVIDIA datacenter",
+      "platform": "discrete",
+      "ramGb": 128,
+      "vramGb": 40,
+      "memoryBandwidthGbs": 1555,
+      "systemMemoryId": "ddr5-quad"
+    },
+    {
+      "id": "a40",
+      "label": "A40 48GB",
+      "group": "NVIDIA datacenter",
+      "platform": "discrete",
+      "ramGb": 128,
+      "vramGb": 48,
+      "memoryBandwidthGbs": 696,
+      "systemMemoryId": "ddr5-quad"
+    },
+    {
+      "id": "l40s",
+      "label": "L40S 48GB",
+      "group": "NVIDIA datacenter",
+      "platform": "discrete",
+      "ramGb": 128,
+      "vramGb": 48,
+      "memoryBandwidthGbs": 864,
+      "systemMemoryId": "ddr5-twelve"
+    },
+    {
+      "id": "a100-80",
+      "label": "A100 80GB",
+      "group": "NVIDIA datacenter",
+      "platform": "discrete",
+      "ramGb": 256,
+      "vramGb": 80,
+      "memoryBandwidthGbs": 2039,
+      "systemMemoryId": "ddr5-quad"
+    },
+    {
+      "id": "h100-80",
+      "label": "H100 80GB",
+      "group": "NVIDIA datacenter",
+      "platform": "discrete",
+      "ramGb": 256,
+      "vramGb": 80,
+      "memoryBandwidthGbs": 3350,
+      "systemMemoryId": "ddr5-twelve"
+    },
+    {
+      "id": "arc-a750",
+      "label": "Arc A750 8GB",
+      "group": "Intel",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 512,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "moderate"
+    },
+    {
+      "id": "arc-b570",
+      "label": "Arc B570 10GB",
+      "group": "Intel",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 10,
+      "memoryBandwidthGbs": 380,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate"
+    },
+    {
+      "id": "arc-b580",
+      "label": "Arc B580 12GB",
+      "group": "Intel",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 12,
+      "memoryBandwidthGbs": 456,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate"
+    },
+    {
+      "id": "arc-a770",
+      "label": "Arc A770 16GB",
+      "group": "Intel",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 16,
+      "memoryBandwidthGbs": 560,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "moderate"
+    },
+    {
+      "id": "arc-pro-b50",
+      "label": "Arc Pro B50 16GB",
+      "group": "Intel",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 16,
+      "memoryBandwidthGbs": 224,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate"
+    },
+    {
+      "id": "arc-pro-b60",
+      "label": "Arc Pro B60 24GB",
+      "group": "Intel",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 24,
+      "memoryBandwidthGbs": 456,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate"
+    },
+    {
+      "id": "arc-pro-b70",
+      "label": "Arc Pro B70 32GB",
+      "group": "Intel",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 32,
+      "memoryBandwidthGbs": 608,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate"
+    },
+    {
+      "id": "arc-pro-b60-2",
+      "label": "Arc Pro B60 Dual 48GB (2 × 24GB)",
+      "group": "Intel",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 48,
+      "memoryBandwidthGbs": 456,
+      "systemMemoryId": "ddr5-dual",
+      "prefillClass": "moderate",
+      "note": "Two GPUs on one board, not one 48GB pool: 24GB and 456 GB/s each. A model larger than 24GB is split across them and the halves run in sequence, so the card holds twice what one GPU does and generates at about one GPU's speed. The figure here is one GPU's bandwidth for that reason.",
+      "noteUrl": "https://www.intel.com/content/www/us/en/products/sku/242998/intel-arc-pro-b60-graphics/specifications.html"
+    },
+    {
+      "id": "cpu-8",
+      "label": "No graphics card, 8GB RAM",
+      "group": "CPU only",
+      "platform": "cpu",
+      "ramGb": 8,
+      "systemMemoryId": "ddr5-dual",
+      "note": "No graphics card, so every layer runs on the CPU at the speed of system memory. That speed is what separates these machines: this one is assumed to be a mainstream desktop or laptop. Change it above if yours differs."
+    },
+    {
+      "id": "cpu-16",
+      "label": "No graphics card, 16GB RAM",
+      "group": "CPU only",
+      "platform": "cpu",
+      "ramGb": 16,
+      "systemMemoryId": "ddr5-dual",
+      "note": "No graphics card, so every layer runs on the CPU at the speed of system memory. That speed is what separates these machines: this one is assumed to be a mainstream desktop or laptop. Change it above if yours differs."
+    },
+    {
+      "id": "cpu-32",
+      "label": "No graphics card, 32GB RAM",
+      "group": "CPU only",
+      "platform": "cpu",
+      "ramGb": 32,
+      "systemMemoryId": "ddr5-dual",
+      "note": "No graphics card, so every layer runs on the CPU at the speed of system memory. That speed is what separates these machines: this one is assumed to be a mainstream desktop or laptop. Change it above if yours differs."
+    },
+    {
+      "id": "cpu-64",
+      "label": "No graphics card, 64GB RAM",
+      "group": "CPU only",
+      "platform": "cpu",
+      "ramGb": 64,
+      "systemMemoryId": "ddr5-dual",
+      "note": "No graphics card, so every layer runs on the CPU at the speed of system memory. That speed is what separates these machines: this one is assumed to be a mainstream desktop or laptop. Change it above if yours differs."
+    },
+    {
+      "id": "cpu-128",
+      "label": "No graphics card, 128GB RAM",
+      "group": "CPU only",
+      "platform": "cpu",
+      "ramGb": 128,
+      "systemMemoryId": "ddr5-quad",
+      "note": "No graphics card, so every layer runs on the CPU at the speed of system memory. That speed is what separates these machines: this one is assumed to be a workstation. Change it above if yours differs."
+    },
+    {
+      "id": "cpu-256",
+      "label": "No graphics card, 256GB RAM",
+      "group": "CPU only",
+      "platform": "cpu",
+      "ramGb": 256,
+      "systemMemoryId": "ddr5-oct",
+      "note": "No graphics card, so every layer runs on the CPU at the speed of system memory. That speed is what separates these machines: this one is assumed to be a Threadripper PRO-class workstation. Change it above if yours differs."
+    },
+    {
+      "id": "cpu-512",
+      "label": "No graphics card, 512GB RAM",
+      "group": "CPU only",
+      "platform": "cpu",
+      "ramGb": 512,
+      "systemMemoryId": "ddr5-twelve",
+      "note": "No graphics card, so every layer runs on the CPU at the speed of system memory. That speed is what separates these machines: this one is assumed to be a server. Change it above if yours differs."
+    },
+    {
+      "id": "ryzen-9950x3d-64",
+      "label": "Ryzen 9 9950X3D, 64GB",
+      "group": "CPU only",
+      "platform": "cpu",
+      "ramGb": 64,
+      "systemMemoryId": "ddr5-dual",
+      "note": "Zen 5, 16 cores, AM5. The 3D V-Cache this chip is named for does very little here: 128MB of L3 is large for a game and negligible against a model measured in gigabytes, so every token still comes from main memory. What decides speed on a machine like this is the memory configuration, not the cache — and that is why the 192GB entry is slower than the 96GB one rather than the same.",
+      "noteUrl": "https://www.amd.com/en/products/processors/desktops/ryzen/9000-series/amd-ryzen-9-9950x3d.html"
+    },
+    {
+      "id": "ryzen-9950x3d-96",
+      "label": "Ryzen 9 9950X3D, 96GB",
+      "group": "CPU only",
+      "platform": "cpu",
+      "ramGb": 96,
+      "systemMemoryId": "ddr5-dual",
+      "note": "Zen 5, 16 cores, AM5. The 3D V-Cache this chip is named for does very little here: 128MB of L3 is large for a game and negligible against a model measured in gigabytes, so every token still comes from main memory. What decides speed on a machine like this is the memory configuration, not the cache — and that is why the 192GB entry is slower than the 96GB one rather than the same.",
+      "noteUrl": "https://www.amd.com/en/products/processors/desktops/ryzen/9000-series/amd-ryzen-9-9950x3d.html"
+    },
+    {
+      "id": "ryzen-9950x3d-192",
+      "label": "Ryzen 9 9950X3D, 192GB",
+      "group": "CPU only",
+      "platform": "cpu",
+      "ramGb": 192,
+      "systemMemoryId": "ddr5-dual-4dimm",
+      "note": "Zen 5, 16 cores, AM5. The 3D V-Cache this chip is named for does very little here: 128MB of L3 is large for a game and negligible against a model measured in gigabytes, so every token still comes from main memory. What decides speed on a machine like this is the memory configuration, not the cache — and that is why the 192GB entry is slower than the 96GB one rather than the same. Four 48GB modules to reach 192GB, which is what drops the speed — two 48GB modules at 96GB run the memory a third faster.",
+      "noteUrl": "https://www.amd.com/en/products/processors/desktops/ryzen/9000-series/amd-ryzen-9-9950x3d.html"
+    },
+    {
+      "id": "rtx-4050-l",
+      "label": "RTX 4050 6GB",
+      "group": "NVIDIA laptop",
+      "platform": "discrete",
+      "ramGb": 16,
+      "vramGb": 6,
+      "memoryBandwidthGbs": 192,
+      "systemMemoryId": "ddr5-dual",
+      "note": "A laptop part, and a different chip from the desktop card of the same name: no desktop 4050 exists at all. Picking the wrong one overstates both what fits and how fast it runs.",
+      "noteUrl": "https://www.nvidia.com/en-us/geforce/laptops/compare/"
+    },
+    {
+      "id": "rtx-4060-l",
+      "label": "RTX 4060 8GB",
+      "group": "NVIDIA laptop",
+      "platform": "discrete",
+      "ramGb": 16,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 256,
+      "systemMemoryId": "ddr5-dual",
+      "note": "A laptop part, and a different chip from the desktop card of the same name: 8GB on a 128-bit bus, where the desktop 4060 Ti on this list holds 16GB. Picking the wrong one overstates both what fits and how fast it runs.",
+      "noteUrl": "https://www.nvidia.com/en-us/geforce/laptops/compare/"
+    },
+    {
+      "id": "rtx-4080-l",
+      "label": "RTX 4080 12GB",
+      "group": "NVIDIA laptop",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 12,
+      "memoryBandwidthGbs": 432,
+      "systemMemoryId": "ddr5-dual",
+      "note": "A laptop part, and a different chip from the desktop card of the same name: 12GB at 432 GB/s against the desktop 4080’s 16GB at 717. Picking the wrong one overstates both what fits and how fast it runs.",
+      "noteUrl": "https://www.nvidia.com/en-us/geforce/laptops/compare/"
+    },
+    {
+      "id": "rtx-4090-l",
+      "label": "RTX 4090 16GB",
+      "group": "NVIDIA laptop",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 16,
+      "memoryBandwidthGbs": 576,
+      "systemMemoryId": "ddr5-dual",
+      "note": "A laptop part, and a different chip from the desktop card of the same name: 16GB at 576 GB/s against the desktop 4090’s 24GB at 1008. Picking the wrong one overstates both what fits and how fast it runs.",
+      "noteUrl": "https://www.nvidia.com/en-us/geforce/laptops/compare/"
+    },
+    {
+      "id": "rtx-5060-l",
+      "label": "RTX 5060 8GB",
+      "group": "NVIDIA laptop",
+      "platform": "discrete",
+      "ramGb": 16,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 384,
+      "systemMemoryId": "ddr5-dual",
+      "note": "A laptop part, and a different chip from the desktop card of the same name: 8GB against the desktop 5060 Ti’s 16GB. Picking the wrong one overstates both what fits and how fast it runs.",
+      "noteUrl": "https://www.nvidia.com/en-us/geforce/laptops/compare/"
+    },
+    {
+      "id": "rtx-5070-l",
+      "label": "RTX 5070 8GB",
+      "group": "NVIDIA laptop",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 384,
+      "systemMemoryId": "ddr5-dual",
+      "note": "A laptop part, and a different chip from the desktop card of the same name: 8GB on a 128-bit bus — half of what the name suggests beside the desktop line. Picking the wrong one overstates both what fits and how fast it runs.",
+      "noteUrl": "https://www.nvidia.com/en-us/geforce/laptops/compare/"
+    },
+    {
+      "id": "rtx-5070-l-12",
+      "label": "RTX 5070 12GB",
+      "group": "NVIDIA laptop",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 12,
+      "memoryBandwidthGbs": 384,
+      "systemMemoryId": "ddr5-dual",
+      "note": "A laptop part, and a different chip from the desktop card of the same name: the quieter 2026 refresh: same 128-bit bus and same 384 GB/s as the 8GB card, with 3GB GDDR7 modules. Half again the capacity at identical speed, which for running a model is the axis that matters. Picking the wrong one overstates both what fits and how fast it runs.",
+      "noteUrl": "https://www.nvidia.com/en-us/geforce/laptops/compare/"
+    },
+    {
+      "id": "rtx-5070ti-l",
+      "label": "RTX 5070 Ti 12GB",
+      "group": "NVIDIA laptop",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 12,
+      "memoryBandwidthGbs": 672,
+      "systemMemoryId": "ddr5-dual",
+      "note": "A laptop part, and a different chip from the desktop card of the same name: 12GB at 672 GB/s; there is no desktop card on this list to confuse it with. Picking the wrong one overstates both what fits and how fast it runs.",
+      "noteUrl": "https://www.nvidia.com/en-us/geforce/laptops/compare/"
+    },
+    {
+      "id": "rtx-5080-l",
+      "label": "RTX 5080 16GB",
+      "group": "NVIDIA laptop",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 16,
+      "memoryBandwidthGbs": 896,
+      "systemMemoryId": "ddr5-dual",
+      "note": "A laptop part, and a different chip from the desktop card of the same name: the sharpest collision on this list — identical name AND identical 16GB to the desktop 5080, at 896 GB/s against its 960. Only the row you picked it from tells them apart. Picking the wrong one overstates both what fits and how fast it runs.",
+      "noteUrl": "https://www.nvidia.com/en-us/geforce/laptops/compare/"
+    },
+    {
+      "id": "rtx-5090-l",
+      "label": "RTX 5090 24GB",
+      "group": "NVIDIA laptop",
+      "platform": "discrete",
+      "ramGb": 64,
+      "vramGb": 24,
+      "memoryBandwidthGbs": 896,
+      "systemMemoryId": "ddr5-dual",
+      "note": "A laptop part, and a different chip from the desktop card of the same name: 24GB at 896 GB/s against the desktop 5090’s 32GB at 1792 — a third less memory at half the speed. Picking the wrong one overstates both what fits and how fast it runs.",
+      "noteUrl": "https://www.nvidia.com/en-us/geforce/laptops/compare/"
+    },
+    {
+      "id": "arc-a380",
+      "label": "Arc A380 6GB",
+      "group": "Intel",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 6,
+      "memoryBandwidthGbs": 186,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "moderate"
+    },
+    {
+      "id": "arc-a580",
+      "label": "Arc A580 8GB",
+      "group": "Intel",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 512,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "moderate"
+    },
+    {
+      "id": "arc-a770-8",
+      "label": "Arc A770 8GB",
+      "group": "Intel",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 8,
+      "memoryBandwidthGbs": 512,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "moderate",
+      "note": "The A770 shipped as two cards. This is the 8GB one at 512 GB/s; the 16GB one runs its memory faster still, at 560. Same name, and the one you have decides what fits.",
+      "noteUrl": "https://www.intel.com/content/www/us/en/products/sku/227957/intel-arc-a770-graphics/specifications.html"
+    },
+    {
+      "id": "arc-pro-a60",
+      "label": "Arc Pro A60 12GB",
+      "group": "Intel",
+      "platform": "discrete",
+      "ramGb": 32,
+      "vramGb": 12,
+      "memoryBandwidthGbs": 384,
+      "systemMemoryId": "ddr4-dual",
+      "prefillClass": "moderate"
+    },
+    {
+      "id": "mi210",
+      "label": "Instinct MI210 64GB",
+      "group": "AMD datacenter",
+      "platform": "discrete",
+      "ramGb": 256,
+      "vramGb": 64,
+      "memoryBandwidthGbs": 1638,
+      "systemMemoryId": "ddr5-twelve",
+      "prefillClass": "moderate",
+      "note": "HBM2e. One GPU per card, unlike the MI250 pair.",
+      "noteUrl": "https://www.amd.com/en/products/accelerators/instinct.html"
+    },
+    {
+      "id": "mi250",
+      "label": "Instinct MI250 128GB",
+      "group": "AMD datacenter",
+      "platform": "discrete",
+      "ramGb": 256,
+      "vramGb": 128,
+      "memoryBandwidthGbs": 1638,
+      "systemMemoryId": "ddr5-twelve",
+      "prefillClass": "moderate",
+      "note": "Two GPUs in one package, not a 128GB pool. ROCm enumerates two separate 64GB devices at 1.6TB/s each; a model over 64GB has to be split across them, and cross-die traffic is roughly eight times slower than local HBM. The figure here is one die's bandwidth for that reason.",
+      "noteUrl": "https://www.amd.com/en/products/accelerators/instinct.html"
+    },
+    {
+      "id": "mi250x",
+      "label": "Instinct MI250X 128GB",
+      "group": "AMD datacenter",
+      "platform": "discrete",
+      "ramGb": 256,
+      "vramGb": 128,
+      "memoryBandwidthGbs": 1638,
+      "systemMemoryId": "ddr5-twelve",
+      "prefillClass": "moderate",
+      "note": "Two GPUs in one package, like the MI250 — two 64GB devices at 1.6TB/s each, not one pool.",
+      "noteUrl": "https://www.amd.com/en/products/accelerators/instinct.html"
+    },
+    {
+      "id": "mi300x",
+      "label": "Instinct MI300X 192GB",
+      "group": "AMD datacenter",
+      "platform": "discrete",
+      "ramGb": 512,
+      "vramGb": 192,
+      "memoryBandwidthGbs": 5325,
+      "systemMemoryId": "ddr5-twelve",
+      "prefillClass": "moderate",
+      "note": "HBM3, and genuinely unified unlike the MI250 pair — 192GB the runtime sees as one device.",
+      "noteUrl": "https://www.amd.com/en/products/accelerators/instinct.html"
+    },
+    {
+      "id": "mi325x",
+      "label": "Instinct MI325X 256GB",
+      "group": "AMD datacenter",
+      "platform": "discrete",
+      "ramGb": 512,
+      "vramGb": 256,
+      "memoryBandwidthGbs": 6144,
+      "systemMemoryId": "ddr5-twelve",
+      "prefillClass": "moderate",
+      "note": "256GB, not the 288GB widely quoted: that figure came from the 2024 announcement and the shipping part is 256.",
+      "noteUrl": "https://www.amd.com/en/products/accelerators/instinct.html"
+    },
+    {
+      "id": "mi350x",
+      "label": "Instinct MI350X 288GB",
+      "group": "AMD datacenter",
+      "platform": "discrete",
+      "ramGb": 512,
+      "vramGb": 288,
+      "memoryBandwidthGbs": 8192,
+      "systemMemoryId": "ddr5-twelve",
+      "prefillClass": "moderate",
+      "note": "HBM3E at 8TB/s.",
+      "noteUrl": "https://www.amd.com/en/products/accelerators/instinct.html"
+    },
+    {
+      "id": "mi355x",
+      "label": "Instinct MI355X 288GB",
+      "group": "AMD datacenter",
+      "platform": "discrete",
+      "ramGb": 512,
+      "vramGb": 288,
+      "memoryBandwidthGbs": 8192,
+      "systemMemoryId": "ddr5-twelve",
+      "prefillClass": "moderate",
+      "note": "HBM3E at 8TB/s, liquid-cooled.",
+      "noteUrl": "https://www.amd.com/en/products/accelerators/instinct.html"
+    }
+  ],
+  "runtimeOverhead": {
+    "frameworkGbLo": 0.5,
+    "frameworkGbHi": 1.5,
+    "ubatch": 512,
+    "activationCopies": 3,
+    "kqBytesPerTokenPerUbatch": 2,
+    "flashAttentionOffBytesPerTokenPerHead": 4,
+    "note": "A running model needs more than weights and KV cache, and what it needs is knowable rather than a rule of thumb. Three terms, each derived from what llama.cpp allocates for one micro-batch: the final vocabulary projection (ubatch x vocabSize x 4 bytes), the peak live activations through the FFN (activationCopies x ubatch x width x 4), and the KQ mask, which is the only part that grows with context (context x ubatch x 2). The mechanism is checkable: llama.cpp's own documented example is a 507MB compute buffer for Gemma 2 9B, and 512 x 256000 x 4 is 500MB — the vocabulary projection IS the compute buffer, to within 1.4 percent, with nothing fitted. This replaced a term of the form 'baseGb + 6 percent of weights', which used the wrong variable entirely: it charged a 397B mixture-of-experts 15.6GB of scratch and a model a third as wide three times more than a wider one. Parameter count does not size a compute buffer; vocabulary, width and batch do. Only frameworkGb is not derived — published figures put llama.cpp plus its backend kernels at 0.5-1.5GB — so the estimate is a range, and fit verdicts take the pessimistic end. NOT YET CHECKED AGAINST A REAL MACHINE. An earlier note claimed corroboration from a measured ~80K context on a 32GB Mac; that reading was taken with the wired limit raised, so it was never a 24GB-budget measurement and could not test this. The claim has been withdrawn rather than reworded. See docs/measuring-runtime-overhead.md for how to produce a reading that would actually test it.",
+    "citation": "https://github.com/ggml-org/llama.cpp/discussions/9936"
+  },
+  "chips": [
+    {
+      "id": "m1",
+      "label": "M1",
+      "family": "M1",
+      "platform": "unified",
+      "bandwidthGbs": 68,
+      "ramOptions": [
+        8,
+        16
+      ],
+      "citation": "https://support.apple.com/en-us/102896"
+    },
+    {
+      "id": "m1-pro",
+      "label": "M1 Pro",
+      "family": "M1",
+      "platform": "unified",
+      "bandwidthGbs": 200,
+      "ramOptions": [
+        16,
+        32
+      ],
+      "citation": "https://support.apple.com/en-us/111902"
+    },
+    {
+      "id": "m1-max",
+      "label": "M1 Max",
+      "family": "M1",
+      "platform": "unified",
+      "bandwidthGbs": 400,
+      "ramOptions": [
+        32,
+        64
+      ],
+      "citation": "https://support.apple.com/en-us/111902"
+    },
+    {
+      "id": "m1-ultra",
+      "label": "M1 Ultra",
+      "family": "M1",
+      "platform": "unified",
+      "bandwidthGbs": 800,
+      "ramOptions": [
+        64,
+        128
+      ],
+      "citation": "https://support.apple.com/en-us/102896"
+    },
+    {
+      "id": "m2",
+      "label": "M2",
+      "family": "M2",
+      "platform": "unified",
+      "bandwidthGbs": 100,
+      "ramOptions": [
+        8,
+        16,
+        24
+      ],
+      "citation": "https://support.apple.com/en-us/102896"
+    },
+    {
+      "id": "m2-pro",
+      "label": "M2 Pro",
+      "family": "M2",
+      "platform": "unified",
+      "bandwidthGbs": 200,
+      "ramOptions": [
+        16,
+        32
+      ],
+      "citation": "https://support.apple.com/en-us/102896"
+    },
+    {
+      "id": "m2-max",
+      "label": "M2 Max",
+      "family": "M2",
+      "platform": "unified",
+      "bandwidthGbs": 400,
+      "ramOptions": [
+        32,
+        64,
+        96
+      ],
+      "citation": "https://support.apple.com/en-us/102896"
+    },
+    {
+      "id": "m2-ultra",
+      "label": "M2 Ultra",
+      "family": "M2",
+      "platform": "unified",
+      "bandwidthGbs": 800,
+      "ramOptions": [
+        64,
+        128,
+        192
+      ],
+      "citation": "https://support.apple.com/en-us/102896"
+    },
+    {
+      "id": "m3",
+      "label": "M3",
+      "family": "M3",
+      "platform": "unified",
+      "bandwidthGbs": 100,
+      "ramOptions": [
+        8,
+        16,
+        24
+      ],
+      "citation": "https://support.apple.com/en-us/102896"
+    },
+    {
+      "id": "m3-pro",
+      "label": "M3 Pro",
+      "family": "M3",
+      "platform": "unified",
+      "bandwidthGbs": 150,
+      "ramOptions": [
+        18,
+        36
+      ],
+      "citation": "https://support.apple.com/en-us/117736"
+    },
+    {
+      "id": "m3-max-30c",
+      "label": "M3 Max (30-core GPU)",
+      "family": "M3",
+      "platform": "unified",
+      "bandwidthGbs": 300,
+      "ramOptions": [
+        36,
+        96
+      ],
+      "citation": "https://support.apple.com/en-us/117736"
+    },
+    {
+      "id": "m3-max-40c",
+      "label": "M3 Max (40-core GPU)",
+      "family": "M3",
+      "platform": "unified",
+      "bandwidthGbs": 400,
+      "ramOptions": [
+        48,
+        64,
+        128
+      ],
+      "citation": "https://support.apple.com/en-us/117736"
+    },
+    {
+      "id": "m3-ultra",
+      "label": "M3 Ultra",
+      "family": "M3",
+      "platform": "unified",
+      "bandwidthGbs": 819,
+      "ramOptions": [
+        96,
+        256,
+        512
+      ],
+      "citation": "https://support.apple.com/en-us/122211"
+    },
+    {
+      "id": "m4",
+      "label": "M4",
+      "family": "M4",
+      "platform": "unified",
+      "bandwidthGbs": 120,
+      "ramOptions": [
+        16,
+        24,
+        32
+      ],
+      "citation": "https://support.apple.com/en-us/102896"
+    },
+    {
+      "id": "m4-pro",
+      "label": "M4 Pro",
+      "family": "M4",
+      "platform": "unified",
+      "bandwidthGbs": 273,
+      "ramOptions": [
+        24,
+        48,
+        64
+      ],
+      "citation": "https://support.apple.com/en-us/121553"
+    },
+    {
+      "id": "m4-max-32c",
+      "label": "M4 Max (32-core GPU)",
+      "family": "M4",
+      "platform": "unified",
+      "bandwidthGbs": 410,
+      "ramOptions": [
+        36
+      ],
+      "citation": "https://support.apple.com/en-us/121553"
+    },
+    {
+      "id": "m4-max-40c",
+      "label": "M4 Max (40-core GPU)",
+      "family": "M4",
+      "platform": "unified",
+      "bandwidthGbs": 546,
+      "ramOptions": [
+        48,
+        64,
+        128
+      ],
+      "citation": "https://support.apple.com/en-us/121553"
+    },
+    {
+      "id": "m5",
+      "label": "M5",
+      "family": "M5",
+      "platform": "unified",
+      "bandwidthGbs": 153,
+      "ramOptions": [
+        16,
+        24,
+        32
+      ],
+      "citation": "https://support.apple.com/en-us/102896"
+    },
+    {
+      "id": "m5-pro",
+      "label": "M5 Pro",
+      "family": "M5",
+      "platform": "unified",
+      "bandwidthGbs": 307,
+      "ramOptions": [
+        24,
+        48,
+        64
+      ],
+      "citation": "https://support.apple.com/en-us/126319"
+    },
+    {
+      "id": "m5-max-32c",
+      "label": "M5 Max (32-core GPU)",
+      "family": "M5",
+      "platform": "unified",
+      "bandwidthGbs": 460,
+      "ramOptions": [
+        36,
+        48,
+        64,
+        128
+      ],
+      "citation": "https://www.apple.com/mac-studio/specs/"
+    },
+    {
+      "id": "m5-max-40c",
+      "label": "M5 Max (40-core GPU)",
+      "family": "M5",
+      "platform": "unified",
+      "bandwidthGbs": 614,
+      "ramOptions": [
+        48,
+        64,
+        128
+      ],
+      "citation": "https://www.apple.com/mac-studio/specs/"
+    },
+    {
+      "id": "m5-ultra",
+      "label": "M5 Ultra",
+      "family": "M5",
+      "platform": "unified",
+      "bandwidthGbs": 1228,
+      "ramOptions": [
+        96,
+        256,
+        512
+      ],
+      "citation": "https://www.apple.com/mac-studio/specs/"
+    },
+    {
+      "id": "m6",
+      "label": "M6",
+      "family": "M6",
+      "platform": "unified",
+      "bandwidthGbs": 170,
+      "bandwidthAtRamGb": {
+        "16": 153
+      },
+      "ramOptions": [
+        16,
+        24,
+        32
+      ],
+      "citation": "https://www.apple.com/newsroom/2026/08/apple-introduces-m6-and-m5-ultra/"
+    }
+  ],
+  "systemMemory": [
+    {
+      "id": "ddr4-dual",
+      "label": "DDR4, 2 channels (older desktop or laptop)",
+      "bandwidthGbs": 51,
+      "note": "DDR4-3200 in the two channels a mainstream board has: 3200 x 8 bytes x 2. The floor for anything built before roughly 2022, and the reason an older machine offloads noticeably worse than a current one with the same graphics card.",
+      "citation": "https://www.servethehome.com/guide-ddr-ddr2-ddr3-ddr4-and-ddr5-bandwidth-by-generation/"
+    },
+    {
+      "id": "ddr5-dual",
+      "label": "DDR5, 2 channels (current desktop or laptop)",
+      "bandwidthGbs": 90,
+      "note": "DDR5-5600 in two channels: 5600 x 8 bytes x 2 = 89.6GB/s. What almost every desktop and laptop sold now has, and the default here for that reason.",
+      "citation": "https://www.servethehome.com/guide-ddr-ddr2-ddr3-ddr4-and-ddr5-bandwidth-by-generation/"
+    },
+    {
+      "id": "ddr5-dual-4dimm",
+      "label": "DDR5, 2 channels, all four slots filled",
+      "bandwidthGbs": 58,
+      "note": "Still two channels, but clocked down: a desktop memory controller that runs DDR5-5600 across two DIMMs drops to about DDR5-3600 across four. 3600 x 8 bytes x 2 = 57.6GB/s. This is the trap in maxing out a consumer board for local models — going from 96GB to 192GB by filling the empty slots costs roughly 36% of your memory bandwidth, and on a machine with no graphics card that is 36% of your tokens per second. Twice the model, two thirds the speed.",
+      "citation": "https://www.amd.com/en/products/processors/desktops/ryzen/9000-series/amd-ryzen-9-9950x3d.html"
+    },
+    {
+      "id": "ddr5-quad",
+      "label": "DDR5, 4 channels (workstation)",
+      "bandwidthGbs": 179,
+      "note": "Four channels of DDR5-5600. Entry workstation boards and the smaller Threadripper parts; twice a desktop, and it shows on any model the graphics card cannot hold.",
+      "citation": "https://www.servethehome.com/guide-ddr-ddr2-ddr3-ddr4-and-ddr5-bandwidth-by-generation/"
+    },
+    {
+      "id": "ddr5-oct",
+      "label": "DDR5, 8 channels (Threadripper PRO)",
+      "bandwidthGbs": 384,
+      "note": "Eight channels of DDR5-6000. At this point the CPU reads faster than several graphics cards on this list, which is why these machines run large models on the CPU rather than around it.",
+      "citation": "https://vrlatech.com/threadripper-pro-vs-epyc-for-ai-workstations-in-2026/"
+    },
+    {
+      "id": "ddr5-twelve",
+      "label": "DDR5, 12 channels (EPYC / Xeon server)",
+      "bandwidthGbs": 460,
+      "note": "Twelve channels of DDR5-4800: 4800 x 8 bytes x 12 = 460.8GB/s. Newer server parts run faster still; this is the conservative reading of the generation.",
+      "citation": "https://vrlatech.com/threadripper-pro-vs-epyc-for-ai-workstations-in-2026/"
+    }
+  ],
+  "perTokenLatency": {
+    "loMs": 0.09,
+    "hiMs": 0.45,
+    "byPlatform": {
+      "discrete": {
+        "loMs": 0.09,
+        "hiMs": 0.2
+      },
+      "unified-nvidia": {
+        "loMs": 0.09,
+        "hiMs": 0.2
+      },
+      "unified": {
+        "loMs": 0.21,
+        "hiMs": 0.45
+      }
+    },
+    "note": "The part of a token's cost that does not scale with weight bytes — kernel launches, attention over the KV cache, sampling, expert routing — charged PER LAYER, in milliseconds. Time per token is bytes-read/bandwidth plus layers x this. Solved from published measurements, not assumed. Per-layer rather than per-token because a flat per-token figure does not hold: it comes to 6-14ms on a 32-layer 7B and 25-41ms on an 80-layer 70B, and divided by layer count both land near 0.2-0.5ms, which is what a per-layer kernel dispatch would do. Checked against five measurements, three of which it was not fitted to: an 8B at 4-bit on an RTX 4090 (85-125 tok/s measured, 86-124 predicted); Llama-3.3-70B on an M2 Ultra at Q2_K, Q4_K_M and F16 (16.18 / 13.50 / 4.87 measured, all bracketed); and a sparse Qwen3.5-35B-A3B on an M4 Max (66-70 measured). A flat per-token cost misses the 70B rows entirely. This replaced a multiplicative 45-70% 'fraction of peak bandwidth'. That was the wrong shape: utilisation is not something an engine has, it is what you see when a fixed overhead is divided by a varying read. It is why 4-bit looks less efficient than F16 on the same chip, and why sparse mixture-of-experts models were overpredicted by roughly two times — they read little per token, so the overhead dominates and a bandwidth fraction flatters them. Per platform because it does not transfer: CUDA dispatches cheaper than Metal. The default spans both and is what a platform with no measurements of its own gets. AMD and Intel cards sit inside the discrete figure, which is CUDA-derived and likely optimistic for them.",
+    "citation": "https://github.com/ggml-org/llama.cpp/discussions/4167"
+  }
+}

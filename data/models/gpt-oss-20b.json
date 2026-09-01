@@ -1,0 +1,40 @@
+{
+  "id": "gpt-oss-20b",
+  "name": "gpt-oss-20b",
+  "family": "gpt-oss",
+  "vendor": "OpenAI",
+  "architecture": "moe",
+  "paramsB": 20.9,
+  "activeParamsB": 3.6,
+  "layers": 24,
+  "vocabSize": 201088,
+  "width": 11520,
+  "attentionHeads": 64,
+  "kvHeads": 8,
+  "headDim": 64,
+  "attentionPattern": "SFSFSFSFSFSFSFSFSFSFSFSF",
+  "expertsPerToken": 4,
+  "vision": false,
+  "contextLength": 131072,
+  "license": {
+    "name": "Apache-2.0",
+    "url": "https://huggingface.co/openai/gpt-oss-20b"
+  },
+  "releaseDate": "2025-08-05",
+  "ggufUrl": "https://huggingface.co/ggml-org/gpt-oss-20b-GGUF",
+  "status": "active",
+  "summary": "OpenAI's open MoE, shipped natively in MXFP4 (~4-bit) — the quant band question mostly answers itself. Fast, strong at STEM and tool use, and startlingly ignorant of the world: built to look things up, not to know them.",
+  "kvBytesPerToken": 24576,
+  "kvWindowedBytesPerToken": 24576,
+  "slidingWindow": 128,
+  "kvSourceUrl": "https://huggingface.co/openai/gpt-oss-20b/blob/main/config.json",
+  "bands": {
+    "mid": {
+      "weightsGb": 12,
+      "exampleQuants": [
+        "mxfp4"
+      ]
+    }
+  },
+  "mlxUrl": "https://huggingface.co/mlx-community/gpt-oss-20b-MXFP4-Q4"
+}

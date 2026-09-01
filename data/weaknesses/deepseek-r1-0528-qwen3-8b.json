@@ -1,0 +1,36 @@
+{
+  "modelId": "deepseek-r1-0528-qwen3-8b",
+  "entries": [
+    {
+      "id": "deepseek-r1-0528-qwen3-8b/all/tool-calling",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["tool-calling"],
+      "severity": "severe",
+      "summary": "Unreliable tool/function calling — broken or ignored tool schemas are a recurring report across runtimes. This is not an agent model.",
+      "mitigations": [
+        { "mitigationId": "update-runtime", "note": "Community-fixed chat templates (unsloth's GGUFs) improve it somewhat.", "effectiveness": "weak" },
+        { "mitigationId": "none", "note": "For agents, use base Qwen3-8B and keep this one for pure reasoning." }
+      ],
+      "citations": [
+        { "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1-0528-Qwen3-8B/discussions/20", "title": "Tool-calling reliability discussion", "sourceType": "other", "accessed": "2026-08-30" },
+        { "url": "https://github.com/vllm-project/vllm/issues/19001", "title": "vLLM issue: R1-0528 distill function calling", "sourceType": "github", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "deepseek-r1-0528-qwen3-8b/all/overthinking",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["instruction-following"],
+      "severity": "moderate",
+      "summary": "Very long, redundant chains of thought — it can spend thousands of tokens re-deriving a simple answer, which is slow and floods small context windows.",
+      "mitigations": [
+        { "mitigationId": "prompting", "note": "temp 0.6 per the card; cap max output tokens; save it for problems that deserve the thinking.", "effectiveness": "partial" }
+      ],
+      "citations": [
+        { "url": "https://arxiv.org/html/2508.02120v1", "title": "Study of reasoning-model overthinking", "sourceType": "paper", "accessed": "2026-08-30" },
+        { "url": "https://xyzlabs.substack.com/p/the-achilles-heel-of-ai-why-deepseek", "title": "Analysis of DeepSeek chain-of-thought verbosity", "sourceType": "blog", "accessed": "2026-08-30" }
+      ],
+      "confidence": "community-consensus"
+    }
+  ]
+}

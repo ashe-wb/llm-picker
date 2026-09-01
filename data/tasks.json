@@ -1,0 +1,16 @@
+[
+  { "id": "coding-assistant",
+    "assumedContextTokens": 32768, "label": "Help me write code", "weights": { "coding": 0.55, "instruction-following": 0.25, "tool-calling": 0.2 } },
+  { "id": "agentic",
+    "assumedContextTokens": 32768, "label": "Run agents / use tools (MCP)", "weights": { "tool-calling": 0.5, "instruction-following": 0.3, "coding": 0.2 } },
+  { "id": "writing",
+    "assumedContextTokens": 8192, "label": "Creative writing & roleplay", "weights": { "creative-writing": 0.6, "instruction-following": 0.25, "long-context": 0.15 } },
+  { "id": "docs-qa",
+    "assumedContextTokens": 131072, "label": "Chat with my documents", "weights": { "long-context": 0.4, "factuality": 0.35, "instruction-following": 0.25 } },
+  { "id": "homework",
+    "assumedContextTokens": 8192, "label": "Math, study & general questions", "weights": { "math": 0.4, "factuality": 0.35, "instruction-following": 0.25 } },
+  { "id": "general",
+    "assumedContextTokens": 8192, "label": "A bit of everything", "weights": { "instruction-following": 0.3, "coding": 0.15, "factuality": 0.2, "math": 0.1, "creative-writing": 0.1, "tool-calling": 0.15 } },
+  { "id": "vision",
+    "assumedContextTokens": 8192, "label": "Describe images / screenshots", "requires": { "vision": true }, "weights": { "instruction-following": 0.5, "factuality": 0.5 } }
+]

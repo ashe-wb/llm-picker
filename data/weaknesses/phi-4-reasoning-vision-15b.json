@@ -1,0 +1,75 @@
+{
+  "modelId": "phi-4-reasoning-vision-15b",
+  "entries": [
+    {
+      "id": "phi-4-reasoning-vision-15b/all/no-local-vision",
+      "bands": [
+        "low",
+        "mid",
+        "high",
+        "full"
+      ],
+      "dimensions": [
+        "instruction-following"
+      ],
+      "severity": "severe",
+      "summary": "Its reason-to-exist doesn't work in llama.cpp: there is no support for the phi4-siglip vision tower, so every GGUF is a text-only backbone (which is why our text dimensions sit unrated). An mlx-community 4-bit build exists and may be the practical local vision path on Apple Silicon via mlx-vlm — unverified by us.",
+      "mitigations": [
+        {
+          "mitigationId": "update-runtime",
+          "note": "On a Mac, try the mlx-community 4-bit build with mlx-vlm. Elsewhere, watch llama.cpp for phi4-siglip support; until then vision needs full weights via transformers.",
+          "effectiveness": "partial"
+        },
+        {
+          "mitigationId": "none",
+          "note": "For local vision today, use Gemma 3, Mistral Small 4, or Qwen3.8 instead."
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://huggingface.co/jamesburton/Phi-4-reasoning-vision-15B-GGUF",
+          "title": "Community GGUF (text-backbone-only conversion, vision tower unsupported)",
+          "sourceType": "other",
+          "accessed": "2026-08-30"
+        },
+        {
+          "url": "https://huggingface.co/microsoft/Phi-4-reasoning-vision-15B",
+          "title": "Phi-4-reasoning-vision model card (vision-only benchmark table)",
+          "sourceType": "vendor",
+          "accessed": "2026-08-30"
+        }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "phi-4-reasoning-vision-15b/all/short-context",
+      "bands": [
+        "low",
+        "mid",
+        "high",
+        "full"
+      ],
+      "dimensions": [
+        "long-context"
+      ],
+      "severity": "moderate",
+      "summary": "Inherits Phi-4's 16K window — cramped for 2026, especially for the multi-image reasoning it was built for.",
+      "mitigations": [
+        {
+          "mitigationId": "rag",
+          "note": "Chunked retrieval keeps requests inside 16K.",
+          "effectiveness": "partial"
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://huggingface.co/microsoft/Phi-4-reasoning-vision-15B",
+          "title": "Model card (16,384 context)",
+          "sourceType": "vendor",
+          "accessed": "2026-08-30"
+        }
+      ],
+      "confidence": "anecdotal"
+    }
+  ]
+}

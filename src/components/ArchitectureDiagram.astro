@@ -1,0 +1,100 @@
+---
+/**
+ * A model's architecture, drawn from its own config.json.
+ *
+ * Deliberately not a picture borrowed from elsewhere. Published galleries are
+ * copyrighted works, and the useful diagram for this site is a different one
+ * anyway: not "here is a transformer block" but "here is which of this model's
+ * layers hold a KV cache, and here is where your memory goes because of it".
+ * Every number below is one this site already computes with, so the diagram
+ * explains the fit verdict rather than decorating it.
+ */
+import type { Model } from '../lib/schemas';
+import { formatMemory, kvGb } from '../lib/fit';
+
+interface Props { model: Model }
+const { model } = Astro.props;
+
+const pat = model.attentionPattern;
+// Trailing KV-shared layers reuse an earlier layer's keys and values, so they
+// allocate nothing however they attend. They are drawn, because they are real
+// layers, but they are not counted among the ones that hold a cache.
+const shared = model.kvSharedLayers ?? 0;
+const firstShared = pat ? pat.length - shared : 0;
+const cells = pat ? pat.split('').map((ch, i) => ({ ch, shared: i >= firstShared })) : [];
+const own = pat ? pat.slice(0, firstShared) : '';
+const caching = pat ? (own.match(/[FS]/g) ?? []).length : null;
+const full = pat ? (own.match(/F/g) ?? []).length : null;
+const KIND = {
+  F: { label: 'full attention', cls: 'bg-live', note: 'caches the whole context' },
+  S: { label: 'sliding window', cls: 'bg-warn', note: 'caches only its window' },
+  '.': { label: 'linear / recurrent', cls: 'bg-rule', note: 'holds no KV cache' },
+} as const;
+const kinds = own ? [...new Set(own.split(''))] as (keyof typeof KIND)[] : [];
+const countIn = (s: string, k: string) => [...s].filter((c) => c === k).length;
+const ctxs = [8192, 32768, 131072].filter((c) => c <= model.contextLength);
+const kvAt = (c: number) => { const g = kvGb(model, c); return g === null ? null : formatMemory(g); };
+const gqa = model.attentionHeads && model.kvHeads ? Math.round(model.attentionHeads / model.kvHeads) : null;
+---
+<div class="border border-rule bg-panel px-3 py-3">
+  <p class="dslabel">Architecture, from its own config.json</p>
+
+  {pat && (
+    <div class="mt-2">
+      <div class="flex flex-wrap gap-[2px]" role="img"
+           aria-label={`${model.layers} layers: ${full} full attention, ${pat.length - (caching ?? 0)} without a KV cache`}>
+        {cells.map(({ ch, shared: sh }) => (
+          <span
+            class={`h-4 w-[6px] ${KIND[ch as keyof typeof KIND].cls}${sh ? ' opacity-30' : ''}`}
+            title={sh ? `${KIND[ch as keyof typeof KIND].label}, reusing an earlier layer's cache` : KIND[ch as keyof typeof KIND].label}
+          />
+        ))}
+      </div>
+      <p class="mt-1.5 dsnote">
+        {model.layers} layers ·
+        {kinds.map((k, i) => (
+          <span>{i > 0 ? ' · ' : ' '}<span class={`inline-block h-2 w-2 align-middle ${KIND[k].cls}`} /> {countIn(own, k)} {KIND[k].label}</span>
+        ))}
+        {shared > 0 && <span> · <span class="inline-block h-2 w-2 align-middle bg-live opacity-30" /> {shared} sharing an earlier layer's cache</span>}
+      </p>
+      {shared > 0 && (
+        <p class="mt-1 dsnote">
+          Its last <span class="text-ink">{shared} of {model.layers}</span> layers have no keys and values
+          of their own — they read those of an earlier layer, so they add nothing to the cache no matter
+          how long the context gets.
+        </p>
+      )}
+      {/* Only when layers hold no cache for a reason the shared-layer note above
+          does not already give -- otherwise the two lines say the same thing. */}
+      {caching !== null && caching < firstShared && (
+        <p class="mt-1 dsnote">
+          Only <span class="text-ink">{caching} of {model.layers}</span> layers hold a cache at all,
+          which is why its memory grows so much more slowly with context than its size suggests.
+        </p>
+      )}
+    </div>
+  )}
+
+  <p class="mt-2 dsnote">
+    {model.attentionHeads} attention heads{model.kvHeads && ` over ${model.kvHeads} KV heads`}{gqa && gqa > 1 && ` (GQA ${gqa}:1)`}{model.headDim && `, head dim ${model.headDim}`}{model.globalHeadDim && ` — its full-attention layers use a different shape again, ${model.globalKvHeads} KV head${model.globalKvHeads === 1 ? '' : 's'} of ${model.globalHeadDim}, which is the shape that decides the cache at long context`}{model.mlaLatentDim && `, multi-head latent attention — it caches one ${model.mlaLatentDim}-wide compressed vector per layer instead of per-head keys and values, which is why its cache is small for its size`} ·
+    {model.activeParamsB
+      ? ` mixture of experts, ${model.activeParamsB}B of ${model.paramsB}B active per token${model.expertsPerToken ? ` across ${model.expertsPerToken} experts` : ''}`
+      : ' dense feed-forward'} ·
+    vocabulary {model.vocabSize?.toLocaleString()}
+  </p>
+
+  <p class="mt-2 dsnote">
+    Where the memory goes: weights by band above, plus a KV cache of
+    {ctxs.map((c, i) => <span>{i > 0 ? ' · ' : ' '}<span class="text-ink">{kvAt(c)}</span> at {Math.round(c / 1024)}K</span>)},
+    plus the runtime's own working memory — dominated by the output projection over
+    that vocabulary.
+  </p>
+
+  {!pat && (
+    <p class="mt-2 dsnote">
+      {model.mlaLatentDim
+        ? 'No per-layer split is drawn because latent attention does not have one in the usual sense: every layer caches the same compressed vector, so there is no full-versus-sliding distinction to show.'
+        : 'Its per-layer attention pattern is not published in a form we can derive, so none is drawn. The cache figures above still come from its own config.'}
+    </p>
+  )}
+</div>

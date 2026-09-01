@@ -1,0 +1,58 @@
+{
+  "id": "qwen3.6-27b",
+  "name": "Qwen3.6 27B",
+  "family": "Qwen3.6",
+  "vendor": "Alibaba",
+  "architecture": "dense",
+  "paramsB": 27,
+  "layers": 64,
+  "vocabSize": 248320,
+  "width": 17408,
+  "attentionHeads": 24,
+  "kvHeads": 4,
+  "headDim": 256,
+  "attentionPattern": "...F...F...F...F...F...F...F...F...F...F...F...F...F...F...F...F",
+  "vision": true,
+  "contextLength": 262144,
+  "license": {
+    "name": "Apache-2.0",
+    "url": "https://huggingface.co/Qwen/Qwen3.6-27B"
+  },
+  "releaseDate": "2026-04-22",
+  "ggufUrl": "https://huggingface.co/bartowski/Qwen_Qwen3.6-27B-GGUF",
+  "status": "active",
+  "summary": "The 27B dense agentic-coding model that beat a 397B MoE on SWE-bench Verified — and, unlike its Qwen3.8 successor, has had four months for independent evaluators to check the claim. Q4_K_M is measurably indistinguishable from bf16 here; the real caveat is tool-calling reliability, not quantization.",
+  "kvBytesPerToken": 65536,
+  "kvSourceUrl": "https://huggingface.co/Qwen/Qwen3.6-27B/blob/main/config.json",
+  "bands": {
+    "low": {
+      "weightsGb": 14,
+      "exampleQuants": [
+        "Q3_K_M",
+        "Q3_K_S"
+      ]
+    },
+    "mid": {
+      "weightsGb": 17,
+      "exampleQuants": [
+        "Q4_K_M",
+        "Q5_K_M",
+        "mlx-4bit"
+      ]
+    },
+    "high": {
+      "weightsGb": 23,
+      "exampleQuants": [
+        "Q6_K",
+        "Q8_0"
+      ]
+    },
+    "full": {
+      "weightsGb": 55,
+      "exampleQuants": [
+        "bf16"
+      ]
+    }
+  },
+  "mlxUrl": "https://huggingface.co/mlx-community/Qwen3.6-27B-4bit"
+}

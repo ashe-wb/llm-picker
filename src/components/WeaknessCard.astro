@@ -1,0 +1,57 @@
+---
+import { BAND_LABELS } from '../lib/schemas';
+import type { Mitigation, WeaknessEntry } from '../lib/schemas';
+
+interface Props {
+  entry: WeaknessEntry;
+  index: number;
+  mitigations: Mitigation[];
+}
+const { entry, index, mitigations } = Astro.props;
+const stamp = {
+  severe: 'bg-serious text-paper',
+  moderate: 'border border-warn text-warn',
+  mild: 'border border-faded text-faded',
+}[entry.severity];
+const lib = (id: string) => mitigations.find((m) => m.id === id);
+const num = String(index + 1).padStart(2, '0');
+---
+
+<div class="border border-edge bg-panel">
+  <div class="flex flex-wrap items-center gap-3 border-b border-rule px-4 py-2">
+    <span class="font-mono text-xs font-bold">ISSUE-{num}</span>
+    <span class={`px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] ${stamp}`}>{entry.severity}</span>
+    <span class="dslabel">{entry.bands.map((b) => BAND_LABELS[b]).join(' / ')} · {entry.dimensions.join(', ')}</span>
+  </div>
+  <div class="space-y-3 px-4 py-3">
+    <p class="text-sm">{entry.summary}</p>
+    <div class="space-y-2">
+      {entry.mitigations.map((m) => {
+        const mit = lib(m.mitigationId);
+        const noFix = m.mitigationId === 'none';
+        return (
+          <div class={`flex gap-3 border-l-2 py-1 pl-3 text-sm ${noFix ? 'border-serious' : 'border-ok'}`}>
+            <span class={`font-mono text-[10px] font-bold uppercase tracking-[0.14em] pt-0.5 ${noFix ? 'text-serious' : 'text-ok'}`}>
+              {noFix ? 'No fix' : 'Fix'}
+            </span>
+            <div>
+              <span class="font-medium">{mit?.label ?? m.mitigationId}</span>
+              {m.effectiveness && <span class="ml-2 dsnote">[{m.effectiveness}]</span>}
+              <p class="mt-0.5 text-faded">{m.note}</p>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+    {entry.citations.length > 0 && (
+      <details class="dsnote">
+        <summary class="cursor-pointer uppercase tracking-[0.12em]">Evidence · {entry.citations.length} source{entry.citations.length > 1 ? 's' : ''} · {entry.confidence}</summary>
+        <ul class="mt-1 list-disc space-y-0.5 pl-5">
+          {entry.citations.map((c) => (
+            <li><a href={c.url} class="underline underline-offset-2" rel="nofollow">{c.title}</a> ({c.sourceType}, {c.accessed})</li>
+          ))}
+        </ul>
+      </details>
+    )}
+  </div>
+</div>

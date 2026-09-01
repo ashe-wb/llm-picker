@@ -1,0 +1,48 @@
+{
+  "modelId": "gemma-4-e2b",
+  "entries": [
+    {
+      "id": "gemma-4-e2b/all/tool-calling-unusable",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["tool-calling"],
+      "severity": "severe",
+      "summary": "Tau2 24.5 — the vendor's own number says roughly three in four tool-use episodes fail. Treat tool calling as unsupported on this model rather than as something to tune.",
+      "mitigations": [
+        { "mitigationId": "none", "note": "No prompt technique recovers this. If you need tools on small hardware, Gemma 4 E4B (42.2) is the minimum and the 12B (69.0) is the first size that actually works.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://ai.google.dev/gemma/docs/core/model_card_4", "title": "Gemma 4 model card — Tau2 per variant (E2B 24.5)", "sourceType": "vendor", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    },
+    {
+      "id": "gemma-4-e2b/all/knowledge-floor",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["factuality", "math"],
+      "severity": "severe",
+      "summary": "MMLU-Pro 60.0 and GPQA Diamond 43.4 are the lowest in this catalog. At 2.3B effective parameters there is simply not enough capacity to store reliable world knowledge — it will answer general-knowledge questions fluently and wrongly.",
+      "mitigations": [
+        { "mitigationId": "rag", "note": "Give it the source text and let it summarize or extract. It is a competent reader; it is not a reference work.", "effectiveness": "strong" },
+        { "mitigationId": "code-interpreter", "note": "Arithmetic belongs in a calculator, not in the weights — though note the model's own tool-calling is unreliable, so drive the tool from your harness rather than letting the model choose it.", "effectiveness": "weak" }
+      ],
+      "citations": [
+        { "url": "https://ai.google.dev/gemma/docs/core/model_card_4", "title": "Gemma 4 model card — MMLU-Pro and GPQA Diamond per variant", "sourceType": "vendor", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    },
+    {
+      "id": "gemma-4-e2b/all/long-context-nominal",
+      "bands": ["low", "mid", "high", "full"],
+      "dimensions": ["long-context"],
+      "severity": "severe",
+      "summary": "MRCR v2 at 128K is 19.1% — the advertised window is a buffer size, not a working memory.",
+      "mitigations": [
+        { "mitigationId": "rag", "note": "Retrieve a page at a time.", "effectiveness": "strong" }
+      ],
+      "citations": [
+        { "url": "https://ai.google.dev/gemma/docs/core/model_card_4", "title": "Gemma 4 model card — MRCR v2 @128K per variant", "sourceType": "vendor", "accessed": "2026-08-30" }
+      ],
+      "confidence": "anecdotal"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "modelId": "gemma-3-4b",
+  "entries": [
+    { "band": "full", "dimension": "math", "score": 3,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "MATH (4-shot)", "rawValue": 24.2, "url": "https://huggingface.co/google/gemma-3-4b-it", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "GSM8K: 38.4 — well behind Qwen3-4B and Phi-4-mini." }] },
+    { "band": "full", "dimension": "coding", "score": 4,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "HumanEval (0-shot)", "rawValue": 36.0, "url": "https://huggingface.co/google/gemma-3-4b-it", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "MBPP: 46.0." }] },
+    { "band": "full", "dimension": "factuality", "score": 5,
+      "provenance": [{ "sourceId": "vectara-hallucination", "metric": "HHEM hallucination rate % (lower is better)", "rawValue": 6.4, "url": "https://github.com/vectara/hallucination-leaderboard", "retrieved": "2026-08-30", "quant": "bf16", "method": "aggregated", "notes": "Answer rate only 67.3% — it refuses to answer a third of the time, which caps usefulness even when it doesn't hallucinate." }] },
+    { "band": "mid", "dimension": "math", "score": 3,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_0", "method": "aggregated", "quantNote": "Editorial derivation: already weak at full precision; QAT Q4_0 preserves what there is." }] },
+    { "band": "mid", "dimension": "coding", "score": 4,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_0", "method": "aggregated", "quantNote": "Editorial derivation: QAT limits quant loss." }] }
+  ],
+  "quantOverrides": []
+}

@@ -1,0 +1,109 @@
+{
+  "modelId": "qwen3-30b-a3b",
+  "entries": [
+    {
+      "id": "qwen3-30b-a3b/low/quant-cliff",
+      "bands": [
+        "low"
+      ],
+      "dimensions": [
+        "math",
+        "tool-calling"
+      ],
+      "severity": "severe",
+      "summary": "≤3-bit quantization hits this MoE's expert weights hard: arithmetic becomes unreliable and tool calls produce malformed arguments.",
+      "mitigations": [
+        {
+          "mitigationId": "higher-quant",
+          "note": "Q4_K_M (~19GB) is the sweet spot; if you only have ~13GB free, a smaller dense model at 4-bit usually beats this model at 3-bit.",
+          "effectiveness": "strong"
+        },
+        {
+          "mitigationId": "code-interpreter",
+          "note": "Offload math to a tool — works because tool calling recovers at 4-bit+, but at 3-bit the tool calls themselves get flaky.",
+          "effectiveness": "partial"
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://github.com/ggml-org/llama.cpp/discussions",
+          "title": "llama.cpp quantization quality discussions (MoE quant sensitivity)",
+          "sourceType": "github",
+          "accessed": "2026-08-30"
+        },
+        {
+          "url": "https://www.reddit.com/r/LocalLLaMA/",
+          "title": "r/LocalLLaMA threads on Qwen3-30B-A3B quant choice",
+          "sourceType": "reddit",
+          "accessed": "2026-08-30"
+        }
+      ],
+      "confidence": "community-consensus"
+    },
+    {
+      "id": "qwen3-30b-a3b/all/creative-writing",
+      "bands": [
+        "low",
+        "mid",
+        "high",
+        "full"
+      ],
+      "dimensions": [
+        "creative-writing"
+      ],
+      "severity": "moderate",
+      "summary": "Fast and smart, but its prose reads utilitarian — repetitive sentence rhythms and little voice.",
+      "mitigations": [
+        {
+          "mitigationId": "none",
+          "note": "Model character, not a settings problem. Gemma 3 12B writes better in half the memory."
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.reddit.com/r/LocalLLaMA/",
+          "title": "r/LocalLLaMA model-recommendation threads for writing",
+          "sourceType": "reddit",
+          "accessed": "2026-08-30"
+        }
+      ],
+      "confidence": "anecdotal"
+    },
+    {
+      "id": "qwen3-30b-a3b/all/greedy-repetition",
+      "bands": [
+        "low",
+        "mid",
+        "high",
+        "full"
+      ],
+      "dimensions": [
+        "instruction-following"
+      ],
+      "severity": "mild",
+      "summary": "Qwen3 models fall into endless repetition loops under greedy decoding — the model card itself warns 'DO NOT use greedy decoding'. Quantized builds hit it more often.",
+      "mitigations": [
+        {
+          "mitigationId": "prompting",
+          "note": "Use the card's sampler settings (temp 0.6 / top_p 0.95 / top_k 20 in thinking mode; 0.7 / 0.8 / 20 non-thinking) and presence_penalty up to 1.5 if loops persist.",
+          "effectiveness": "strong"
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://huggingface.co/Qwen/Qwen3-30B-A3B",
+          "title": "Qwen3 model card (greedy-decoding warning + recommended samplers)",
+          "sourceType": "vendor",
+          "accessed": "2026-08-30"
+        },
+        {
+          "url": "https://github.com/ggml-org/llama.cpp/issues/13310",
+          "title": "llama.cpp issue: Qwen3 GGUF repetition reports",
+          "sourceType": "github",
+          "accessed": "2026-08-30"
+        }
+      ],
+      "confidence": "community-consensus"
+    }
+  ]
+}

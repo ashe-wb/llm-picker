@@ -1,0 +1,51 @@
+{
+  "modelId": "qwen3-8b",
+  "entries": [
+    { "band": "full", "dimension": "math", "score": 7,
+      "provenance": [
+        { "sourceId": "vendor-model-card", "metric": "AIME'24 (thinking mode)", "rawValue": 76.0, "url": "https://arxiv.org/abs/2505.09388", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Qwen3 Technical Report Table 17. Non-thinking mode drops to 29.1 — the score reflects both modes." },
+        { "sourceId": "vendor-model-card", "metric": "MATH-500 (thinking mode)", "rawValue": 97.4, "url": "https://arxiv.org/abs/2505.09388", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported" }
+      ] },
+    { "band": "full", "dimension": "coding", "score": 6,
+      "provenance": [
+        { "sourceId": "vendor-model-card", "metric": "LiveCodeBench v5 (thinking mode)", "rawValue": 57.5, "url": "https://arxiv.org/abs/2505.09388", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Non-thinking mode: 22.8. Model absent from the Aider polyglot leaderboard as of 2026-08-30." }
+      ] },
+    { "band": "full", "dimension": "tool-calling", "score": 6,
+      "provenance": [
+        { "sourceId": "vendor-model-card", "metric": "BFCL v3 (thinking mode)", "rawValue": 68.1, "url": "https://arxiv.org/abs/2505.09388", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Non-thinking mode: 60.2." }
+      ] },
+    { "band": "full", "dimension": "instruction-following", "score": 7,
+      "provenance": [
+        { "sourceId": "vendor-model-card", "metric": "IFEval strict prompt (thinking mode)", "rawValue": 85.0, "url": "https://arxiv.org/abs/2505.09388", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported" }
+      ] },
+    { "band": "full", "dimension": "factuality", "score": 6,
+      "provenance": [
+        { "sourceId": "vectara-hallucination", "metric": "HHEM hallucination rate % (lower is better)", "rawValue": 4.8, "url": "https://github.com/vectara/hallucination-leaderboard", "retrieved": "2026-08-30", "quant": "bf16", "method": "aggregated", "notes": "95.2% factual consistency, 99.9% answer rate." }
+      ] },
+    { "band": "full", "dimension": "long-context", "score": 6,
+      "provenance": [
+        { "sourceId": "vendor-model-card", "metric": "RULER @128K", "rawValue": 77.4, "url": "https://arxiv.org/abs/2505.09388", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "RULER @32K: 91.2 — accuracy degrades past 64K." }
+      ] },
+    { "band": "mid", "dimension": "math", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "KLD/perplexity delta vs bf16", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation from the full-band score: community KLD data shows Q4_K_M retains most reasoning ability with a small consistent loss." }] },
+    { "band": "mid", "dimension": "coding", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "KLD/perplexity delta vs bf16", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: Q4_K_M coding loss vs bf16 is minor per community testing." }] },
+    { "band": "mid", "dimension": "tool-calling", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://www.reddit.com/r/LocalLLaMA/", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: tool-call formatting stays reliable at 4-bit for this model per community reports." }] },
+    { "band": "mid", "dimension": "instruction-following", "score": 7,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://www.reddit.com/r/LocalLLaMA/", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: IF is not quant-sensitive; carried from full band." }] },
+    { "band": "low", "dimension": "math", "score": 3,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "KLD delta + degradation reports", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q3_K_M", "method": "aggregated", "quantNote": "Editorial derivation: multi-step arithmetic degrades sharply at ≤3-bit; consistent community finding across Qwen-family models." }] },
+    { "band": "low", "dimension": "coding", "score": 4,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "KLD delta + degradation reports", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q3_K_M", "method": "aggregated", "quantNote": "Editorial derivation: noticeably more syntax errors and logic slips at 3-bit." }] },
+    { "band": "low", "dimension": "tool-calling", "score": 4,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://www.reddit.com/r/LocalLLaMA/", "retrieved": "2026-08-30", "quant": "Q3_K_M", "method": "aggregated", "quantNote": "Editorial derivation: malformed JSON arguments become common at ≤3-bit." }] },
+    { "band": "low", "dimension": "instruction-following", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://www.reddit.com/r/LocalLLaMA/", "retrieved": "2026-08-30", "quant": "Q3_K_M", "method": "aggregated", "quantNote": "Editorial derivation: IF holds up better than math/coding at low quants." }] }
+  ],
+  "quantOverrides": [
+    { "quant": "IQ3_XXS", "dimension": "math", "score": 2,
+      "note": "IQ3_XXS is materially worse than Q3_K_M for arithmetic despite sharing the band — the extreme compression hits attention precision hardest.",
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "KLD delta vs bf16", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "IQ3_XXS", "method": "aggregated" }] }
+  ]
+}

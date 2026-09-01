@@ -1,0 +1,20 @@
+{
+  "modelId": "granite-4.2-8b",
+  "entries": [
+    { "band": "full", "dimension": "coding", "score": 5,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "SWE-bench Verified", "rawValue": 47.67, "url": "https://huggingface.co/blog/ibm-granite/granite-4-2", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "An 8B-class model resolving nearly half of SWE-bench Verified is notable for the size; still far below the 27B-class models here. Vendor-reported." }] },
+    { "band": "full", "dimension": "tool-calling", "score": 6,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "BFCL v3", "rawValue": 68.27, "url": "https://huggingface.co/blog/ibm-granite/granite-4-2", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "The reason to pick this model at 8B: function calling is the design goal, not an afterthought. Independent BFCL listing pending as of 2026-08-30." }] },
+    { "band": "full", "dimension": "factuality", "score": 4,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "MMLU", "rawValue": 73.8, "url": "https://huggingface.co/blog/ibm-granite/granite-4-2", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Knowledge proxy only — no hallucination benchmark lists this model yet. Nine billion parameters is a hard ceiling on stored facts." }] },
+    { "band": "mid", "dimension": "coding", "score": 4,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: one point down. Q4_K_M is 5.54GB — comfortably inside the 8GB tier." }] },
+    { "band": "mid", "dimension": "tool-calling", "score": 5,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: one point down; smaller models have less headroom for the token-level precision that structured calls need." }] },
+    { "band": "high", "dimension": "coding", "score": 5,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q6_K", "method": "aggregated", "quantNote": "Editorial derivation: carried from the full band." }] },
+    { "band": "high", "dimension": "tool-calling", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "community consensus", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q6_K", "method": "aggregated", "quantNote": "Editorial derivation: carried from the full band. At 7.52GB this is the band to run if you have 16GB." }] }
+  ],
+  "quantOverrides": []
+}

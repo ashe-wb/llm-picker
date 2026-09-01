@@ -1,0 +1,19 @@
+{
+  "modelId": "phi-4",
+  "entries": [
+    { "band": "full", "dimension": "math", "score": 7,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "MATH", "rawValue": 80.4, "url": "https://huggingface.co/microsoft/phi-4", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "MGSM: 80.6, GPQA: 56.1 — exceptional per-GB math." }] },
+    { "band": "full", "dimension": "coding", "score": 7,
+      "provenance": [{ "sourceId": "vendor-model-card", "metric": "HumanEval", "rawValue": 82.6, "url": "https://huggingface.co/microsoft/phi-4", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "Absent from the Aider polyglot leaderboard as of 2026-08-30." }] },
+    { "band": "full", "dimension": "factuality", "score": 5,
+      "provenance": [
+        { "sourceId": "vectara-hallucination", "metric": "HHEM hallucination rate % (lower is better)", "rawValue": 3.7, "url": "https://github.com/vectara/hallucination-leaderboard", "retrieved": "2026-08-30", "quant": "bf16", "method": "aggregated", "notes": "Grounds provided text very well." },
+        { "sourceId": "vendor-model-card", "metric": "SimpleQA", "rawValue": 3.0, "url": "https://huggingface.co/microsoft/phi-4", "retrieved": "2026-08-30", "quant": "bf16", "method": "vendor-reported", "notes": "…but knows almost nothing: open-domain recall is among the lowest measured. The split score reflects both." }
+      ] },
+    { "band": "mid", "dimension": "math", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "KLD/perplexity delta vs bf16", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: small loss at 4-bit." }] },
+    { "band": "mid", "dimension": "coding", "score": 6,
+      "provenance": [{ "sourceId": "quant-degradation-community", "metric": "KLD/perplexity delta vs bf16", "url": "https://github.com/ggml-org/llama.cpp/discussions", "retrieved": "2026-08-30", "quant": "Q4_K_M", "method": "aggregated", "quantNote": "Editorial derivation: small loss at 4-bit." }] }
+  ],
+  "quantOverrides": []
+}
