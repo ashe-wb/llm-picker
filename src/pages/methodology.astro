@@ -170,19 +170,29 @@ const shared = machines.filter((p) => (counts.get(capacityOf(p)) ?? 0) > 1).leng
         fixed 45–70%, and a fraction is the wrong shape for a fixed cost: it flatters anything
         that reads little per token. Sparse mixture-of-experts models read a tenth of themselves,
         so they were being predicted at roughly twice their real speed — a published Qwen3.5-35B-A3B
-        measurement on an M4 Max is 66–70 tok/s where the old arithmetic said 120–187. The
+        llama.cpp measurement on an M4 Max is 70–72 tok/s where the old arithmetic said 120–187. The
         per-layer form gets it right without a special case, and it explains the same puzzle in
         llama.cpp's own table, where 4-bit looks less "efficient" than FP16 on identical hardware.
       </p>
       <p class="text-faded">
         The overhead is charged per layer because that is what the measurements show: solved as a
         flat per-token cost it comes to 6–14ms on a 32-layer 7B and 25–41ms on an 80-layer 70B, and
-        divided by layer count both land near 0.2–0.5ms. It is checked against five published
-        measurements, three of which it was not fitted to — an 8B on an RTX 4090, Llama-3.3-70B on
-        an M2 Ultra at three different quantizations, and the sparse model above. A flat per-token
+        divided by layer count both land in the same few tenths of a millisecond. A flat per-token
         cost misses the 70B rows entirely. It is set per platform, since CUDA dispatches more
         cheaply than Metal, and AMD and Intel currently sit inside the CUDA figure, which is
         probably optimistic for them.
+      </p>
+      <p class="text-faded">
+        On Apple Silicon it is 0.05–0.30ms per layer, set from
+        <a href="https://github.com/ashe-wb/llm-picker/blob/main/docs/mac-tok-s-validation.md" class="underline underline-offset-2">92 published measurements attributed to a named chip</a>,
+        across llama.cpp and MLX, and it brackets 76 of them. The range is wide because the
+        overhead is not one number: routing a mixture-of-experts costs two to three times what a
+        dense layer costs, and a current llama.cpp build dispatches about half as expensively as
+        the 2023 build in its own table. What escapes the range is dense models under MLX on M3
+        Ultra and M4 chips, which run up to a tenth quicker than its top, and prompts of 15K
+        tokens or more, where attention over the cache pushes below its bottom. The previous
+        figure, 0.21–0.45ms, was fitted to a 70B on an M2 Ultra including a 2-bit row that is
+        bound by dequantisation rather than memory, and it left 75 of the 92 above the range.
       </p>
       <p class="text-faded">
         Two consequences worth knowing. A mixture-of-experts model reads only the experts
@@ -231,7 +241,8 @@ const shared = machines.filter((p) => (counts.get(capacityOf(p)) ?? 0) > 1).leng
       </p>
       <p class="text-faded">
         These figures assume a <strong class="text-ink">GGUF runtime</strong> — llama.cpp, LM
-        Studio, Ollama — because that is what every measurement behind them was taken on. The
+        Studio, Ollama — because that is what every measurement behind them was taken on, apart
+        from the Apple Silicon range above, which was set on MLX as well. The
         per-layer overhead is set separately for CUDA and for Metal, from
         <a href="https://github.com/ggml-org/llama.cpp/discussions/4167" class="underline underline-offset-2">llama.cpp's own Apple Silicon benchmark table</a>
         and a published 70B study, rather than measuring one platform and applying it everywhere —
@@ -240,14 +251,16 @@ const shared = machines.filter((p) => (counts.get(capacityOf(p)) ?? 0) > 1).leng
         probably slower than it suggests.
       </p>
       <p class="text-faded">
-        <strong class="text-ink">MLX is a different runtime and is not modelled.</strong> It is
-        faster, and by a measured amount: controlled same-machine comparisons at 4-bit on both
-        sides put it at
-        <a href="https://jaesolshin.com/posts/apple-silicon-llm-backends/" class="underline underline-offset-2">1.63× on a dense Qwen3.5-9B</a>
-        (25 against 15.3 tok/s) and
-        <a href="https://antekapetanovic.com/blog/qwen3.5-apple-silicon-benchmark/" class="underline underline-offset-2">about 1.5× on a 35B mixture-of-experts</a>
-        (85–108 against 66–70). So on a Mac running MLX, treat everything here as a
-        <strong class="text-ink">floor</strong> rather than an estimate.
+        <strong class="text-ink">MLX is a different runtime, and the Apple Silicon range holds
+        both.</strong> Controlled same-machine comparisons at 4-bit on both sides put MLX at
+        1.0–1.2× llama.cpp on most models — 1.04× on Qwen3-8B, 1.03–1.19× on Qwen3-30B-A3B,
+        1.09× on Qwen3-32B — and at 1.6–1.9× on Qwen3.5, whose linear-attention layers
+        llama.cpp runs less well:
+        <a href="https://antekapetanovic.com/blog/qwen3.5-apple-silicon-benchmark/" class="underline underline-offset-2">126–132 against 70–72 tok/s on a 35B mixture-of-experts</a>
+        and
+        <a href="https://jaesolshin.com/posts/apple-silicon-llm-backends/" class="underline underline-offset-2">1.63× on a dense 9B</a>.
+        So on a Mac running MLX, expect the <strong class="text-ink">top of the range</strong>
+        on most models, and above it on Qwen3.5.
       </p>
       <p class="text-faded">
         One number worth distrusting is the 3× you will see quoted. That comes from Ollama
@@ -256,12 +269,13 @@ const shared = machines.filter((p) => (counts.get(capacityOf(p)) ?? 0) > 1).leng
         real speedup for Ollama users and not a measure of MLX against llama.cpp.
       </p>
       <p class="text-faded">
-        It stays unmodelled because a single multiplier would be the wrong shape. MLX ships its
-        own quantizations at their own bits-per-weight — the same model can be 17GB as Q4_K_M and
-        15.8GB in MLX 4-bit, which is free speed from reading less — and the ratio moves with
-        architecture and runtime version. This project has measured none of it on its own
-        hardware, and two blog benchmarks are enough to tell you the direction, not enough to
-        compute with.
+        It gets no multiplier of its own because a single multiplier would be the wrong shape.
+        MLX ships its own quantizations at their own bits-per-weight — 4-bit is 4.5 bits per
+        weight exactly, where Q4_K_M is about 4.85, so the same model is 17GB as Q4_K_M and
+        15.8GB in MLX, which is free speed from reading less and most of the 1.0–1.2× — and the
+        rest moves with architecture and runtime version. This project has measured none of it
+        on its own hardware; the range is set from other people's published runs, and the
+        document above lists every one.
       </p>
       <p class="text-faded">
         Prompt processing gets a <em>class</em> — fast, moderate or slow — rather than a number.
