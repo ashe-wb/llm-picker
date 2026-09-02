@@ -1219,6 +1219,30 @@ describe('bandwidthFor / prefillFor / sameCapacityPresets', () => {
     expect(prefillFor({ platform: 'unified', ramGb: 32 }, hardware)).toBe('moderate');
   });
 
+  it('lets a chip override its platform prefill class, and the M5 family is the one that does', () => {
+    // llama.cpp discussion #4167, Llama-2-7B Q4_0 pp512: M5 Max 40-core 3,220
+    // tok/s against 886 on the M4 Max 40-core and 1,471 on the M3 Ultra 80-core.
+    // The base M5's 723 is a 32-core M4 Max figure, so it keeps the platform class.
+    const mac = (chipId: string, ramGb: number) => ({ platform: 'unified' as const, ramGb, chipId });
+    expect(prefillFor(mac('m5-max-40c', 64), hardware)).toBe('fast');
+    expect(prefillFor(mac('m5-pro', 48), hardware)).toBe('fast');
+    expect(prefillFor(mac('m5-ultra', 256), hardware)).toBe('fast');
+    expect(prefillFor(mac('m5', 32), hardware)).toBe('moderate');
+    expect(prefillFor(mac('m4-max-40c', 64), hardware)).toBe('moderate');
+    expect(prefillFor(mac('m3-ultra', 256), hardware)).toBe('moderate');
+    // Through the generated preset too, which is how the picker reaches it
+    // (Picker.astro merges the chip presets into the list before use).
+    const merged = { ...hardware, presets: [...hardware.presets, ...chipPresets(hardware)] };
+    expect(prefillFor({ platform: 'unified', ramGb: 64, presetId: 'm5-max-40c-64' }, merged)).toBe('fast');
+    // Every fast Apple chip says what the grade depends on, with its source.
+    for (const c of hardware.chips.filter((x) => x.prefillClass === 'fast')) {
+      expect(c.note, c.id).toMatch(/current llama.cpp build on macOS 26/);
+      expect(c.noteUrl, c.id).toContain('llama.cpp/discussions/4167');
+    }
+    const preset = chipPresets(hardware).find((p) => p.id === 'm5-max-40c-64')!;
+    expect(preset.note).toBe(hardware.chips.find((c) => c.id === 'm5-max-40c')!.note);
+  });
+
   it('groups machines of equal capacity without mixing VRAM and RAM', () => {
     const peers = sameCapacityPresets({ platform: 'discrete', ramGb: 64, vramGb: 24 }, hardware);
     expect(peers.length).toBeGreaterThan(5);

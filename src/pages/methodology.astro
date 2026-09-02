@@ -284,6 +284,17 @@ const shared = machines.filter((p) => (counts.get(capacityOf(p)) ?? 0) > 1).leng
         generating no faster. A tok/s figure there would depend on the backend and is honestly
         measured for only a handful of machines, so we grade it instead of inventing it.
       </p>
+      <p class="text-faded">
+        The grade is per platform, with overrides where a machine breaks from its platform, and
+        on Apple silicon the M5 is that break. Its GPU cores carry matrix units, and on
+        <a href="https://github.com/ggml-org/llama.cpp/discussions/4167" class="underline underline-offset-2">llama.cpp's own 7B prompt benchmark</a>
+        a 40-core M5 Max ingests 3,220 tokens/s where a 40-core M4 Max measures 886 and an
+        80-core M3 Ultra 1,471 — prefill no longer tracks bandwidth at all. So the M5 Pro, Max
+        and Ultra are graded <em>fast</em>; the base M5, at 723, posts a 32-core M4 Max's figure
+        and stays <em>moderate</em>. The grade assumes a current llama.cpp on macOS 26, which is
+        what reaches those units; an older build gets M4-class figures on the same chip, and the
+        picker says so whenever an M5 is selected.
+      </p>
       <p class="border-l-2 border-warn bg-panel py-2 pl-3 pr-3 text-sm text-faded">
         <strong class="text-ink">Speed is one axis of a buying decision, and rarely the deciding
         one.</strong> Nothing here accounts for price, performance per pound, power draw, heat,
