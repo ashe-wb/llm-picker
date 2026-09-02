@@ -201,19 +201,23 @@ function speedNote(
     ? ` — HELD BACK BY THE LAYERS YOUR CPU IS RUNNING, WHICH READ SYSTEM RAM AT ${systemBandwidthGbs}GB/S RATHER THAN ${bandwidthGbs}GB/S`
     : '';
   const pf = prefill ? ` · PROMPT PROCESSING: ${prefill.toUpperCase()}` : '';
-  // On a Mac the runtime name is not enough on its own. "GGUF" only corrects the
-  // expectation of someone who already knows MLX is a different thing, and the
-  // reader most likely to have heard MLX is fast is exactly the one reading
-  // this number. So the caveat rides on the number itself, every card, rather
-  // than only in the block above them.
+  // On a Mac the reader most likely to have heard MLX is fast is exactly the
+  // one reading this number, so where MLX sits rides on the number itself,
+  // every card, rather than only in the note below them. The Apple range was
+  // set on both runtimes (docs/mac-tok-s-validation.md): MLX is 1.0-1.2x
+  // llama.cpp on most models, 1.6-1.9x on Qwen3.5. No "floor" — that was the
+  // old 1.5x claim, which rested on a misquoted measurement.
   //
   // No context qualifier. It used to say "at shorter contexts", resting on a
   // reported 40K crossover from a single article whose headline figure this site
   // rejects. The one controlled sweep available shows MLX, llama.cpp and Ollama
   // all roughly halving together at 32K — the ratio holds, the advantage does
   // not evaporate — so the qualifier was hedging against something unevidenced.
-  const mlx = isApple ? ' — MLX MEASURES ABOUT 1.5x FASTER, SO TREAT THIS AS A FLOOR' : '';
-  return `<p class="dsline">~${s.lo}–${s.hi} TOK/S GENERATING ON A GGUF RUNTIME, BY THIS ESTIMATE${pf}<span class="text-faded/85">${esc(active + throttle + mlx)}</span></p>`;
+  const mlx = isApple
+    ? ` — LLAMA.CPP OR MLX; MLX SITS NEAR THE TOP OF THIS RANGE${rec.model.id.startsWith('qwen3.5') ? ', AND ABOVE IT ON QWEN3.5' : ''}`
+    : '';
+  const runtime = isApple ? '' : ' ON A GGUF RUNTIME';
+  return `<p class="dsline">~${s.lo}–${s.hi} TOK/S GENERATING${runtime}, BY THIS ESTIMATE${pf}<span class="text-faded/85">${esc(active + throttle + mlx)}</span></p>`;
 }
 
 /**
