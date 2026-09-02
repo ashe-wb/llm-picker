@@ -793,7 +793,6 @@ export function initPicker(): void {
 
     results.innerHTML =
       notes.join('') +
-      (out.recommendations.length > 0 ? mlxNote(m) : '') +
       (out.recommendations.length > 0
         ? out.recommendations
             .map((r, i) =>
@@ -832,6 +831,9 @@ export function initPicker(): void {
             )
             .join('')
         : '<p class="font-mono text-sm text-faded">NOTHING RATED RUNS ON THIS MACHINE FOR THIS WORKLOAD — an honest gap, not a bug.</p>') +
+      // After the cards: it talks about "the range above", so it has to follow
+      // the speeds it is qualifying, not precede them.
+      (out.recommendations.length > 0 ? mlxNote(m) : '') +
       offload +
       (out.recommendations[0] ? capacityCompare(out.recommendations[0], m, data, out.contextTokens, data.tasks.find((x) => x.id === task)!) : '');
 
