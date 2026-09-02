@@ -532,10 +532,12 @@ export function raiseSteps(machine: Machine, hardware: Hardware): number[] {
   return [...new Set(steps)];
 }
 
-/** Prompt-processing class: the preset's override, else the platform's default. */
+/** Prompt-processing class: the preset's override, else the chip's, else the platform's default. */
 export function prefillFor(machine: Machine, hardware: Hardware): string | undefined {
   const preset = matchPreset(machine, hardware);
-  return preset?.prefillClass ?? platformFor(hardware, machine.platform).prefillClass;
+  return (
+    preset?.prefillClass ?? chipFor(machine, hardware)?.prefillClass ?? platformFor(hardware, machine.platform).prefillClass
+  );
 }
 
 /**
@@ -578,6 +580,8 @@ export function chipPresets(hardware: Hardware): Preset[] {
       platform: c.platform,
       ramGb,
       chipId: c.id,
+      note: c.note,
+      noteUrl: c.noteUrl,
     })),
   );
 }

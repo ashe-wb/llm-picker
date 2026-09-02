@@ -2153,7 +2153,9 @@
         24,
         32
       ],
-      "citation": "https://support.apple.com/en-us/102896"
+      "citation": "https://support.apple.com/en-us/102896",
+      "note": "Prompt processing on a current llama.cpp build on macOS 26 is 3.3x an M4's — 723 against 221 tokens/s on a 7B at Q4_0 in llama.cpp's own table, from the matrix units in each M5 GPU core. That is a 32-core M4 Max's figure, which is graded moderate here, so the base M5 stays moderate. Older builds do not use the units and get M4-class figures.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/4167"
     },
     {
       "id": "m5-pro",
@@ -2166,7 +2168,10 @@
         48,
         64
       ],
-      "citation": "https://support.apple.com/en-us/126319"
+      "citation": "https://support.apple.com/en-us/126319",
+      "prefillClass": "fast",
+      "note": "Prompt processing is fast on a current llama.cpp build on macOS 26: the matrix units in each M5 GPU core put a 20-core M5 Pro at 1,621 tokens/s on a 7B at Q4_0 in llama.cpp's own table, where a 20-core M4 Pro measures 440. Older builds do not use them and get M4-class figures.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/4167"
     },
     {
       "id": "m5-max-32c",
@@ -2180,7 +2185,10 @@
         64,
         128
       ],
-      "citation": "https://www.apple.com/mac-studio/specs/"
+      "citation": "https://www.apple.com/mac-studio/specs/",
+      "prefillClass": "fast",
+      "note": "Prompt processing is fast on a current llama.cpp build on macOS 26. The 32-core M5 Max is not yet in llama.cpp's table; the 40-core measures 3,220 tokens/s on a 7B at Q4_0 where a 40-core M4 Max measures 886, and the matrix units doing that sit in every GPU core, so the 32-core is graded with it. Older builds do not use them and get M4-class figures.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/4167"
     },
     {
       "id": "m5-max-40c",
@@ -2193,7 +2201,10 @@
         64,
         128
       ],
-      "citation": "https://www.apple.com/mac-studio/specs/"
+      "citation": "https://www.apple.com/mac-studio/specs/",
+      "prefillClass": "fast",
+      "note": "Prompt processing is fast on a current llama.cpp build on macOS 26: the matrix units in each M5 GPU core put a 40-core M5 Max at 3,220 tokens/s on a 7B at Q4_0 in llama.cpp's own table, where a 40-core M4 Max measures 886 and an 80-core M3 Ultra 1,471. Older builds do not use them and get M4-class figures.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/4167"
     },
     {
       "id": "m5-ultra",
@@ -2206,7 +2217,10 @@
         256,
         512
       ],
-      "citation": "https://www.apple.com/mac-studio/specs/"
+      "citation": "https://www.apple.com/mac-studio/specs/",
+      "prefillClass": "fast",
+      "note": "Prompt processing is fast on a current llama.cpp build on macOS 26. The M5 Ultra is not yet in llama.cpp's table; it is two M5 Max dies, and the 40-core M5 Max measures 3,220 tokens/s on a 7B at Q4_0 where a 40-core M4 Max measures 886, from matrix units that sit in every GPU core. Older builds do not use them and get M4-class figures.",
+      "noteUrl": "https://github.com/ggml-org/llama.cpp/discussions/4167"
     },
     {
       "id": "m6",

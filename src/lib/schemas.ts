@@ -193,6 +193,16 @@ export const ChipSchema = z.object({
    */
   ramOptions: z.array(z.number().positive()).min(1),
   citation: z.string().url().optional(),
+  /**
+   * Overrides the platform's prompt-processing class, the way a preset can.
+   * Needed because on Apple silicon prefill stopped tracking bandwidth with
+   * the M5: its GPU cores carry matrix units that a 40-core M5 Max ingests a
+   * prompt with at 3.6x the rate of a 40-core M4 Max, and past both Ultras.
+   */
+  prefillClass: z.enum(PREFILL_CLASSES).optional(),
+  /** Shown while a machine on this chip is selected; forwarded to its presets. */
+  note: z.string().optional(),
+  noteUrl: z.string().url().optional(),
 });
 
 /**

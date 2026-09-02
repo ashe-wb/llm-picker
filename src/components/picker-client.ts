@@ -253,14 +253,16 @@ function capacityCompare(
       const speed = peer
         ? generationSpeed(peer.fit.weightsGb, peer.fit.kvGb, rec.model, peer.fit, bw, sysBw, data.hardware, pm.platform)
         : null;
-      return { p, speed, fits: !!peer, band: peer?.band, bw, chip: chipFor(pm, data.hardware) };
+      return { p, speed, fits: !!peer, band: peer?.band, bw, chip: chipFor(pm, data.hardware), prefill: prefillFor(pm, data.hardware) };
     })
     .sort((a, b) => (b.speed?.hi ?? -1) - (a.speed?.hi ?? -1));
 
   const body = rows
-    .map(({ p, speed, fits, band, bw, chip }) => {
+    .map(({ p, speed, fits, band, bw, chip, prefill }) => {
       const mine = p.id === m.presetId || (!m.presetId && p.label === here);
-      const pf = (p.prefillClass ?? data.hardware.platforms.find((x) => x.id === p.platform)?.prefillClass ?? '').toUpperCase();
+      // Through prefillFor, not the preset field: an Apple preset carries a
+      // chip, and since the M5 the chip is what sets the class.
+      const pf = (prefill ?? '').toUpperCase();
       const figure = !fits
         ? '<span class="text-faded">does not fit</span>'
         : speed
